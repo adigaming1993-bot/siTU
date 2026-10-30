@@ -4,463 +4,745 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistem Inventaris Logistik Tata Usaha | RSUD dr. R.T. Notopuro</title>
+  
+  <!-- Font Google Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            hospital: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase JS Client v2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    :root {
-      --primary: #0284c7;
-      --primary-dark: #0369a1;
-      --primary-light: #e0f2fe;
-      --success: #10b981;
-      --success-light: #d1fae5;
-      --warning: #f59e0b;
-      --warning-light: #fef3c7;
-      --danger: #ef4444;
-      --danger-light: #fee2e2;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --radius: 12px;
-      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    /* Animasi halus kustom */
+    .fade-in {
+      animation: fadeIn 0.25s ease-out forwards;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      padding-bottom: 60px;
-    }
-
-    header {
-      background: #ffffff;
-      border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      box-shadow: var(--shadow);
-    }
-
-    .header-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-badge {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #0284c7, #0369a1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 20px;
-      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
-    }
-
-    .brand-text h1 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .brand-text p {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .api-badge-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--primary-light);
-      color: var(--primary-dark);
-      text-decoration: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      border: 1px solid rgba(2, 132, 199, 0.2);
-    }
-
-    .api-badge-btn:hover {
-      background: var(--primary);
-      color: white;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 28px auto;
-      padding: 0 20px;
-    }
-
-    .status-alert {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      border-radius: 10px;
-      margin-bottom: 24px;
-      font-size: 0.9rem;
-    }
-
-    .status-alert.online {
-      background: var(--success-light);
-      color: #065f46;
-      border: 1px solid #a7f3d0;
-    }
-
-    .status-alert.loading {
-      background: var(--warning-light);
-      color: #92400e;
-      border: 1px solid #fde68a;
-    }
-
-    .status-alert.error {
-      background: var(--danger-light);
-      color: #991b1b;
-      border: 1px solid #fecaca;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .stat-card {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-    }
-
-    .stat-card h3 {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-card .value {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .filter-bar {
-      background: var(--card-bg);
-      padding: 16px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .search-input {
-      flex: 1;
-      min-width: 250px;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .search-input:focus {
-      border-color: var(--primary);
-    }
-
-    .filter-select {
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.9rem;
-      background: white;
-      outline: none;
-    }
-
-    .btn {
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: background 0.2s;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-dark);
-    }
-
-    .table-container {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.9rem;
-    }
-
-    th {
-      background: #f1f5f9;
-      color: var(--text-muted);
-      font-weight: 600;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    td {
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover td {
-      background: #f8fafc;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .badge-primary {
-      background: var(--primary-light);
-      color: var(--primary-dark);
-    }
-
-    .badge-success {
-      background: var(--success-light);
-      color: #065f46;
-    }
-
-    .badge-danger {
-      background: var(--danger-light);
-      color: #991b1b;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 48px 20px;
-      color: var(--text-muted);
-    }
-
-    .empty-state h4 {
-      font-size: 1.1rem;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .code-box {
-      background: #0f172a;
-      color: #e2e8f0;
-      padding: 16px;
-      border-radius: 8px;
-      font-family: monospace;
-      font-size: 0.85rem;
-      text-align: left;
-      margin: 16px auto;
-      max-width: 700px;
-      overflow-x: auto;
-      white-space: pre-wrap;
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
     }
   </style>
 </head>
-<body>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex flex-col">
 
-  <header>
-    <div class="header-container">
-      <div class="brand">
-        <div class="logo-badge">🏥</div>
-        <div class="brand-text">
-          <h1>Sistem Inventaris Logistik Tata Usaha</h1>
-          <p>RSUD dr. R.T. Notopuro Sidoarjo • Vercel Serverless & Supabase</p>
+  <!-- ========================================================================= -->
+  <!-- 1. TAMPILAN LOGIN (SUPABASE AUTH) - Tampil Pertama Sebelum Login           -->
+  <!-- ========================================================================= -->
+  <div id="loginView" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-hospital-800 to-slate-900">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden fade-in">
+      
+      <!-- Header Kartu Login -->
+      <div class="bg-gradient-to-r from-hospital-600 to-brand-600 p-8 text-white text-center relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-white/10 rounded-full blur-xl"></div>
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md mb-4 shadow-inner">
+          <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold tracking-tight">RSUD dr. R.T. Notopuro</h2>
+        <p class="text-hospital-100 text-sm mt-1 font-medium">Sistem Inventaris Logistik Tata Usaha</p>
+      </div>
+
+      <!-- Form Login -->
+      <form id="loginForm" class="p-8 space-y-5">
+        <div>
+          <label for="loginEmail" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Email Pegawai</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+              </svg>
+            </div>
+            <input type="email" id="loginEmail" required placeholder="nama@rsudnotopuro.id"
+              class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+          </div>
+        </div>
+
+        <div>
+          <label for="loginPassword" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Kata Sandi</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+            </div>
+            <input type="password" id="loginPassword" required placeholder="••••••••"
+              class="w-full pl-10 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+            <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 text-xs">
+              Lihat
+            </button>
+          </div>
+        </div>
+
+        <!-- Notifikasi Error Login -->
+        <div id="loginErrorAlert" class="hidden p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-start gap-2">
+          <svg class="w-4 h-4 text-rose-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span id="loginErrorText">Email atau kata sandi tidak sesuai.</span>
+        </div>
+
+        <button type="submit" id="loginSubmitBtn"
+          class="w-full py-3.5 px-4 bg-gradient-to-r from-hospital-600 to-brand-600 hover:from-hospital-700 hover:to-brand-700 text-white font-semibold rounded-xl text-sm shadow-lg shadow-hospital-500/25 transition-all flex items-center justify-center gap-2">
+          <span id="loginBtnSpinner" class="hidden">
+            <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+          </span>
+          <span id="loginBtnText">Masuk ke Sistem Inventaris</span>
+        </button>
+
+        <div class="text-center pt-2">
+          <p class="text-xs text-slate-400">
+            Akses terbatas untuk Staf Logistik & Kepala Bagian Tata Usaha RSUD dr. R.T. Notopuro Sidoarjo.
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- 2. DASHBOARD ADMIN UTAMA (Hanya Tampil Setelah Login Berhasil)             -->
+  <!-- ========================================================================= -->
+  <div id="dashboardView" class="hidden min-h-screen flex flex-col fade-in">
+    
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16 gap-4">
+          
+          <!-- Logo & Info Instansi -->
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-hospital-600 to-brand-500 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-hospital-500/20">
+              TU
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">RSUD dr. R.T. Notopuro</h1>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-brand-100 text-brand-800">Tata Usaha</span>
+              </div>
+              <p class="text-xs text-slate-500 hidden sm:block">Sistem Informasi Inventaris Logistik Masuk-Keluar Barang</p>
+            </div>
+          </div>
+
+          <!-- Profil User & Tombol Logout -->
+          <div class="flex items-center gap-3">
+            <div class="hidden md:flex flex-col text-right">
+              <span id="userEmailBadge" class="text-xs font-semibold text-slate-700">user@rsudnotopuro.id</span>
+              <span class="text-[10px] text-slate-400">Pegawai Terautentikasi</span>
+            </div>
+            
+            <a href="/api/barang" target="_blank" title="Akses JSON Endpoint" 
+              class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-medium transition">
+              <svg class="w-3.5 h-3.5 text-hospital-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+              </svg>
+              <span>API JSON</span>
+            </a>
+
+            <button id="logoutBtn"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-semibold transition shadow-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+              <span>Logout</span>
+            </button>
+          </div>
+
         </div>
       </div>
-      <div>
-        <a href="/api/barang" target="_blank" class="api-badge-btn">
-          ⚡ Buka JSON Endpoint (/api/barang)
-        </a>
+    </header>
+
+    <!-- Konten Dashboard -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
+      <!-- Baris Tindakan Utama: Judul & Tombol Tambah Barang -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Katalog Inventaris Logistik</h2>
+          <p class="text-sm text-slate-500 mt-1">Kelola stok ATK, cetakan rekam medis, dan barang logistik operasional TU.</p>
+        </div>
+
+        <!-- Tombol Utama: Tambah Barang Baru -->
+        <button id="openAddModalBtn"
+          class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-hospital-600 to-brand-600 hover:from-hospital-700 hover:to-brand-700 text-white font-semibold rounded-xl text-sm shadow-md shadow-hospital-600/20 hover:shadow-lg transition-all">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          <span>Tambah Barang Baru</span>
+        </button>
       </div>
-    </div>
-  </header>
 
-  <main class="container">
-    <!-- Status Serverless Function -->
-    <div id="statusAlert" class="status-alert loading">
-      <div>⏳ Menghubungkan ke API Vercel Serverless (/api/barang)...</div>
-    </div>
+      <!-- Kartu Ringkasan Statistik -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        
+        <!-- Total Jenis Barang -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-hospital-50 border border-hospital-100 flex items-center justify-center text-hospital-600 flex-shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Item</p>
+            <h3 id="statTotalItem" class="text-2xl font-extrabold text-slate-800 mt-0.5">0</h3>
+          </div>
+        </div>
 
-    <!-- Statistik Ringkas -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h3>Total Jenis Barang</h3>
-        <div id="totalBarang" class="value">-</div>
+        <!-- Total Stok Fisik -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 flex-shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Stok Fisik</p>
+            <h3 id="statTotalStok" class="text-2xl font-extrabold text-slate-800 mt-0.5">0</h3>
+          </div>
+        </div>
+
+        <!-- Stok Kritis / Habis -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Perlu Restock</p>
+            <h3 id="statStokKritis" class="text-2xl font-extrabold text-amber-600 mt-0.5">0</h3>
+          </div>
+        </div>
+
+        <!-- Kategori Aktif -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kategori Aktif</p>
+            <h3 id="statTotalKategori" class="text-2xl font-extrabold text-slate-800 mt-0.5">0</h3>
+          </div>
+        </div>
+
       </div>
-      <div class="stat-card">
-        <h3>Total Kuantitas Fisik</h3>
-        <div id="totalStok" class="value">-</div>
+
+      <!-- Bilah Pencarian & Filter Kategori -->
+      <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm mb-6 flex flex-col md:flex-row gap-3">
+        <!-- Pencarian -->
+        <div class="flex-1 relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <input type="text" id="searchInput" placeholder="Cari nama barang, kode, atau rak..."
+            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+        </div>
+
+        <!-- Filter Kategori -->
+        <div class="w-full md:w-56">
+          <select id="kategoriFilter"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition text-slate-700">
+            <option value="">Semua Kategori</option>
+          </select>
+        </div>
+
+        <!-- Filter Status Stok -->
+        <div class="w-full md:w-44">
+          <select id="statusFilter"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition text-slate-700">
+            <option value="">Semua Status</option>
+            <option value="aman">Stok Aman</option>
+            <option value="kritis">Stok Kritis</option>
+            <option value="habis">Stok Habis</option>
+          </select>
+        </div>
+
+        <!-- Tombol Refresh -->
+        <button id="refreshTableBtn"
+          class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          <span class="hidden sm:inline">Refresh</span>
+        </button>
       </div>
-      <div class="stat-card">
-        <h3>Kategori Aktif</h3>
-        <div id="totalKategori" class="value">-</div>
+
+      <!-- Tabel Daftar Barang -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-700">
+            <thead class="bg-slate-50/75 border-b border-slate-200 text-xs uppercase font-semibold text-slate-500">
+              <tr>
+                <th class="px-5 py-4">No</th>
+                <th class="px-5 py-4">Kode Barang</th>
+                <th class="px-5 py-4">Nama Barang</th>
+                <th class="px-5 py-4">Kategori</th>
+                <th class="px-5 py-4 text-center">Stok Fisik</th>
+                <th class="px-5 py-4">Satuan</th>
+                <th class="px-5 py-4">Lokasi Rak</th>
+                <th class="px-5 py-4 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="barangTableBody" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="8" class="px-6 py-12 text-center text-slate-400">
+                  <div class="inline-flex items-center gap-2">
+                    <svg class="animate-spin w-5 h-5 text-hospital-600" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span>Memuat data inventaris...</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
 
-    <!-- Bilah Pencarian & Filter -->
-    <div class="filter-bar">
-      <input type="text" id="searchInput" class="search-input" placeholder="Cari nama barang atau kode barang..." />
-      <select id="kategoriSelect" class="filter-select">
-        <option value="">Semua Kategori</option>
-      </select>
-      <button id="refreshBtn" class="btn btn-primary">🔄 Muat Ulang Data</button>
-    </div>
+    </main>
+  </div>
 
-    <!-- Tabel Data Barang -->
-    <div class="table-container">
-      <table id="barangTable">
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Kode</th>
-            <th>Nama Barang</th>
-            <th>Kategori</th>
-            <th>Stok</th>
-            <th>Satuan</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          <tr>
-            <td colspan="7" class="empty-state">
-              <p>Memuat data katalog logistik...</p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
 
-    <!-- Panduan Jika Data Masih Kosong -->
-    <div id="emptyNotice" style="display: none; margin-top: 32px;" class="stat-card">
-      <h3 style="color: #0284c7; font-size: 1rem; margin-bottom: 8px;">💡 Cara Mengisi Data Awal di Supabase</h3>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
-        Koneksi backend ke Vercel dan Supabase berhasil! Namun tabel <code>barang</code> di database masih kosong (0 item).
-        Anda dapat menyalin perintah SQL berikut dan menjalankannya di <strong>Supabase Dashboard → SQL Editor</strong> untuk memasukkan contoh barang logistik TU:
-      </p>
-      <div class="code-box">INSERT INTO public.barang (kode_barang, nama, kategori, stok, satuan, stok_minimum, lokasi_rak)
-VALUES 
-    ('TU-ATK-001', 'Kertas HVS A4 75 GSM', 'Alat Tulis Kantor', 150, 'rim', 20, 'Rak A-1'),
-    ('TU-ATK-002', 'Bolpoin Standard AE7 Hitam', 'Alat Tulis Kantor', 240, 'buah', 30, 'Rak B-1'),
-    ('TU-CTK-001', 'Formulir Catatan Perkembangan Pasien (CPPT)', 'Cetakan & Formulir', 50, 'rim', 10, 'Rak C-1'),
-    ('TU-KBS-001', 'Hand Sanitizer Gel 500ml', 'Kebersihan & Sanitasi Non-Medis', 85, 'botol', 15, 'Rak D-1');</div>
-    </div>
-  </main>
+  <!-- ========================================================================= -->
+  <!-- 3. MODAL POP-UP INPUT BARANG BARU (INSERT SUPABASE)                        -->
+  <!-- ========================================================================= -->
+  <div id="addBarangModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-hospital-100 text-hospital-700 flex items-center justify-center">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
+          <h3 class="font-bold text-slate-800 text-base">Tambah Barang Baru</h3>
+        </div>
+        <button type="button" id="closeAddModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
 
+      <!-- Modal Body (Form) -->
+      <form id="addBarangForm" class="p-6 space-y-4">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Kode Barang -->
+          <div>
+            <label for="inputKode" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+              Kode Barang <span class="text-rose-500">*</span>
+            </label>
+            <input type="text" id="inputKode" required placeholder="misal: TU-ATK-005"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+          </div>
+
+          <!-- Kategori -->
+          <div>
+            <label for="inputKategori" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+              Kategori <span class="text-rose-500">*</span>
+            </label>
+            <select id="inputKategori" required
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition">
+              <option value="">Pilih Kategori...</option>
+              <option value="Alat Tulis Kantor">Alat Tulis Kantor (ATK)</option>
+              <option value="Cetakan & Formulir">Cetakan & Formulir RS</option>
+              <option value="Kebersihan & Sanitasi Non-Medis">Kebersihan & Sanitasi Non-Medis</option>
+              <option value="Perlengkapan Komputer & IT">Perlengkapan Komputer & IT</option>
+              <option value="Perlengkapan Kantor & RT">Perlengkapan Kantor & RT</option>
+              <option value="Lain-lain">Lain-lain</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Nama Barang -->
+        <div>
+          <label for="inputNama" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+            Nama Barang <span class="text-rose-500">*</span>
+          </label>
+          <input type="text" id="inputNama" required placeholder="misal: Kertas HVS F4 75 GSM Sinar Dunia"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <!-- Stok Awal -->
+          <div>
+            <label for="inputStok" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+              Stok Awal <span class="text-rose-500">*</span>
+            </label>
+            <input type="number" id="inputStok" required min="0" value="0"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+          </div>
+
+          <!-- Satuan -->
+          <div>
+            <label for="inputSatuan" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+              Satuan <span class="text-rose-500">*</span>
+            </label>
+            <input type="text" id="inputSatuan" required placeholder="rim / pcs / dus"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+          </div>
+
+          <!-- Stok Minimum -->
+          <div>
+            <label for="inputStokMin" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+              Batas Minimum
+            </label>
+            <input type="number" id="inputStokMin" min="0" value="5"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+          </div>
+        </div>
+
+        <!-- Lokasi Rak Penyimpanan -->
+        <div>
+          <label for="inputRak" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+            Lokasi Rak / Penyimpanan
+          </label>
+          <input type="text" id="inputRak" placeholder="misal: Rak A-2 Logistik TU"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+        </div>
+
+        <!-- Keterangan Tambahan -->
+        <div>
+          <label for="inputKeterangan" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+            Keterangan (Opsional)
+          </label>
+          <textarea id="inputKeterangan" rows="2" placeholder="Catatan spesifikasi pengadaan..."
+            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition"></textarea>
+        </div>
+
+        <!-- Tombol Aksi Modal -->
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button type="button" id="cancelAddModalBtn"
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+            Batal
+          </button>
+          <button type="submit" id="saveBarangBtn"
+            class="px-5 py-2.5 bg-gradient-to-r from-hospital-600 to-brand-600 hover:from-hospital-700 hover:to-brand-700 text-white font-semibold rounded-xl text-sm shadow-md shadow-hospital-500/25 transition flex items-center gap-2">
+            <span id="saveBtnSpinner" class="hidden">
+              <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+            </span>
+            <span id="saveBtnText">Simpan ke Supabase</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- 4. WIDGET NOTIFIKASI TOAST (Success, Error, Info)                         -->
+  <!-- ========================================================================= -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+
+  <!-- ========================================================================= -->
+  <!-- 5. LOGIKA JAVASCRIPT FRONTEND LENGKAP                                     -->
+  <!-- ========================================================================= -->
   <script>
-    let allBarang = [];
+    // State Aplikasi
+    let supabaseClient = null;
+    let currentUser = null;
+    let barangList = [];
 
-    async function loadData() {
-      const statusAlert = document.getElementById('statusAlert');
-      const tableBody = document.getElementById('tableBody');
-      const emptyNotice = document.getElementById('emptyNotice');
+    // =========================================================================
+    // A. SISTEM NOTIFIKASI TOAST
+    // =========================================================================
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      let bg = 'bg-slate-800 text-white border-slate-700';
+      let icon = `
+        <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      `;
 
-      statusAlert.className = 'status-alert loading';
-      statusAlert.innerHTML = '⏳ Menghubungkan ke API Vercel Serverless (/api/barang)...';
+      if (type === 'error') {
+        bg = 'bg-rose-900 text-rose-100 border-rose-700';
+        icon = `
+          <svg class="w-5 h-5 text-rose-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        `;
+      } else if (type === 'info') {
+        bg = 'bg-hospital-900 text-hospital-100 border-hospital-700';
+        icon = `
+          <svg class="w-5 h-5 text-hospital-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        `;
+      }
 
+      toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border ${bg} text-sm font-medium fade-in min-w-[280px] max-w-md`;
+      toast.innerHTML = `
+        ${icon}
+        <span class="flex-1">${message}</span>
+        <button class="text-white/60 hover:text-white text-xs ml-2" onclick="this.parentElement.remove()">✕</button>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // =========================================================================
+    // B. INISIALISASI SUPABASE CLIENT JS
+    // =========================================================================
+    async function initSupabase() {
       try {
-        const response = await fetch('/api/barang');
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.error || result.details || 'Gagal memuat data dari server.');
+        // Ambil konfigurasi URL dan Anon Key dari Vercel endpoint /api/config
+        const configRes = await fetch('/api/config');
+        if (!configRes.ok) throw new Error('Gagal memuat konfigurasi Supabase dari backend.');
+        
+        const config = await configRes.json();
+        if (!config.supabaseUrl || !config.supabaseAnonKey) {
+          throw new Error('Kredensial Supabase belum lengkap di Vercel.');
         }
 
-        allBarang = result.data || [];
-        statusAlert.className = 'status-alert online';
-        statusAlert.innerHTML = `✅ <strong>Terhubung Normal</strong> • Berhasil memuat ${allBarang.length} data barang dari Supabase via Vercel Function.`;
+        supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
+          auth: {
+            persistSession: true,
+            storageKey: 'situ_rsud_auth_token',
+          }
+        });
 
-        updateSummary(allBarang);
-        populateCategories(allBarang);
-        renderTable(allBarang);
-
-        if (allBarang.length === 0) {
-          emptyNotice.style.display = 'block';
+        // Cek sesi login aktif saat pertama kali buka
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        if (session && session.user) {
+          handleAuthSuccess(session.user, false);
         } else {
-          emptyNotice.style.display = 'none';
+          showLoginScreen();
         }
+
+        // Daftarkan listener perubahan status auth
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_IN' && session?.user) {
+            handleAuthSuccess(session.user, true);
+          } else if (event === 'SIGNED_OUT') {
+            showLoginScreen();
+          }
+        });
+
       } catch (err) {
-        statusAlert.className = 'status-alert error';
-        statusAlert.innerHTML = `❌ <strong>Error API:</strong> ${err.message}`;
-        tableBody.innerHTML = `<tr><td colspan="7" class="empty-state"><h4>Gagal Memuat Data</h4><p>${err.message}</p></td></tr>`;
+        console.error('[Init Error]:', err);
+        showToast('Gagal inisialisasi: ' + err.message, 'error');
+        showLoginScreen();
       }
     }
 
-    function updateSummary(items) {
-      document.getElementById('totalBarang').innerText = items.length;
-      const totalStok = items.reduce((acc, curr) => acc + (Number(curr.stok) || 0), 0);
-      document.getElementById('totalStok').innerText = totalStok.toLocaleString('id-ID');
-      
-      const categories = new Set(items.map(i => i.kategori).filter(Boolean));
-      document.getElementById('totalKategori').innerText = categories.size;
+    function showLoginScreen() {
+      currentUser = null;
+      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('dashboardView').classList.add('hidden');
     }
 
-    function populateCategories(items) {
-      const select = document.getElementById('kategoriSelect');
-      const currentVal = select.value;
+    function handleAuthSuccess(user, notify = true) {
+      currentUser = user;
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('dashboardView').classList.remove('hidden');
+      document.getElementById('userEmailBadge').innerText = user.email || 'Pegawai TU';
+      
+      if (notify) {
+        showToast(`Selamat datang, ${user.email}! Login berhasil.`, 'success');
+      }
+
+      loadBarang();
+    }
+
+    // =========================================================================
+    // C. EVENT LISTENER FORM LOGIN
+    // =========================================================================
+    const loginForm = document.getElementById('loginForm');
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+    const loginBtnSpinner = document.getElementById('loginBtnSpinner');
+    const loginBtnText = document.getElementById('loginBtnText');
+    const loginErrorAlert = document.getElementById('loginErrorAlert');
+    const loginErrorText = document.getElementById('loginErrorText');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginErrorAlert.classList.add('hidden');
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      if (!supabaseClient) {
+        loginErrorText.innerText = 'Koneksi Supabase belum siap. Tunggu beberapa detik lalu coba lagi.';
+        loginErrorAlert.classList.remove('hidden');
+        return;
+      }
+
+      // Animasi tombol login
+      loginSubmitBtn.disabled = true;
+      loginBtnSpinner.classList.remove('hidden');
+      loginBtnText.innerText = 'Memverifikasi...';
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+        // Berhasil login -> listener onAuthStateChange akan mengalihkan ke dashboard
+      } catch (err) {
+        console.error('[Login Error]:', err);
+        loginErrorText.innerText = err.message || 'Email atau kata sandi tidak valid.';
+        loginErrorAlert.classList.remove('hidden');
+        showToast('Login gagal: ' + (err.message || 'Periksa kembali kredensial Anda.'), 'error');
+      } finally {
+        loginSubmitBtn.disabled = false;
+        loginBtnSpinner.classList.add('hidden');
+        loginBtnText.innerText = 'Masuk ke Sistem Inventaris';
+      }
+    });
+
+    // Toggle Lihat Password
+    document.getElementById('togglePasswordBtn').addEventListener('click', function () {
+      const pwd = document.getElementById('loginPassword');
+      if (pwd.type === 'password') {
+        pwd.type = 'text';
+        this.innerText = 'Sembunyikan';
+      } else {
+        pwd.type = 'password';
+        this.innerText = 'Lihat';
+      }
+    });
+
+    // Logout Button
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      if (confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
+        if (supabaseClient) {
+          await supabaseClient.auth.signOut();
+        }
+        showToast('Anda telah logout dari sistem.', 'info');
+      }
+    });
+
+    // =========================================================================
+    // D. MEMUAT & MENAMPILKAN DATA BARANG DARI SUPABASE
+    // =========================================================================
+    async function loadBarang() {
+      const tbody = document.getElementById('barangTableBody');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" class="px-6 py-12 text-center text-slate-400">
+            <div class="inline-flex items-center gap-2">
+              <svg class="animate-spin w-5 h-5 text-hospital-600" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+              <span>Memperbarui data inventaris...</span>
+            </div>
+          </td>
+        </tr>
+      `;
+
+      try {
+        // Query langsung menggunakan Supabase Client JS (memanfaatkan token login user)
+        const { data, error } = await supabaseClient
+          .from('barang')
+          .select('*')
+          .order('nama', { ascending: true });
+
+        if (error) throw error;
+
+        barangList = data || [];
+        updateStatistics(barangList);
+        populateCategoryOptions(barangList);
+        renderTable(barangList);
+
+      } catch (err) {
+        console.error('[Load Barang Error]:', err);
+        showToast('Gagal memuat barang: ' + err.message, 'error');
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="px-6 py-10 text-center text-rose-500 font-medium">
+              Gagal memuat data: ${err.message}
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function updateStatistics(items) {
+      document.getElementById('statTotalItem').innerText = items.length;
+      
+      const totalStok = items.reduce((sum, item) => sum + (Number(item.stok) || 0), 0);
+      document.getElementById('statTotalStok').innerText = totalStok.toLocaleString('id-ID');
+
+      const kritisCount = items.filter(item => {
+        const s = Number(item.stok) || 0;
+        const min = Number(item.stok_minimum) || 5;
+        return s <= min;
+      }).length;
+      document.getElementById('statStokKritis').innerText = kritisCount;
+
+      const categories = new Set(items.map(i => i.kategori).filter(Boolean));
+      document.getElementById('statTotalKategori').innerText = categories.size;
+    }
+
+    function populateCategoryOptions(items) {
+      const select = document.getElementById('kategoriFilter');
+      const current = select.value;
       const categories = Array.from(new Set(items.map(i => i.kategori).filter(Boolean))).sort();
 
       select.innerHTML = '<option value="">Semua Kategori</option>';
@@ -468,66 +750,195 @@ VALUES
         const opt = document.createElement('option');
         opt.value = cat;
         opt.textContent = cat;
-        if (cat === currentVal) opt.selected = true;
+        if (cat === current) opt.selected = true;
         select.appendChild(opt);
       });
     }
 
     function renderTable(items) {
-      const tableBody = document.getElementById('tableBody');
+      const tbody = document.getElementById('barangTableBody');
       const search = document.getElementById('searchInput').value.toLowerCase().trim();
-      const selectedKategori = document.getElementById('kategoriSelect').value;
+      const kat = document.getElementById('kategoriFilter').value;
+      const stFilter = document.getElementById('statusFilter').value;
 
       const filtered = items.filter(item => {
         const matchSearch =
           !search ||
           (item.nama && item.nama.toLowerCase().includes(search)) ||
-          (item.kode_barang && item.kode_barang.toLowerCase().includes(search));
-        const matchKategori = !selectedKategori || item.kategori === selectedKategori;
-        return matchSearch && matchKategori;
+          (item.kode_barang && item.kode_barang.toLowerCase().includes(search)) ||
+          (item.lokasi_rak && item.lokasi_rak.toLowerCase().includes(search));
+
+        const matchKat = !kat || item.kategori === kat;
+
+        const s = Number(item.stok) || 0;
+        const min = Number(item.stok_minimum) || 5;
+        let stStatus = 'aman';
+        if (s === 0) stStatus = 'habis';
+        else if (s <= min) stStatus = 'kritis';
+
+        const matchStatus = !stFilter || stStatus === stFilter;
+
+        return matchSearch && matchKat && matchStatus;
       });
 
       if (filtered.length === 0) {
-        tableBody.innerHTML = `
+        tbody.innerHTML = `
           <tr>
-            <td colspan="7" class="empty-state">
-              <h4>Tidak ada data barang yang sesuai</h4>
-              <p>Coba ubah kata kunci pencarian atau filter kategori Anda.</p>
+            <td colspan="8" class="px-6 py-12 text-center text-slate-400">
+              <svg class="w-10 h-10 mx-auto text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+              </svg>
+              <p class="font-medium">Tidak ada data barang yang sesuai.</p>
+              <p class="text-xs text-slate-400 mt-1">Gunakan tombol "Tambah Barang Baru" di atas untuk menambahkan item.</p>
             </td>
           </tr>
         `;
         return;
       }
 
-      tableBody.innerHTML = filtered.map((item, idx) => {
+      tbody.innerHTML = filtered.map((item, idx) => {
         const stok = Number(item.stok) || 0;
-        const stokMin = Number(item.stok_minimum) || 5;
-        let badge = `<span class="badge badge-success">Aman</span>`;
+        const min = Number(item.stok_minimum) || 5;
+
+        // Badge Status Berwarna (Aman / Kritis / Habis)
+        let badgeHtml = `
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aman
+          </span>
+        `;
+
         if (stok === 0) {
-          badge = `<span class="badge badge-danger">Habis</span>`;
-        } else if (stok <= stokMin) {
-          badge = `<span class="badge badge-danger">Kritis</span>`;
+          badgeHtml = `
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 animate-pulse">
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Habis
+            </span>
+          `;
+        } else if (stok <= min) {
+          badgeHtml = `
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Kritis (${stok}/${min})
+            </span>
+          `;
         }
 
         return `
-          <tr>
-            <td>${idx + 1}</td>
-            <td><strong>${item.kode_barang || '-'}</strong></td>
-            <td>${item.nama || '-'}</td>
-            <td><span class="badge badge-primary">${item.kategori || 'Umum'}</span></td>
-            <td><strong>${stok}</strong></td>
-            <td>${item.satuan || 'pcs'}</td>
-            <td>${badge}</td>
+          <tr class="hover:bg-slate-50/80 transition-colors duration-150">
+            <td class="px-5 py-4 text-slate-400 text-xs">${idx + 1}</td>
+            <td class="px-5 py-4 font-mono font-semibold text-xs text-hospital-700">${item.kode_barang || '-'}</td>
+            <td class="px-5 py-4 font-semibold text-slate-800">${item.nama || '-'}</td>
+            <td class="px-5 py-4 text-xs">
+              <span class="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium">${item.kategori || 'Umum'}</span>
+            </td>
+            <td class="px-5 py-4 text-center font-bold text-slate-800 text-base">${stok}</td>
+            <td class="px-5 py-4 text-slate-500 text-xs">${item.satuan || 'pcs'}</td>
+            <td class="px-5 py-4 text-slate-500 text-xs">${item.lokasi_rak || '-'}</td>
+            <td class="px-5 py-4 text-center">${badgeHtml}</td>
           </tr>
         `;
       }).join('');
     }
 
-    document.getElementById('searchInput').addEventListener('input', () => renderTable(allBarang));
-    document.getElementById('kategoriSelect').addEventListener('change', () => renderTable(allBarang));
-    document.getElementById('refreshBtn').addEventListener('click', loadData);
+    // Filter Listeners
+    document.getElementById('searchInput').addEventListener('input', () => renderTable(barangList));
+    document.getElementById('kategoriFilter').addEventListener('change', () => renderTable(barangList));
+    document.getElementById('statusFilter').addEventListener('change', () => renderTable(barangList));
+    document.getElementById('refreshTableBtn').addEventListener('click', loadBarang);
 
-    window.addEventListener('DOMContentLoaded', loadData);
+    // =========================================================================
+    // E. MODAL & OPERASI INSERT BARANG KE SUPABASE
+    // =========================================================================
+    const addBarangModal = document.getElementById('addBarangModal');
+    const openAddModalBtn = document.getElementById('openAddModalBtn');
+    const closeAddModalBtn = document.getElementById('closeAddModalBtn');
+    const cancelAddModalBtn = document.getElementById('cancelAddModalBtn');
+    const addBarangForm = document.getElementById('addBarangForm');
+    const saveBarangBtn = document.getElementById('saveBarangBtn');
+    const saveBtnSpinner = document.getElementById('saveBtnSpinner');
+    const saveBtnText = document.getElementById('saveBtnText');
+
+    function openModal() {
+      addBarangForm.reset();
+      addBarangModal.classList.remove('hidden');
+      document.getElementById('inputKode').focus();
+    }
+
+    function closeModal() {
+      addBarangModal.classList.add('hidden');
+    }
+
+    openAddModalBtn.addEventListener('click', openModal);
+    closeAddModalBtn.addEventListener('click', closeModal);
+    cancelAddModalBtn.addEventListener('click', closeModal);
+
+    // Klik di luar modal untuk menutup
+    addBarangModal.addEventListener('click', (e) => {
+      if (e.target === addBarangModal) closeModal();
+    });
+
+    // SUBMIT: INSERT KE SUPABASE
+    addBarangForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!supabaseClient) {
+        showToast('Koneksi Supabase belum siap.', 'error');
+        return;
+      }
+
+      const kode = document.getElementById('inputKode').value.trim();
+      const nama = document.getElementById('inputNama').value.trim();
+      const kategori = document.getElementById('inputKategori').value;
+      const stok = parseInt(document.getElementById('inputStok').value, 10) || 0;
+      const satuan = document.getElementById('inputSatuan').value.trim() || 'pcs';
+      const stokMin = parseInt(document.getElementById('inputStokMin').value, 10) || 5;
+      const rak = document.getElementById('inputRak').value.trim();
+      const keterangan = document.getElementById('inputKeterangan').value.trim();
+
+      // State tombol loading
+      saveBarangBtn.disabled = true;
+      saveBtnSpinner.classList.remove('hidden');
+      saveBtnText.innerText = 'Menyimpan ke Supabase...';
+
+      try {
+        const newRecord = {
+          kode_barang: kode,
+          nama: nama,
+          kategori: kategori,
+          stok: stok,
+          satuan: satuan,
+          stok_minimum: stokMin,
+          lokasi_rak: rak,
+          keterangan: keterangan,
+        };
+
+        // Eksekusi INSERT langsung ke tabel 'barang' via Supabase Client JS
+        const { data, error } = await supabaseClient
+          .from('barang')
+          .insert([newRecord])
+          .select();
+
+        if (error) throw error;
+
+        // Berhasil!
+        showToast(`Barang "${nama}" (${kode}) berhasil ditambahkan!`, 'success');
+        closeModal();
+        addBarangForm.reset();
+        
+        // Otomatis refresh data tabel
+        await loadBarang();
+
+      } catch (err) {
+        console.error('[Insert Error]:', err);
+        showToast('Gagal menyimpan barang: ' + (err.message || 'Terjadi kesalahan database.'), 'error');
+      } finally {
+        saveBarangBtn.disabled = false;
+        saveBtnSpinner.classList.add('hidden');
+        saveBtnText.innerText = 'Simpan ke Supabase';
+      }
+    });
+
+    // Inisialisasi saat DOM siap
+    window.addEventListener('DOMContentLoaded', initSupabase);
   </script>
+
 </body>
 </html>
