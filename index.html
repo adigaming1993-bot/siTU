@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistem Inventaris Logistik Tata Usaha | RSUD dr. R.T. Notopuro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 20px;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .brand-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .api-badge-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+
+    .api-badge-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 28px auto;
+      padding: 0 20px;
+    }
+
+    .status-alert {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      font-size: 0.9rem;
+    }
+
+    .status-alert.online {
+      background: var(--success-light);
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .status-alert.loading {
+      background: var(--warning-light);
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .status-alert.error {
+      background: var(--danger-light);
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card h3 {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .filter-bar {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+    }
+
+    .filter-select {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      background: white;
+      outline: none;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .table-container {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-primary {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    .badge-success {
+      background: var(--success-light);
+      color: #065f46;
+    }
+
+    .badge-danger {
+      background: var(--danger-light);
+      color: #991b1b;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state h4 {
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .code-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      text-align: left;
+      margin: 16px auto;
+      max-width: 700px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <div class="logo-badge">🏥</div>
+        <div class="brand-text">
+          <h1>Sistem Inventaris Logistik Tata Usaha</h1>
+          <p>RSUD dr. R.T. Notopuro Sidoarjo • Vercel Serverless & Supabase</p>
+        </div>
+      </div>
+      <div>
+        <a href="/api/barang" target="_blank" class="api-badge-btn">
+          ⚡ Buka JSON Endpoint (/api/barang)
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Status Serverless Function -->
+    <div id="statusAlert" class="status-alert loading">
+      <div>⏳ Menghubungkan ke API Vercel Serverless (/api/barang)...</div>
+    </div>
+
+    <!-- Statistik Ringkas -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Jenis Barang</h3>
+        <div id="totalBarang" class="value">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Kuantitas Fisik</h3>
+        <div id="totalStok" class="value">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Kategori Aktif</h3>
+        <div id="totalKategori" class="value">-</div>
+      </div>
+    </div>
+
+    <!-- Bilah Pencarian & Filter -->
+    <div class="filter-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="Cari nama barang atau kode barang..." />
+      <select id="kategoriSelect" class="filter-select">
+        <option value="">Semua Kategori</option>
+      </select>
+      <button id="refreshBtn" class="btn btn-primary">🔄 Muat Ulang Data</button>
+    </div>
+
+    <!-- Tabel Data Barang -->
+    <div class="table-container">
+      <table id="barangTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Kode</th>
+            <th>Nama Barang</th>
+            <th>Kategori</th>
+            <th>Stok</th>
+            <th>Satuan</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr>
+            <td colspan="7" class="empty-state">
+              <p>Memuat data katalog logistik...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Panduan Jika Data Masih Kosong -->
+    <div id="emptyNotice" style="display: none; margin-top: 32px;" class="stat-card">
+      <h3 style="color: #0284c7; font-size: 1rem; margin-bottom: 8px;">💡 Cara Mengisi Data Awal di Supabase</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
+        Koneksi backend ke Vercel dan Supabase berhasil! Namun tabel <code>barang</code> di database masih kosong (0 item).
+        Anda dapat menyalin perintah SQL berikut dan menjalankannya di <strong>Supabase Dashboard → SQL Editor</strong> untuk memasukkan contoh barang logistik TU:
+      </p>
+      <div class="code-box">INSERT INTO public.barang (kode_barang, nama, kategori, stok, satuan, stok_minimum, lokasi_rak)
+VALUES 
+    ('TU-ATK-001', 'Kertas HVS A4 75 GSM', 'Alat Tulis Kantor', 150, 'rim', 20, 'Rak A-1'),
+    ('TU-ATK-002', 'Bolpoin Standard AE7 Hitam', 'Alat Tulis Kantor', 240, 'buah', 30, 'Rak B-1'),
+    ('TU-CTK-001', 'Formulir Catatan Perkembangan Pasien (CPPT)', 'Cetakan & Formulir', 50, 'rim', 10, 'Rak C-1'),
+    ('TU-KBS-001', 'Hand Sanitizer Gel 500ml', 'Kebersihan & Sanitasi Non-Medis', 85, 'botol', 15, 'Rak D-1');</div>
+    </div>
+  </main>
+
+  <script>
+    let allBarang = [];
+
+    async function loadData() {
+      const statusAlert = document.getElementById('statusAlert');
+      const tableBody = document.getElementById('tableBody');
+      const emptyNotice = document.getElementById('emptyNotice');
+
+      statusAlert.className = 'status-alert loading';
+      statusAlert.innerHTML = '⏳ Menghubungkan ke API Vercel Serverless (/api/barang)...';
+
+      try {
+        const response = await fetch('/api/barang');
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || result.details || 'Gagal memuat data dari server.');
+        }
+
+        allBarang = result.data || [];
+        statusAlert.className = 'status-alert online';
+        statusAlert.innerHTML = `✅ <strong>Terhubung Normal</strong> • Berhasil memuat ${allBarang.length} data barang dari Supabase via Vercel Function.`;
+
+        updateSummary(allBarang);
+        populateCategories(allBarang);
+        renderTable(allBarang);
+
+        if (allBarang.length === 0) {
+          emptyNotice.style.display = 'block';
+        } else {
+          emptyNotice.style.display = 'none';
+        }
+      } catch (err) {
+        statusAlert.className = 'status-alert error';
+        statusAlert.innerHTML = `❌ <strong>Error API:</strong> ${err.message}`;
+        tableBody.innerHTML = `<tr><td colspan="7" class="empty-state"><h4>Gagal Memuat Data</h4><p>${err.message}</p></td></tr>`;
+      }
+    }
+
+    function updateSummary(items) {
+      document.getElementById('totalBarang').innerText = items.length;
+      const totalStok = items.reduce((acc, curr) => acc + (Number(curr.stok) || 0), 0);
+      document.getElementById('totalStok').innerText = totalStok.toLocaleString('id-ID');
+      
+      const categories = new Set(items.map(i => i.kategori).filter(Boolean));
+      document.getElementById('totalKategori').innerText = categories.size;
+    }
+
+    function populateCategories(items) {
+      const select = document.getElementById('kategoriSelect');
+      const currentVal = select.value;
+      const categories = Array.from(new Set(items.map(i => i.kategori).filter(Boolean))).sort();
+
+      select.innerHTML = '<option value="">Semua Kategori</option>';
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        if (cat === currentVal) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderTable(items) {
+      const tableBody = document.getElementById('tableBody');
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const selectedKategori = document.getElementById('kategoriSelect').value;
+
+      const filtered = items.filter(item => {
+        const matchSearch =
+          !search ||
+          (item.nama && item.nama.toLowerCase().includes(search)) ||
+          (item.kode_barang && item.kode_barang.toLowerCase().includes(search));
+        const matchKategori = !selectedKategori || item.kategori === selectedKategori;
+        return matchSearch && matchKategori;
+      });
+
+      if (filtered.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="empty-state">
+              <h4>Tidak ada data barang yang sesuai</h4>
+              <p>Coba ubah kata kunci pencarian atau filter kategori Anda.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tableBody.innerHTML = filtered.map((item, idx) => {
+        const stok = Number(item.stok) || 0;
+        const stokMin = Number(item.stok_minimum) || 5;
+        let badge = `<span class="badge badge-success">Aman</span>`;
+        if (stok === 0) {
+          badge = `<span class="badge badge-danger">Habis</span>`;
+        } else if (stok <= stokMin) {
+          badge = `<span class="badge badge-danger">Kritis</span>`;
+        }
+
+        return `
+          <tr>
+            <td>${idx + 1}</td>
+            <td><strong>${item.kode_barang || '-'}</strong></td>
+            <td>${item.nama || '-'}</td>
+            <td><span class="badge badge-primary">${item.kategori || 'Umum'}</span></td>
+            <td><strong>${stok}</strong></td>
+            <td>${item.satuan || 'pcs'}</td>
+            <td>${badge}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('searchInput').addEventListener('input', () => renderTable(allBarang));
+    document.getElementById('kategoriSelect').addEventListener('change', () => renderTable(allBarang));
+    document.getElementById('refreshBtn').addEventListener('click', loadData);
+
+    window.addEventListener('DOMContentLoaded', loadData);
+  </script>
+</body>
+</html>
