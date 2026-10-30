@@ -53,7 +53,6 @@
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    /* Scrollbar halus untuk konten utama */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -165,7 +164,7 @@
           </div>
           <div class="flex-1 min-w-0">
             <p id="sidebarUserEmail" class="text-xs font-semibold text-white truncate">pegawai@rsudnotopuro.id</p>
-            <p class="text-[10px] text-slate-400">Staf Terautentikasi</p>
+            <p id="sidebarUserRole" class="text-[10px] text-slate-400">Staf Terautentikasi</p>
           </div>
         </div>
 
@@ -179,31 +178,47 @@
             <span>Home Dashboard</span>
           </a>
 
-          <!-- Menu 2: Tambah Barang (Buka Modal) -->
+          <!-- Menu 2: Tambah Barang (SATU-SATUNYA PEMICU INPUT SESUAI INSTRUKSI) -->
           <button id="sidebarAddBtn" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
-            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <span>Tambah Barang</span>
           </button>
 
-          <!-- Menu 3: Mutasi Masuk -->
-          <a href="#mutasiMasuk" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
-            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <!-- Menu 3: Mutasi Masuk (Terhubung Modal Transaksi) -->
+          <button id="sidebarMutasiMasukBtn" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
             </svg>
             <span>Mutasi Masuk / Drop</span>
-          </a>
+          </button>
 
-          <!-- Menu 4: Mutasi Keluar -->
-          <a href="#mutasiKeluar" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
-            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <!-- Menu 4: Distribusi (Mutasi Keluar / SBBK) -->
+          <button id="sidebarMutasiKeluarBtn" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
             </svg>
             <span>Distribusi / SBBK</span>
-          </a>
+          </button>
 
-          <!-- Menu 5: Endpoint JSON API -->
+          <!-- Menu 5: Peminjaman Aset / Pelacakan -->
+          <button id="sidebarPeminjamanBtn" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span>Catat Peminjaman</span>
+          </button>
+
+          <!-- Menu 6: Kelola Akun (Manajemen Pengguna via supabase.auth.signUp) -->
+          <button id="sidebarManageUserBtn" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <span>Kelola Akun Staf</span>
+          </button>
+
+          <!-- Menu 7: Endpoint JSON API -->
           <a href="/api/barang" target="_blank" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
             <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
@@ -233,19 +248,75 @@
     <main class="flex-1 bg-slate-50 min-h-screen p-6 sm:p-10 space-y-8 overflow-y-auto">
       
       <!-- Header Konten Utama: Teks "Home Dashboard" Berukuran Besar -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <!-- CATATAN: Tombol '+ Tambah Barang Baru' DIHAPUS sesuai spesifikasi Navigasi Terpusat -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
         <div>
           <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Home Dashboard</h2>
           <p class="text-sm text-slate-500 mt-1">Sistem Pemantauan Logistik Tata Usaha RSUD dr. R.T. Notopuro Sidoarjo</p>
         </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Sistem Online
+          </span>
+          <button id="refreshDataBtn" class="px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition shadow-sm">
+            🔄 Refresh Data
+          </button>
+        </div>
+      </div>
 
-        <!-- Tombol Tambah Barang Baru -->
-        <button id="openAddModalBtn"
-          class="inline-flex items-center gap-2 px-5 py-3 bg-[#0f172a] hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-md shadow-slate-900/10 transition-all hover:shadow-lg">
-          <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-          <span>Tambah Barang Baru</span>
+      <!-- ===================================================================== -->
+      <!-- KARTU PERINGATAN DINAMIS MERAH: KETERLAMBATAN PEMINJAMAN ASET         -->
+      <!-- ===================================================================== -->
+      <section id="overdueAlertSection" class="hidden fade-in">
+        <div class="bg-rose-50 border-2 border-rose-200 text-rose-950 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-rose-200/80 gap-2">
+            <div class="flex items-center gap-3">
+              <span class="flex h-3 w-3 relative">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
+              </span>
+              <h3 class="text-base font-extrabold text-rose-900 tracking-tight">
+                🚨 Peringatan: Aset Logistik Lewat Jatuh Tempo (Keterlambatan Pengembalian)
+              </h3>
+            </div>
+            <span id="overdueCountBadge" class="self-start sm:self-auto text-xs font-extrabold px-3 py-1 rounded-full bg-rose-600 text-white shadow-sm">
+              0 Aset Terlambat
+            </span>
+          </div>
+
+          <p class="text-xs text-rose-800 mb-4">
+            Daftar aset atau barang logistik inventaris yang batas waktu pengembaliannya telah terlewati. Segera hubungi peminjam di bawah:
+          </p>
+
+          <!-- Tabel Ringkas Peminjaman Terlambat (Borderless) -->
+          <div class="overflow-x-auto bg-white/70 backdrop-blur-sm rounded-xl border border-rose-100 p-2">
+            <table class="w-full text-left text-xs border-none">
+              <thead class="text-rose-900 font-bold uppercase tracking-wider border-b border-rose-200/60">
+                <tr>
+                  <th class="py-2.5 px-3">Nama Barang</th>
+                  <th class="py-2.5 px-3">Nama Peminjam</th>
+                  <th class="py-2.5 px-3">Unit / Ruangan</th>
+                  <th class="py-2.5 px-3">Batas Kembali</th>
+                  <th class="py-2.5 px-3">Status Telat</th>
+                  <th class="py-2.5 px-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="overdueTableBody" class="divide-y divide-rose-100/70 text-slate-800">
+                <!-- Diisi via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status Peminjaman Aman (Tampil jika tidak ada keterlambatan) -->
+      <div id="noOverdueNotice" class="hidden p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span>✅</span>
+          <span>Seluruh peminjaman aset logistik TU terpantau tertib (Tidak ada keterlambatan pengembalian).</span>
+        </div>
+        <button id="inlinePinjamBtn" class="text-emerald-700 hover:text-emerald-900 font-bold underline text-xs">
+          + Catat Pinjam Baru
         </button>
       </div>
 
@@ -345,9 +416,7 @@
               <h3 class="text-base font-bold text-slate-800">Katalog Barang Terkini</h3>
               <p class="text-xs text-slate-400">Daftar inventaris umum Tata Usaha</p>
             </div>
-            <button id="refreshDataBtn" class="text-xs font-semibold text-sky-600 hover:text-sky-800 flex items-center gap-1">
-              🔄 Muat Ulang
-            </button>
+            <span class="text-[11px] font-semibold text-slate-400">Terbanyak Disimpan</span>
           </div>
 
           <!-- Tabel Borderless -->
@@ -409,7 +478,7 @@
 
 
   <!-- ========================================================================= -->
-  <!-- 3. MODAL POP-UP TAMBAH BARANG (Direct INSERT ke Supabase)                 -->
+  <!-- 3. MODAL 1: FORM TAMBAH BARANG BARU (DIPICU DARI SIDEBAR 'TAMBAH BARANG') -->
   <!-- ========================================================================= -->
   <div id="addBarangModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
@@ -434,11 +503,12 @@
             <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kategori *</label>
             <select id="inputKategori" required
               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition">
-              <option value="">Pilih...</option>
-              <option value="Alat Tulis Kantor">Alat Tulis Kantor</option>
+              <option value="">Pilih Kategori...</option>
+              <option value="Alat Tulis Kantor">Alat Tulis Kantor (ATK)</option>
               <option value="Cetakan & Formulir">Cetakan & Formulir RS</option>
               <option value="Kebersihan & Sanitasi Non-Medis">Kebersihan & Sanitasi</option>
-              <option value="Perlengkapan IT">Perlengkapan IT</option>
+              <option value="Perlengkapan IT">Perlengkapan Komputer & IT</option>
+              <option value="Perlengkapan Kantor">Perlengkapan Rumah Tangga TU</option>
               <option value="Lain-lain">Lain-lain</option>
             </select>
           </div>
@@ -458,7 +528,7 @@
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Satuan *</label>
-            <input type="text" id="inputSatuan" required placeholder="rim / pcs"
+            <input type="text" id="inputSatuan" required placeholder="rim / pcs / dus"
               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
           </div>
           <div>
@@ -469,7 +539,7 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Lokasi Rak</label>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Lokasi Rak / Lemari</label>
           <input type="text" id="inputRak" placeholder="Rak A-1 Logistik TU"
             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
         </div>
@@ -495,21 +565,298 @@
 
 
   <!-- ========================================================================= -->
-  <!-- 4. TOAST CONTAINER                                                        -->
+  <!-- 4. MODAL 2: TRANSAKSI MUTASI (MASUK / DROP & DISTRIBUSI KELUAR)          -->
+  <!-- ========================================================================= -->
+  <div id="mutasiModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
+      
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div>
+          <h3 id="mutasiModalTitle" class="font-bold text-slate-800 text-base">Pencatatan Mutasi Logistik</h3>
+          <p id="mutasiModalSubtitle" class="text-xs text-slate-400">Proses keluar-masuk barang terhubung ke database</p>
+        </div>
+        <button type="button" id="closeMutasiModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form id="mutasiForm" class="p-6 space-y-4">
+        
+        <!-- Jenis Mutasi: Masuk vs Keluar -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">Jenis Transaksi *</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/40">
+              <input type="radio" name="jenisMutasi" value="masuk" id="mutasiTypeMasuk" class="text-emerald-600 focus:ring-emerald-500" checked />
+              <div>
+                <span class="block text-xs font-bold text-slate-800">Mutasi Masuk (Drop)</span>
+                <span class="block text-[10px] text-slate-400">Pengadaan baru (+ stok)</span>
+              </div>
+            </label>
+            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50/40">
+              <input type="radio" name="jenisMutasi" value="keluar" id="mutasiTypeKeluar" class="text-amber-600 focus:ring-amber-500" />
+              <div>
+                <span class="block text-xs font-bold text-slate-800">Distribusi Keluar (SBBK)</span>
+                <span class="block text-[10px] text-slate-400">Distribusi unit (- stok)</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Pilih Barang -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Pilih Barang Logistik *</label>
+          <select id="mutasiBarangSelect" required
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition">
+            <option value="">-- Pilih Barang dari Katalog --</option>
+          </select>
+        </div>
+
+        <!-- Jumlah & Nomor Dokumen -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Kuantitas *</label>
+            <input type="number" id="mutasiJumlah" required min="1" value="1"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
+            <span id="mutasiStokInfo" class="block text-[11px] text-slate-400 mt-1">Stok saat ini: -</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nomor Dokumen (BAP / SBBK) *</label>
+            <input type="text" id="mutasiNoDokumen" required placeholder="misal: SBBK-2026-001"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
+          </div>
+        </div>
+
+        <!-- Unit Asal / Tujuan -->
+        <div>
+          <label id="mutasiUnitLabel" class="block text-xs font-bold text-slate-600 uppercase mb-1">Asal Pengadaan / Vendor *</label>
+          <input type="text" id="mutasiUnitTujuanAsal" required placeholder="misal: Pengadaan Rutin APBD / Poli Rawat Jalan / Rekam Medis"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
+        </div>
+
+        <!-- Keterangan Transaksi -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Keterangan / Keperluan</label>
+          <textarea id="mutasiKeterangan" rows="2" placeholder="Catatan keperluan transaksi..."
+            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition"></textarea>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button type="button" id="cancelMutasiModalBtn" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+            Batal
+          </button>
+          <button type="submit" id="saveMutasiBtn"
+            class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center gap-2">
+            <span id="saveMutasiSpinner" class="hidden">
+              <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+            </span>
+            <span id="saveMutasiText">Proses Transaksi</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- 5. MODAL 3: KELOLA AKUN STAF (supabase.auth.signUp + profil_user)         -->
+  <!-- ========================================================================= -->
+  <div id="manageUserModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
+      
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div>
+          <h3 class="font-bold text-slate-800 text-base">Pendaftaran Akun Staf Baru</h3>
+          <p class="text-xs text-slate-400">Daftarkan akun pegawai via Supabase Auth & Profil User</p>
+        </div>
+        <button type="button" id="closeManageUserModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form id="registerUserForm" class="p-6 space-y-4">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Email Pegawai *</label>
+            <input type="email" id="inputUserEmail" required placeholder="staf@rsudnotopuro.id"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kata Sandi Baru *</label>
+            <input type="password" id="inputUserPassword" required minlength="6" placeholder="min. 6 karakter"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Lengkap Pegawai *</label>
+            <input type="text" id="inputUserNama" required placeholder="misal: Siti Nurhaliza, S.AP"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">NIP (Nomor Induk Pegawai)</label>
+            <input type="text" id="inputUserNip" placeholder="1985xxxxxxxxxxxx"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Peran Akses (Role) *</label>
+            <select id="inputUserRole" required
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition">
+              <option value="staf_gudang">Staf Logistik & Gudang TU</option>
+              <option value="kepala_tu">Kepala Bagian Tata Usaha</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jabatan / Posisi</label>
+            <input type="text" id="inputUserJabatan" value="Staf Logistik Tata Usaha" placeholder="misal: Pengelola Barang TU"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">No. WhatsApp / Telepon</label>
+          <input type="text" id="inputUserTelepon" placeholder="08xxxxxxxxxx"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button type="button" id="cancelManageUserModalBtn" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+            Batal
+          </button>
+          <button type="submit" id="saveUserBtn"
+            class="px-5 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center gap-2">
+            <span id="saveUserSpinner" class="hidden">
+              <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+            </span>
+            <span id="saveUserText">Daftarkan Akun Staf</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- 6. MODAL 4: CATAT PEMINJAMAN ASET (Pelacakan Peminjaman)                   -->
+  <!-- ========================================================================= -->
+  <div id="peminjamanModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
+      
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div>
+          <h3 class="font-bold text-slate-800 text-base">Pencatatan Peminjaman Aset</h3>
+          <p class="text-xs text-slate-400">Pelacakan masa pakai dan batas waktu pengembalian</p>
+        </div>
+        <button type="button" id="closePeminjamanModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form id="peminjamanForm" class="p-6 space-y-4">
+        
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Barang / Aset yang Dipinjam *</label>
+          <select id="pinjamBarangSelect" required
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition">
+            <option value="">-- Pilih Barang --</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Staf Peminjam *</label>
+            <input type="text" id="pinjamNama" required placeholder="dr. Bambang / Ns. Ratna"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Unit / Ruangan Peminjam *</label>
+            <input type="text" id="pinjamUnit" required placeholder="Instalasi Rawat Inap / Poli Anak"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Unit *</label>
+            <input type="number" id="pinjamJumlah" required min="1" value="1"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Batas Waktu Pengembalian *</label>
+            <input type="datetime-local" id="pinjamBatasWaktu" required
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Keperluan / Keterangan</label>
+          <textarea id="pinjamKeterangan" rows="2" placeholder="Keperluan rapat komite medik / seminar akreditasi..."
+            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition"></textarea>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button type="button" id="cancelPeminjamanModalBtn" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+            Batal
+          </button>
+          <button type="submit" id="savePeminjamanBtn"
+            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center gap-2">
+            <span id="savePeminjamanSpinner" class="hidden">
+              <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+            </span>
+            <span id="savePeminjamanText">Simpan Peminjaman</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- 7. TOAST CONTAINER                                                        -->
   <!-- ========================================================================= -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
 
   <!-- ========================================================================= -->
-  <!-- 5. JAVASCRIPT FRONTEND LENGKAP                                            -->
+  <!-- 8. JAVASCRIPT FRONTEND LENGKAP                                            -->
   <!-- ========================================================================= -->
   <script>
     let supabaseClient = null;
     let currentUser = null;
     let chartInstance = null;
     let barangList = [];
+    let peminjamanList = [];
 
-    // Toast Alert
+    // Sistem Notifikasi Toast
     function showToast(msg, type = 'success') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -541,7 +888,7 @@
           auth: { persistSession: true, storageKey: 'situ_session_token' }
         });
 
-        // Cek sesi login
+        // Cek sesi login aktif
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
           showDashboard(session.user);
@@ -575,7 +922,21 @@
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('dashboardView').classList.remove('hidden');
       document.getElementById('sidebarUserEmail').innerText = user.email || 'Pegawai TU';
+      
+      // Ambil profil jika ada
+      loadUserProfile(user.id);
       loadData();
+    }
+
+    async function loadUserProfile(userId) {
+      try {
+        const { data } = await supabaseClient.from('profil_user').select('nama_lengkap, role, jabatan').eq('id', userId).single();
+        if (data) {
+          document.getElementById('sidebarUserRole').innerText = `${data.role === 'kepala_tu' ? 'Kepala TU' : 'Staf Gudang'} (${data.nama_lengkap || ''})`;
+        }
+      } catch (e) {
+        // Abaikan jika belum ada profil
+      }
     }
 
     // Login Form Submit
@@ -597,7 +958,7 @@
       try {
         const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        showToast('Login berhasil! Selamat datang.', 'success');
+        showToast('Login berhasil! Selamat datang di Sistem Inventaris.', 'success');
       } catch (err) {
         document.getElementById('loginErrorText').innerText = err.message || 'Login gagal';
         alertBox.classList.remove('hidden');
@@ -621,28 +982,157 @@
     });
 
     document.getElementById('logoutBtn').addEventListener('click', async () => {
-      if (confirm('Keluar dari sistem inventaris?')) {
+      if (confirm('Keluar dari sistem inventaris RSUD dr. R.T. Notopuro?')) {
         await supabaseClient.auth.signOut();
-        showToast('Anda telah logout.', 'info');
+        showToast('Anda telah logout dari sistem.', 'info');
       }
     });
 
-    // Memuat Data Barang
+    // =========================================================================
+    // MEMUAT DATA BARANG & PEMINJAMAN DARI SUPABASE
+    // =========================================================================
     async function loadData() {
       try {
-        const { data, error } = await supabaseClient.from('barang').select('*').order('nama');
-        if (error) throw error;
+        // 1. Ambil Data Katalog Barang
+        const { data: barangData, error: barangError } = await supabaseClient.from('barang').select('*').order('nama');
+        if (barangError) throw barangError;
 
-        barangList = data || [];
+        barangList = barangData || [];
         updateMetrics(barangList);
         renderChart(barangList);
         renderTables(barangList);
+        populateDropdowns(barangList);
+
+        // 2. Ambil Data Peminjaman & Deteksi Keterlambatan
+        await loadPeminjaman();
 
       } catch (err) {
         console.error(err);
         showToast('Gagal memuat data: ' + err.message, 'error');
       }
     }
+
+    // Populate Select Options untuk Modal Transaksi & Peminjaman
+    function populateDropdowns(items) {
+      const mutasiSelect = document.getElementById('mutasiBarangSelect');
+      const pinjamSelect = document.getElementById('pinjamBarangSelect');
+
+      const options = items.map(b => `<option value="${b.id}" data-stok="${b.stok}" data-satuan="${b.satuan || 'pcs'}">[${b.kode_barang || 'NO-KODE'}] ${b.nama} (Stok: ${b.stok} ${b.satuan || ''})</option>`).join('');
+
+      mutasiSelect.innerHTML = '<option value="">-- Pilih Barang dari Katalog --</option>' + options;
+      pinjamSelect.innerHTML = '<option value="">-- Pilih Barang dari Katalog --</option>' + options;
+    }
+
+    // Listener Perubahan Dropdown Mutasi
+    document.getElementById('mutasiBarangSelect').addEventListener('change', function() {
+      const opt = this.options[this.selectedIndex];
+      const stok = opt ? opt.getAttribute('data-stok') : '-';
+      const satuan = opt ? opt.getAttribute('data-satuan') : '';
+      document.getElementById('mutasiStokInfo').innerText = `Stok saat ini di gudang: ${stok} ${satuan}`;
+    });
+
+    // =========================================================================
+    // PELACAKAN KETERLAMBATAN PEMINJAMAN ASET (KARTU PERINGATAN MERAH DINAMIS)
+    // =========================================================================
+    async function loadPeminjaman() {
+      const alertSection = document.getElementById('overdueAlertSection');
+      const noOverdueNotice = document.getElementById('noOverdueNotice');
+      const overdueTableBody = document.getElementById('overdueTableBody');
+      const overdueCountBadge = document.getElementById('overdueCountBadge');
+
+      try {
+        // Query tabel peminjaman
+        const { data, error } = await supabaseClient
+          .from('peminjaman')
+          .select('*, barang:barang_id(nama, kode_barang)')
+          .eq('status', 'dipinjam')
+          .order('batas_waktu_kembali', { ascending: true });
+
+        if (error) {
+          // Jika tabel belum dibuat, jangan crash, cukup sembunyikan
+          console.warn('[Peminjaman Notice]:', error.message);
+          alertSection.classList.add('hidden');
+          noOverdueNotice.classList.remove('hidden');
+          return;
+        }
+
+        peminjamanList = data || [];
+        const now = new Date();
+
+        // Filter aset yang sudah melewati batas waktu kembali (overdue)
+        const overdueList = peminjamanList.filter(item => {
+          return new Date(item.batas_waktu_kembali) < now;
+        });
+
+        if (overdueList.length > 0) {
+          // Ada keterlambatan -> Tampilkan Kartu Peringatan Merah!
+          alertSection.classList.remove('hidden');
+          noOverdueNotice.classList.add('hidden');
+          overdueCountBadge.innerText = `${overdueList.length} Aset Terlambat`;
+
+          overdueTableBody.innerHTML = overdueList.map(item => {
+            const batas = new Date(item.batas_waktu_kembali);
+            const diffDays = Math.max(1, Math.floor((now - batas) / (1000 * 60 * 60 * 24)));
+            const namaBarang = item.barang?.nama || 'Barang Logistik';
+            const kodeBarang = item.barang?.kode_barang || '-';
+
+            return `
+              <tr class="hover:bg-rose-100/50 transition">
+                <td class="py-2.5 px-3">
+                  <span class="font-bold text-slate-900 block">${namaBarang}</span>
+                  <span class="text-[10px] text-slate-500 font-mono">${kodeBarang}</span>
+                </td>
+                <td class="py-2.5 px-3 font-semibold text-rose-950">${item.nama_peminjam || '-'}</td>
+                <td class="py-2.5 px-3 text-slate-600">${item.unit_ruangan || '-'}</td>
+                <td class="py-2.5 px-3 font-mono text-slate-600">${batas.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                <td class="py-2.5 px-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black bg-rose-600 text-white">
+                    Lewat ${diffDays} Hari
+                  </span>
+                </td>
+                <td class="py-2.5 px-3 text-right">
+                  <button onclick="tandaiKembali('${item.id}', '${namaBarang}')"
+                    class="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg text-[11px] font-bold shadow-sm transition">
+                    ✓ Sudah Kembali
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+        } else {
+          // Tidak ada keterlambatan -> sembunyikan peringatan merah
+          alertSection.classList.add('hidden');
+          noOverdueNotice.classList.remove('hidden');
+        }
+
+      } catch (err) {
+        console.warn('Peminjaman error:', err);
+      }
+    }
+
+    // Tandai Pengembalian Aset
+    window.tandaiKembali = async function(peminjamanId, namaBarang) {
+      if (!confirm(`Konfirmasi pengembalian untuk aset: "${namaBarang}"?`)) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('peminjaman')
+          .update({
+            status: 'kembali',
+            tanggal_kembali: new Date().toISOString()
+          })
+          .eq('id', peminjamanId);
+
+        if (error) throw error;
+
+        showToast(`Aset "${namaBarang}" berhasil dikembalikan!`, 'success');
+        await loadPeminjaman();
+
+      } catch (err) {
+        showToast('Gagal memproses pengembalian: ' + err.message, 'error');
+      }
+    };
 
     // Hitung Metrik & Progress Bar
     function updateMetrics(items) {
@@ -671,11 +1161,10 @@
       document.getElementById('statProgressBarBlue').style.width = Math.max(rasioKritis, 8) + '%';
     }
 
-    // Render Chart.js: Bar Chart Vertikal (Abu-abu terang + 1 bar disorot Biru Gelap)
+    // Render Chart.js
     function renderChart(items) {
       const ctx = document.getElementById('mainChart').getContext('2d');
       
-      // Agregasi kuantitas per kategori
       const catMap = {};
       items.forEach(i => {
         const cat = i.kategori || 'Lain-lain';
@@ -686,25 +1175,17 @@
       let values = Object.values(catMap);
 
       if (labels.length === 0) {
-        labels = ['ATK', 'Cetakan & Formulir', 'Kebersihan', 'Perlengkapan Komputer', 'Lain-lain'];
+        labels = ['ATK', 'Cetakan & Formulir', 'Kebersihan', 'Perlengkapan IT', 'Lain-lain'];
         values = [150, 85, 45, 20, 10];
       }
 
-      // Cari indeks dengan nilai tertinggi untuk disorot warna biru gelap (#0f172a)
       const maxVal = Math.max(...values, 0);
       const maxIndex = values.indexOf(maxVal);
 
-      const backgroundColors = values.map((val, idx) => {
-        return idx === maxIndex ? '#0f172a' : '#e2e8f0'; // Biru gelap untuk highlight, abu-abu terang untuk lainnya
-      });
+      const backgroundColors = values.map((val, idx) => idx === maxIndex ? '#0f172a' : '#e2e8f0');
+      const hoverBackgroundColors = values.map((val, idx) => idx === maxIndex ? '#1e293b' : '#cbd5e1');
 
-      const hoverBackgroundColors = values.map((val, idx) => {
-        return idx === maxIndex ? '#1e293b' : '#cbd5e1';
-      });
-
-      if (chartInstance) {
-        chartInstance.destroy();
-      }
+      if (chartInstance) chartInstance.destroy();
 
       chartInstance = new Chart(ctx, {
         type: 'bar',
@@ -732,27 +1213,19 @@
               padding: 10,
               cornerRadius: 8,
               callbacks: {
-                label: function(context) {
-                  return ' ' + context.parsed.y + ' unit barang';
-                }
+                label: (context) => ' ' + context.parsed.y + ' unit barang'
               }
             }
           },
           scales: {
             x: {
               grid: { display: false },
-              ticks: {
-                color: '#64748b',
-                font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }
-              }
+              ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
             },
             y: {
               border: { dash: [4, 4] },
               grid: { color: '#f1f5f9' },
-              ticks: {
-                color: '#94a3b8',
-                font: { family: 'Plus Jakarta Sans', size: 10 }
-              }
+              ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 10 } }
             }
           }
         }
@@ -761,7 +1234,7 @@
 
     // Render Dua Tabel Data Berdampingan (Borderless)
     function renderTables(items) {
-      // 1. Tabel Ringkasan Katalog Barang (Ambil 6 item pertama)
+      // 1. Tabel Ringkasan Katalog Barang
       const katalogBody = document.getElementById('tableKatalogBody');
       if (items.length === 0) {
         katalogBody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-xs text-slate-400">Belum ada barang di database.</td></tr>`;
@@ -806,31 +1279,28 @@
       }
     }
 
-    // Modal Control
-    const modal = document.getElementById('addBarangModal');
-    const form = document.getElementById('addBarangForm');
+    // =========================================================================
+    // MODAL 1: FORM TAMBAH BARANG (SATU-SATUNYA PEMICU DARI SIDEBAR)
+    // =========================================================================
+    const addBarangModal = document.getElementById('addBarangModal');
+    const addBarangForm = document.getElementById('addBarangForm');
 
-    function openModal() {
-      form.reset();
-      modal.classList.remove('hidden');
+    function openAddModal() {
+      addBarangForm.reset();
+      addBarangModal.classList.remove('hidden');
       document.getElementById('inputKode').focus();
     }
-    function closeModal() {
-      modal.classList.add('hidden');
+    function closeAddModal() {
+      addBarangModal.classList.add('hidden');
     }
 
-    document.getElementById('openAddModalBtn').addEventListener('click', openModal);
-    document.getElementById('sidebarAddBtn').addEventListener('click', openModal);
-    document.getElementById('closeAddModalBtn').addEventListener('click', closeModal);
-    document.getElementById('cancelAddModalBtn').addEventListener('click', closeModal);
-    document.getElementById('refreshDataBtn').addEventListener('click', loadData);
+    // Sidebar adalah satu-satunya pemicu form input
+    document.getElementById('sidebarAddBtn').addEventListener('click', openAddModal);
+    document.getElementById('closeAddModalBtn').addEventListener('click', closeAddModal);
+    document.getElementById('cancelAddModalBtn').addEventListener('click', closeAddModal);
+    addBarangModal.addEventListener('click', (e) => { if (e.target === addBarangModal) closeAddModal(); });
 
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
-
-    // Form INSERT Supabase
-    form.addEventListener('submit', async (e) => {
+    addBarangForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const saveBtn = document.getElementById('saveBarangBtn');
       const spinner = document.getElementById('saveBtnSpinner');
@@ -854,9 +1324,9 @@
         const { error } = await supabaseClient.from('barang').insert([newRecord]);
         if (error) throw error;
 
-        showToast(`Barang "${newRecord.nama}" berhasil disimpan!`, 'success');
-        closeModal();
-        form.reset();
+        showToast(`Barang "${newRecord.nama}" berhasil disimpan ke Supabase!`, 'success');
+        closeAddModal();
+        addBarangForm.reset();
         await loadData();
 
       } catch (err) {
@@ -868,6 +1338,275 @@
         text.innerText = 'Simpan ke Supabase';
       }
     });
+
+    // =========================================================================
+    // MODAL 2: TRANSAKSI MUTASI (MUTASI MASUK / DISTRIBUSI KELUAR)
+    // =========================================================================
+    const mutasiModal = document.getElementById('mutasiModal');
+    const mutasiForm = document.getElementById('mutasiForm');
+
+    function openMutasiModal(type = 'masuk') {
+      mutasiForm.reset();
+      mutasiModal.classList.remove('hidden');
+
+      const isMasuk = type === 'masuk';
+      document.getElementById('mutasiTypeMasuk').checked = isMasuk;
+      document.getElementById('mutasiTypeKeluar').checked = !isMasuk;
+
+      document.getElementById('mutasiModalTitle').innerText = isMasuk
+        ? 'Pencatatan Mutasi Masuk (Pengadaan / Drop)'
+        : 'Pencatatan Distribusi Keluar (SBBK Unit)';
+      document.getElementById('mutasiUnitLabel').innerText = isMasuk
+        ? 'Asal Pengadaan / Vendor *'
+        : 'Unit / Ruangan Penerima di RSUD *';
+
+      // Auto generate no dokumen
+      const prefix = isMasuk ? 'BAP-DROP' : 'SBBK-TU';
+      const rand = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('mutasiNoDokumen').value = `${prefix}-${new Date().getFullYear()}-${rand}`;
+    }
+
+    function closeMutasiModal() {
+      mutasiModal.classList.add('hidden');
+    }
+
+    document.getElementById('sidebarMutasiMasukBtn').addEventListener('click', () => openMutasiModal('masuk'));
+    document.getElementById('sidebarMutasiKeluarBtn').addEventListener('click', () => openMutasiModal('keluar'));
+    document.getElementById('closeMutasiModalBtn').addEventListener('click', closeMutasiModal);
+    document.getElementById('cancelMutasiModalBtn').addEventListener('click', closeMutasiModal);
+    mutasiModal.addEventListener('click', (e) => { if (e.target === mutasiModal) closeMutasiModal(); });
+
+    // Dinamis ganti radio button label
+    document.getElementById('mutasiTypeMasuk').addEventListener('change', () => {
+      document.getElementById('mutasiModalTitle').innerText = 'Pencatatan Mutasi Masuk (Pengadaan / Drop)';
+      document.getElementById('mutasiUnitLabel').innerText = 'Asal Pengadaan / Vendor *';
+    });
+    document.getElementById('mutasiTypeKeluar').addEventListener('change', () => {
+      document.getElementById('mutasiModalTitle').innerText = 'Pencatatan Distribusi Keluar (SBBK Unit)';
+      document.getElementById('mutasiUnitLabel').innerText = 'Unit / Ruangan Penerima di RSUD *';
+    });
+
+    mutasiForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById('saveMutasiBtn');
+      const spinner = document.getElementById('saveMutasiSpinner');
+      const text = document.getElementById('saveMutasiText');
+
+      const jenis = document.querySelector('input[name="jenisMutasi"]:checked').value;
+      const barangId = document.getElementById('mutasiBarangSelect').value;
+      const jumlah = parseInt(document.getElementById('mutasiJumlah').value, 10);
+      const noDokumen = document.getElementById('mutasiNoDokumen').value.trim();
+      const unit = document.getElementById('mutasiUnitTujuanAsal').value.trim();
+      const keterangan = document.getElementById('mutasiKeterangan').value.trim();
+
+      const selectedItem = barangList.find(b => b.id === barangId);
+      if (!selectedItem) {
+        showToast('Pilih barang terlebih dahulu!', 'error');
+        return;
+      }
+
+      if (jenis === 'keluar' && (Number(selectedItem.stok) || 0) < jumlah) {
+        showToast(`Stok tidak mencukupi untuk distribusi keluar! Stok saat ini: ${selectedItem.stok}`, 'error');
+        return;
+      }
+
+      saveBtn.disabled = true;
+      spinner.classList.remove('hidden');
+      text.innerText = 'Memproses...';
+
+      try {
+        const stokSekarang = Number(selectedItem.stok) || 0;
+        const stokSesudah = jenis === 'masuk' ? stokSekarang + jumlah : stokSekarang - jumlah;
+
+        // 1. Insert ke tabel mutasi
+        const mutasiRecord = {
+          barang_id: barangId,
+          jenis_mutasi: jenis,
+          jumlah: jumlah,
+          nomor_dokumen: noDokumen,
+          unit_tujuan_asal: unit,
+          keterangan: keterangan,
+          stok_sebelum: stokSekarang,
+          stok_sesudah: stokSesudah,
+          status: 'disetujui',
+          user_id: currentUser?.id || '00000000-0000-0000-0000-000000000000'
+        };
+
+        const { error: mutasiErr } = await supabaseClient.from('mutasi').insert([mutasiRecord]);
+        if (mutasiErr) throw mutasiErr;
+
+        // 2. Update stok barang
+        const { error: updateErr } = await supabaseClient.from('barang').update({ stok: stokSesudah }).eq('id', barangId);
+        if (updateErr) throw updateErr;
+
+        showToast(`Mutasi ${jenis === 'masuk' ? 'Masuk' : 'Distribusi'} sebanyak ${jumlah} ${selectedItem.satuan || ''} berhasil dicatat!`, 'success');
+        closeMutasiModal();
+        await loadData();
+
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal memproses mutasi: ' + err.message, 'error');
+      } finally {
+        saveBtn.disabled = false;
+        spinner.classList.add('hidden');
+        text.innerText = 'Proses Transaksi';
+      }
+    });
+
+    // =========================================================================
+    // MODAL 3: KELOLA AKUN STAF (supabase.auth.signUp + profil_user)
+    // =========================================================================
+    const manageUserModal = document.getElementById('manageUserModal');
+    const registerUserForm = document.getElementById('registerUserForm');
+
+    function openManageUserModal() {
+      registerUserForm.reset();
+      manageUserModal.classList.remove('hidden');
+      document.getElementById('inputUserEmail').focus();
+    }
+    function closeManageUserModal() {
+      manageUserModal.classList.add('hidden');
+    }
+
+    document.getElementById('sidebarManageUserBtn').addEventListener('click', openManageUserModal);
+    document.getElementById('closeManageUserModalBtn').addEventListener('click', closeManageUserModal);
+    document.getElementById('cancelManageUserModalBtn').addEventListener('click', closeManageUserModal);
+    manageUserModal.addEventListener('click', (e) => { if (e.target === manageUserModal) closeManageUserModal(); });
+
+    registerUserForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById('saveUserBtn');
+      const spinner = document.getElementById('saveUserSpinner');
+      const text = document.getElementById('saveUserText');
+
+      const email = document.getElementById('inputUserEmail').value.trim();
+      const password = document.getElementById('inputUserPassword').value;
+      const nama = document.getElementById('inputUserNama').value.trim();
+      const nip = document.getElementById('inputUserNip').value.trim();
+      const role = document.getElementById('inputUserRole').value;
+      const jabatan = document.getElementById('inputUserJabatan').value.trim();
+      const telepon = document.getElementById('inputUserTelepon').value.trim();
+
+      saveBtn.disabled = true;
+      spinner.classList.remove('hidden');
+      text.innerText = 'Mendaftarkan...';
+
+      try {
+        // 1. Pendaftaran via Supabase Auth
+        const { data: authData, error: authErr } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              nama_lengkap: nama,
+              nip: nip,
+              role: role,
+              jabatan: jabatan
+            }
+          }
+        });
+
+        if (authErr) throw authErr;
+
+        // 2. Simpan profil ke tabel profil_user
+        if (authData?.user?.id) {
+          const { error: profileErr } = await supabaseClient.from('profil_user').upsert({
+            id: authData.user.id,
+            nama_lengkap: nama,
+            nip: nip || null,
+            role: role,
+            jabatan: jabatan,
+            no_telepon: telepon || null
+          });
+          if (profileErr) console.warn('[Profile Warning]:', profileErr.message);
+        }
+
+        showToast(`Akun staf "${nama}" (${email}) berhasil didaftarkan!`, 'success');
+        closeManageUserModal();
+        registerUserForm.reset();
+
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal mendaftarkan staf: ' + err.message, 'error');
+      } finally {
+        saveBtn.disabled = false;
+        spinner.classList.add('hidden');
+        text.innerText = 'Daftarkan Akun Staf';
+      }
+    });
+
+    // =========================================================================
+    // MODAL 4: CATAT PEMINJAMAN ASET
+    // =========================================================================
+    const peminjamanModal = document.getElementById('peminjamanModal');
+    const peminjamanForm = document.getElementById('peminjamanForm');
+
+    function openPeminjamanModal() {
+      peminjamanForm.reset();
+      peminjamanModal.classList.remove('hidden');
+
+      // Default batas waktu = 3 hari ke depan
+      const d = new Date();
+      d.setDate(d.getDate() + 3);
+      document.getElementById('pinjamBatasWaktu').value = d.toISOString().slice(0, 16);
+    }
+    function closePeminjamanModal() {
+      peminjamanModal.classList.add('hidden');
+    }
+
+    document.getElementById('sidebarPeminjamanBtn').addEventListener('click', openPeminjamanModal);
+    document.getElementById('inlinePinjamBtn').addEventListener('click', openPeminjamanModal);
+    document.getElementById('closePeminjamanModalBtn').addEventListener('click', closePeminjamanModal);
+    document.getElementById('cancelPeminjamanModalBtn').addEventListener('click', closePeminjamanModal);
+    peminjamanModal.addEventListener('click', (e) => { if (e.target === peminjamanModal) closePeminjamanModal(); });
+
+    peminjamanForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById('savePeminjamanBtn');
+      const spinner = document.getElementById('savePeminjamanSpinner');
+      const text = document.getElementById('savePeminjamanText');
+
+      const barangId = document.getElementById('pinjamBarangSelect').value;
+      const nama = document.getElementById('pinjamNama').value.trim();
+      const unit = document.getElementById('pinjamUnit').value.trim();
+      const jumlah = parseInt(document.getElementById('pinjamJumlah').value, 10);
+      const batasWaktu = document.getElementById('pinjamBatasWaktu').value;
+      const keterangan = document.getElementById('pinjamKeterangan').value.trim();
+
+      saveBtn.disabled = true;
+      spinner.classList.remove('hidden');
+      text.innerText = 'Menyimpan...';
+
+      try {
+        const pinjamRecord = {
+          barang_id: barangId,
+          nama_peminjam: nama,
+          unit_ruangan: unit,
+          jumlah: jumlah,
+          batas_waktu_kembali: new Date(batasWaktu).toISOString(),
+          status: 'dipinjam',
+          keterangan: keterangan,
+          created_by: currentUser?.id || null
+        };
+
+        const { error } = await supabaseClient.from('peminjaman').insert([pinjamRecord]);
+        if (error) throw error;
+
+        showToast(`Peminjaman aset untuk ${nama} berhasil dicatat!`, 'success');
+        closePeminjamanModal();
+        await loadPeminjaman();
+
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal mencatat peminjaman: ' + err.message, 'error');
+      } finally {
+        saveBtn.disabled = false;
+        spinner.classList.add('hidden');
+        text.innerText = 'Simpan Peminjaman';
+      }
+    });
+
+    document.getElementById('refreshDataBtn').addEventListener('click', loadData);
 
     window.addEventListener('DOMContentLoaded', initApp);
   </script>

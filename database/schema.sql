@@ -395,3 +395,39 @@ VALUES
     ('TU-KBS-001', 'Hand Sanitizer Gel 500ml', 'Kebersihan & Sanitasi Non-Medis', 85, 'botol', 15, 'Rak D-1 Kebersihan', 'Penempatan di meja loket TU dan administrasi umum'),
     ('TU-KBS-002', 'Cairan Disinfektan Ruangan 5 Liter', 'Kebersihan & Sanitasi Non-Medis', 30, 'jerigen', 5, 'Gudang Bawah Logistik', 'Untuk desinfeksi rutin ruangan TU dan administrasi')
 ON CONFLICT (kode_barang) DO NOTHING;
+
+-- ==============================================================================
+-- 9. TABEL PELACAKAN PEMINJAMAN ASET / BARANG LOGISTIK TU
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.peminjaman (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    barang_id UUID NOT NULL REFERENCES public.barang(id) ON DELETE RESTRICT,
+    nama_peminjam VARCHAR(255) NOT NULL,
+    nip_peminjam VARCHAR(50),
+    unit_ruangan VARCHAR(150) NOT NULL,
+    jumlah INTEGER NOT NULL DEFAULT 1 CHECK (jumlah > 0),
+    tanggal_ambil TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+    batas_waktu_kembali TIMESTAMPTZ NOT NULL,
+    tanggal_kembali TIMESTAMPTZ,
+    status VARCHAR(50) NOT NULL DEFAULT 'dipinjam' CHECK (status IN ('dipinjam', 'kembali', 'terlambat')),
+    keterangan TEXT,
+    created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+
+CREATE INDEX IF NOT EXISTS idx_peminjaman_barang ON public.peminjaman(barang_id);
+CREATE INDEX IF NOT EXISTS idx_peminjaman_status ON public.peminjaman(status);
+CREATE INDEX IF NOT EXISTS idx_peminjaman_batas_waktu ON public.peminjaman(batas_waktu_kembali);
+
+GRANT ALL ON TABLE public.peminjaman TO anon, authenticated;
+ALTER TABLE public.peminjaman ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "peminjaman_select_all" ON public.peminjaman FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "peminjaman_insert_all" ON public.peminjaman FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "peminjaman_update_all" ON public.peminjaman FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
+
+DROP TRIGGER IF EXISTS trigger_peminjaman_updated_at ON public.peminjaman;
+CREATE TRIGGER trigger_peminjaman_updated_at
+    BEFORE UPDATE ON public.peminjaman
+    FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
