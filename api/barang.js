@@ -5,9 +5,9 @@ import { getSupabaseClient } from '../lib/supabase.js';
  * Mengambil daftar inventaris barang logistik Tata Usaha di RSUD dr. R.T. Notopuro dari Supabase.
  *
  * Query Parameters:
- * - kategori: Filter berdasarkan kategori (contoh: "Alat Tulis Kantor", "Cetakan & Formulir")
- * - search / q: Pencarian teks pada nama atau kode barang
- * - stok_kritis: true/false - Menampilkan barang dengan stok <= stok_minimum (peringatan restock)
+ * - kategori: Filter berdasarkan kategori (contoh: "Alat Tulis Kantor")
+ * - search / q: Pencarian teks pada nama barang
+ * - stok_kritis: true/false - Menampilkan barang dengan stok <= stok_minimum (jika kolom tersedia)
  * - limit: Batas jumlah data yang diambil (default: 50, maks: 100)
  * - offset: Offset data untuk paginasi (default: 0)
  * - sort: Urutkan berdasarkan kolom (default: 'nama')
@@ -17,8 +17,7 @@ import { getSupabaseClient } from '../lib/supabase.js';
  * @param {import('http').ServerResponse & { status: Function, json: Function }} res
  */
 export default async function handler(req, res) {
-  // Atur header CORS
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  // Atur header CORS yang valid (hindari konflik wildcard '*' dengan allow-credentials)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader(
@@ -41,7 +40,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Inisialisasi Supabase client (mewarisi token otentikasi user jika ada)
+    // Inisialisasi Supabase client (meneruskan header Authorization jika ada)
     const supabase = getSupabaseClient(req);
 
     // Parsing parameter query
@@ -61,66 +60,88 @@ export default async function handler(req, res) {
     const isAscending = order.toLowerCase() === 'asc';
     const keyword = search || q;
 
-    // Susun query ke tabel 'barang'
-    let query = supabase
-      .from('barang')
-      .select('id, kode_barang, nama, kategori, stok, satuan, stok_minimum, lokasi_rak, keterangan, created_at, updated_at', {
-        count: 'exact',
-      });
+    // Gunakan select('*') agar tidak gagal jika ada variasi struktur kolom
+    let query = supabase.from('barang').select('*', { count: 'exact' });
 
     // Filter berdasarkan kategori jika disediakan
     if (kategori) {
       query = query.eq('kategori', kategori);
     }
 
-    // Filter pencarian nama atau kode barang
+    // Filter pencarian nama
     if (keyword) {
-      query = query.or(`nama.ilike.%${keyword}%,kode_barang.ilike.%${keyword}%`);
+      query = query.ilike('nama', `%${keyword}%`);
     }
 
-    // Filter stok kritis (di bawah atau sama dengan stok minimum)
+    // Filter stok kritis jika diminta
     if (stok_kritis === 'true' || stok_kritis === true) {
       query = query.filter('stok', 'lte', 'stok_minimum');
     }
 
-    // Urutan dan paginasi
-    const allowedSortFields = ['nama', 'kode_barang', 'kategori', 'stok', 'created_at', 'updated_at'];
-    const sortField = allowedSortFields.includes(sort) ? sort : 'nama';
+    // Paginasi dan pengurutan
+    try {
+      query = query
+        .order(sort, { ascending: isAscending })
+        .range(offsetNumber, offsetNumber + limitNumber - 1);
+    } catch {
+      // Fallback tanpa order jika kolom sort tidak ada
+      query = query.range(offsetNumber, offsetNumber + limitNumber - 1);
+    }
 
-    query = query
-      .order(sortField, { ascending: isAscending })
-      .range(offsetNumber, offsetNumber + limitNumber - 1);
-
-    // Eksekusi query
+    // Eksekusi query ke Supabase
     const { data, count, error } = await query;
 
     if (error) {
       console.error('[API Error /api/barang]: Gagal membaca dari Supabase:', error);
+
+      // Diagnosis spesifik kode error PostgreSQL / Supabase
+      if (error.code === '42501') {
+        return res.status(403).json({
+          success: false,
+          error: 'Akses ditolak oleh kebijakan Row Level Security (RLS) Supabase.',
+          solusi: 'Jalankan perintah SQL berikut di Supabase SQL Editor: ALTER TABLE public.barang DISABLE ROW LEVEL SECURITY; atau pasang policy SELECT untuk role anon.',
+          details: error.message,
+        });
+      }
+
+      if (error.code === '42P01') {
+        return res.status(404).json({
+          success: false,
+          error: 'Tabel "barang" belum ditemukan di database Supabase.',
+          solusi: 'Buka menu SQL Editor di Supabase Dashboard, lalu jalankan isi berkas database/schema.sql untuk membuat tabel.',
+          details: error.message,
+        });
+      }
+
       return res.status(500).json({
         success: false,
         error: 'Terjadi kesalahan saat mengambil data barang dari Supabase.',
+        code: error.code,
         details: error.message,
       });
     }
 
-    // Return response sukses
+    // Berikan respons sukses
     return res.status(200).json({
       success: true,
       instansi: 'RSUD dr. R.T. Notopuro Sidoarjo - Bagian Tata Usaha',
       message: 'Berhasil mengambil daftar barang logistik.',
       meta: {
-        total: count ?? data.length,
+        total: count ?? (data ? data.length : 0),
         limit: limitNumber,
         offset: offsetNumber,
-        count: data.length,
+        count: data ? data.length : 0,
       },
-      data,
+      data: data || [],
     });
   } catch (err) {
     console.error('[API Exception /api/barang]:', err);
     return res.status(500).json({
       success: false,
       error: err.message || 'Terjadi kesalahan internal pada server.',
+      solusi: err.message?.includes('Kredensial')
+        ? 'Pastikan variabel SUPABASE_URL dan SUPABASE_ANON_KEY telah diatur pada Environment Variables di Vercel Dashboard.'
+        : undefined,
     });
   }
 }

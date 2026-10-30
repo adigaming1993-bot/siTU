@@ -279,11 +279,14 @@ CREATE POLICY "profil_delete_kepala_tu"
 -- B. KEBIJAKAN RLS: TABEL BARANG
 -- ------------------------------------------------------------------------------
 
--- 1. Baca: Staf Gudang dan Kepala TU dapat melihat seluruh daftar barang inventaris
-CREATE POLICY "barang_select_authenticated"
+-- 1. Baca: Mengizinkan akses publik/anon dan authenticated untuk melihat katalog barang
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT SELECT ON TABLE public.barang TO anon, authenticated;
+
+CREATE POLICY "barang_select_public_and_auth"
     ON public.barang
     FOR SELECT
-    TO authenticated
+    TO anon, authenticated
     USING (true);
 
 -- 2. Tambah: Baik Staf Gudang maupun Kepala TU dapat menambahkan barang baru
