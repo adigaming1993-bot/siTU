@@ -669,12 +669,13 @@
   <!-- 5. MODAL 3: KELOLA AKUN STAF (supabase.auth.signUp + profil_user)         -->
   <!-- ========================================================================= -->
   <div id="manageUserModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8 max-h-[90vh] flex flex-col">
       
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
         <div>
-          <h3 class="font-bold text-slate-800 text-base">Pendaftaran Akun Staf Baru</h3>
-          <p class="text-xs text-slate-400">Daftarkan akun pegawai via Supabase Auth & Profil User</p>
+          <h3 class="font-bold text-slate-800 text-base">Kelola Akun & Pendaftaran Staf</h3>
+          <p class="text-xs text-slate-400">Pendaftaran staf baru dan sistem manajemen status akses nonaktif (soft delete)</p>
         </div>
         <button type="button" id="closeManageUserModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -683,76 +684,119 @@
         </button>
       </div>
 
-      <form id="registerUserForm" class="p-6 space-y-4">
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="overflow-y-auto flex-1">
+        <!-- Bagian 1: Form Pendaftaran Akun Staf Baru -->
+        <form id="registerUserForm" class="p-6 space-y-4">
+          <div class="pb-2 border-b border-slate-100">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Formulir Pendaftaran Staf Baru</h4>
+            <p class="text-[11px] text-slate-400">Masukkan identitas pegawai untuk membuat akses login Supabase</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Email Pegawai *</label>
+              <input type="email" id="inputUserEmail" required placeholder="staf@rsudnotopuro.id"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kata Sandi Baru *</label>
+              <input type="password" id="inputUserPassword" required minlength="6" placeholder="min. 6 karakter"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Lengkap Pegawai *</label>
+              <input type="text" id="inputUserNama" required placeholder="misal: Siti Nurhaliza, S.AP"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">NIP (Nomor Induk Pegawai)</label>
+              <input type="text" id="inputUserNip" placeholder="1985xxxxxxxxxxxx"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Peran Akses (Role) *</label>
+              <select id="inputUserRole" required
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition">
+                <option value="staf_gudang">Staf Logistik & Gudang TU</option>
+                <option value="kepala_tu">Kepala Bagian Tata Usaha</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jabatan / Posisi</label>
+              <input type="text" id="inputUserJabatan" value="Staf Logistik Tata Usaha" placeholder="misal: Pengelola Barang TU"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+            </div>
+          </div>
+
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Email Pegawai *</label>
-            <input type="email" id="inputUserEmail" required placeholder="staf@rsudnotopuro.id"
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">No. WhatsApp / Telepon</label>
+            <input type="text" id="inputUserTelepon" placeholder="08xxxxxxxxxx"
               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
           </div>
 
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kata Sandi Baru *</label>
-            <input type="password" id="inputUserPassword" required minlength="6" placeholder="min. 6 karakter"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+          <!-- Tombol aksi yang tersedia HANYA 'Batal' dan 'Daftarkan Akun Staf' -->
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+            <button type="button" id="cancelManageUserModalBtn" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+              Batal
+            </button>
+            <button type="submit" id="saveUserBtn"
+              class="px-5 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center gap-2">
+              <span id="saveUserSpinner" class="hidden">
+                <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+              </span>
+              <span id="saveUserText">Daftarkan Akun Staf</span>
+            </button>
           </div>
-        </div>
+        </form>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Lengkap Pegawai *</label>
-            <input type="text" id="inputUserNama" required placeholder="misal: Siti Nurhaliza, S.AP"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+        <!-- Bagian 2: Daftar Staf & Mekanisme Nonaktif (Soft Delete) - TANPA TOMBOL HAPUS -->
+        <div class="p-6 bg-slate-50 border-t border-slate-200/80 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Daftar Staf & Status Akses</h4>
+              <p class="text-[11px] text-slate-500">Gunakan nonaktifkan akses untuk staf yang pindah tugas agar audit trail mutasi terjaga.</p>
+            </div>
+            <button type="button" onclick="loadRegisteredUsers()" class="text-xs text-purple-700 hover:text-purple-900 font-bold flex items-center gap-1">
+              🔄 Refresh Staf
+            </button>
           </div>
 
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">NIP (Nomor Induk Pegawai)</label>
-            <input type="text" id="inputUserNip" placeholder="1985xxxxxxxxxxxx"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
+          <div class="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
+            <table class="w-full text-left text-xs border-none">
+              <thead class="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-100">
+                <tr>
+                  <th class="py-2.5 px-3">Pegawai & NIP</th>
+                  <th class="py-2.5 px-3">Peran Akses</th>
+                  <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2.5 px-3 text-right">Aksi Akses</th>
+                </tr>
+              </thead>
+              <tbody id="userListTableBody" class="divide-y divide-slate-100">
+                <tr>
+                  <td colspan="4" class="py-4 text-center text-slate-400">Memuat data staf...</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
+
+          <p class="text-[10px] text-slate-400 italic">
+            * Larangan Hapus Fisik: Data pengguna tidak dapat dihapus secara permanen demi integritas foreign key pada laporan mutasi dan riwayat persetujuan logistik TU.
+          </p>
         </div>
+      </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Peran Akses (Role) *</label>
-            <select id="inputUserRole" required
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition">
-              <option value="staf_gudang">Staf Logistik & Gudang TU</option>
-              <option value="kepala_tu">Kepala Bagian Tata Usaha</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jabatan / Posisi</label>
-            <input type="text" id="inputUserJabatan" value="Staf Logistik Tata Usaha" placeholder="misal: Pengelola Barang TU"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">No. WhatsApp / Telepon</label>
-          <input type="text" id="inputUserTelepon" placeholder="08xxxxxxxxxx"
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
-        </div>
-
-        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-          <button type="button" id="cancelManageUserModalBtn" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
-            Batal
-          </button>
-          <button type="submit" id="saveUserBtn"
-            class="px-5 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center gap-2">
-            <span id="saveUserSpinner" class="hidden">
-              <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-              </svg>
-            </span>
-            <span id="saveUserText">Daftarkan Akun Staf</span>
-          </button>
-        </div>
-
-      </form>
     </div>
   </div>
 
@@ -930,8 +974,14 @@
 
     async function loadUserProfile(userId) {
       try {
-        const { data } = await supabaseClient.from('profil_user').select('nama_lengkap, role, jabatan').eq('id', userId).single();
+        const { data } = await supabaseClient.from('profil_user').select('nama_lengkap, role, jabatan, is_active').eq('id', userId).single();
         if (data) {
+          if (data.is_active === false) {
+            await supabaseClient.auth.signOut();
+            showLogin();
+            showToast('Akses akun ini telah dinonaktifkan oleh Administrator TU (Pindah tugas / mutasi dinas).', 'error');
+            return;
+          }
           document.getElementById('sidebarUserRole').innerText = `${data.role === 'kepala_tu' ? 'Kepala TU' : 'Staf Gudang'} (${data.nama_lengkap || ''})`;
         }
       } catch (e) {
@@ -956,8 +1006,23 @@
       text.innerText = 'Memverifikasi...';
 
       try {
-        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        const { data: authResult, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
+
+        // Cek apakah akun aktif (Sistem Nonaktif / Soft Delete)
+        if (authResult?.user?.id) {
+          const { data: prof } = await supabaseClient
+            .from('profil_user')
+            .select('is_active')
+            .eq('id', authResult.user.id)
+            .single();
+
+          if (prof && prof.is_active === false) {
+            await supabaseClient.auth.signOut();
+            throw new Error('Akses akun Anda telah dinonaktifkan oleh Administrator TU (Pindah tugas / mutasi dinas). Hubungi Kepala Bagian Tata Usaha.');
+          }
+        }
+
         showToast('Login berhasil! Selamat datang di Sistem Inventaris.', 'success');
       } catch (err) {
         document.getElementById('loginErrorText').innerText = err.message || 'Login gagal';
@@ -1463,6 +1528,7 @@
       registerUserForm.reset();
       manageUserModal.classList.remove('hidden');
       document.getElementById('inputUserEmail').focus();
+      loadRegisteredUsers();
     }
     function closeManageUserModal() {
       manageUserModal.classList.add('hidden');
@@ -1522,9 +1588,8 @@
         }
 
         showToast(`Akun staf "${nama}" (${email}) berhasil didaftarkan!`, 'success');
-        closeManageUserModal();
         registerUserForm.reset();
-
+        await loadRegisteredUsers();
       } catch (err) {
         console.error(err);
         showToast('Gagal mendaftarkan staf: ' + err.message, 'error');
@@ -1534,6 +1599,92 @@
         text.innerText = 'Daftarkan Akun Staf';
       }
     });
+
+    // Muat Daftar Staf Terdaftar & Status Akses (Soft Delete)
+    async function loadRegisteredUsers() {
+      const tbody = document.getElementById('userListTableBody');
+      if (!tbody) return;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('profil_user')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-xs text-slate-400">Gagal memuat staf: ${error.message}</td></tr>`;
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-xs text-slate-400">Belum ada akun staf tersimpan di profil_user.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = data.map(u => {
+          const isActive = u.is_active !== false;
+          const roleBadge = u.role === 'kepala_tu'
+            ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">Kepala TU</span>`
+            : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800">Staf Gudang</span>`;
+
+          const statusBadge = isActive
+            ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif</span>`
+            : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-300"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif</span>`;
+
+          // AKSI HANYA: Sakelar Nonaktifkan / Aktifkan Akses (TANPA TOMBOL HAPUS / TANPA TRASH CAN)
+          const actionBtn = isActive
+            ? `<button onclick="toggleUserActive('${u.id}', false, '${u.nama_lengkap || 'Staf'}')"
+                 class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 transition shadow-sm">
+                 Nonaktifkan Akses
+               </button>`
+            : `<button onclick="toggleUserActive('${u.id}', true, '${u.nama_lengkap || 'Staf'}')"
+                 class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition shadow-sm">
+                 Aktifkan Kembali
+               </button>`;
+
+          return `
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+              <td class="py-2.5 px-3">
+                <span class="font-bold text-slate-800 text-xs block">${u.nama_lengkap || 'Pegawai'}</span>
+                <span class="text-[10px] text-slate-400 font-mono">${u.nip ? 'NIP: ' + u.nip : (u.jabatan || '-')}</span>
+              </td>
+              <td class="py-2.5 px-3">${roleBadge}</td>
+              <td class="py-2.5 px-3">${statusBadge}</td>
+              <td class="py-2.5 px-3 text-right">${actionBtn}</td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.warn('loadRegisteredUsers error:', err);
+      }
+    }
+
+    // Sakelar Status Akses Pegawai (Sistem Nonaktif / Soft Delete)
+    // Mencegah error foreign key pada audit trail mutasi dengan menghindari perintah DELETE
+    window.toggleUserActive = async function(userId, newStatus, nama) {
+      const actionText = newStatus ? 'mengaktifkan kembali' : 'menonaktifkan (blokir akses)';
+      if (!confirm(`Konfirmasi ${actionText} akun staf "${nama}"?\n\nCatatan: Riwayat persetujuan mutasi dan berita acara logistik sebelumnya tetap aman tersimpan.`)) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('profil_user')
+          .update({ is_active: newStatus })
+          .eq('id', userId);
+
+        if (error) throw error;
+
+        const msg = newStatus
+          ? `Akses staf "${nama}" telah diaktifkan kembali.`
+          : `Akses staf "${nama}" berhasil dinonaktifkan (Soft Delete). Rekam jejak transaksi mutasi tetap aman!`;
+
+        showToast(msg, newStatus ? 'success' : 'info');
+        await loadRegisteredUsers();
+
+      } catch (err) {
+        showToast('Gagal memperbarui status staf: ' + err.message, 'error');
+      }
+    };
 
     // =========================================================================
     // MODAL 4: CATAT PEMINJAMAN ASET

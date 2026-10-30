@@ -268,13 +268,11 @@ CREATE POLICY "profil_update_kepala_tu"
     USING (public.get_current_user_role() = 'kepala_tu')
     WITH CHECK (public.get_current_user_role() = 'kepala_tu');
 
--- 5. Hapus: Hanya Kepala TU yang dapat menghapus profil user
-CREATE POLICY "profil_delete_kepala_tu"
-    ON public.profil_user
-    FOR DELETE
-    TO authenticated
-    USING (public.get_current_user_role() = 'kepala_tu');
-
+-- 5. Larangan Penghapusan Fisik (Soft Delete Mekanisme):
+-- Operasi DELETE dilarang demi menjaga integritas data & foreign key mutasi logistik.
+-- Pencabutan akses staf dilakukan melalui pembaruan kolom 'is_active = false'.
+REVOKE DELETE ON TABLE public.profil_user FROM anon, authenticated, public;
+DROP POLICY IF EXISTS "profil_delete_kepala_tu" ON public.profil_user;
 -- ------------------------------------------------------------------------------
 -- B. KEBIJAKAN RLS: TABEL BARANG
 -- ------------------------------------------------------------------------------
