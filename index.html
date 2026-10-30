@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sistem Inventaris Logistik Tata Usaha | RSUD dr. R.T. Notopuro</title>
-  
-  <!-- Font Google Plus Jakarta Sans -->
+  <title>Home Dashboard | Sistem Inventaris TU RSUD dr. R.T. Notopuro</title>
+
+  <!-- Google Font: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind CSS CDN -->
+
+  <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -20,22 +20,14 @@
             sans: ['"Plus Jakarta Sans"', 'sans-serif'],
           },
           colors: {
-            brand: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46',
-              900: '#064e3b',
+            sidebar: {
+              DEFAULT: '#0f172a', // Biru gelap slate-900
+              hover: '#1e293b',
+              active: '#0284c7',
             },
-            hospital: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              500: '#0284c7',
-              600: '#0369a1',
-              700: '#075985',
-              800: '#0c4a6e',
+            accent: {
+              blue: '#0284c7',
+              purple: '#7c3aed',
             }
           }
         }
@@ -43,11 +35,17 @@
     }
   </script>
 
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <!-- Supabase JS Client v2 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    /* Animasi halus kustom */
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(5px);
+    }
     .fade-in {
       animation: fadeIn 0.25s ease-out forwards;
     }
@@ -55,316 +53,369 @@
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .modal-backdrop {
-      background-color: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
+    /* Scrollbar halus untuk konten utama */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
     }
   </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen">
 
   <!-- ========================================================================= -->
-  <!-- 1. TAMPILAN LOGIN (SUPABASE AUTH) - Tampil Pertama Sebelum Login           -->
+  <!-- 1. TAMPILAN LOGIN (SUPABASE AUTH) - Proteksi Dashboard                     -->
   <!-- ========================================================================= -->
-  <div id="loginView" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-hospital-800 to-slate-900">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden fade-in">
+  <div id="loginView" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-[#0b132b]">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden fade-in">
       
-      <!-- Header Kartu Login -->
-      <div class="bg-gradient-to-r from-hospital-600 to-brand-600 p-8 text-white text-center relative overflow-hidden">
-        <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-white/10 rounded-full blur-xl"></div>
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md mb-4 shadow-inner">
-          <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Header Login -->
+      <div class="bg-gradient-to-br from-[#0f172a] to-[#1e293b] p-8 text-white text-center relative overflow-hidden">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shadow-inner mb-4 border border-white/10">
+          <svg class="w-9 h-9 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
           </svg>
         </div>
-        <h2 class="text-xl font-bold tracking-tight">RSUD dr. R.T. Notopuro</h2>
-        <p class="text-hospital-100 text-sm mt-1 font-medium">Sistem Inventaris Logistik Tata Usaha</p>
+        <h2 class="text-xl font-extrabold tracking-tight">RSUD dr. R.T. Notopuro</h2>
+        <p class="text-xs text-slate-300 mt-1 uppercase tracking-widest font-semibold">Sistem Inventaris Tata Usaha</p>
       </div>
 
       <!-- Form Login -->
       <form id="loginForm" class="p-8 space-y-5">
         <div>
           <label for="loginEmail" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Email Pegawai</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
-              </svg>
-            </div>
-            <input type="email" id="loginEmail" required placeholder="nama@rsudnotopuro.id"
-              class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
-          </div>
+          <input type="email" id="loginEmail" required placeholder="nama@rsudnotopuro.id"
+            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
         </div>
 
         <div>
           <label for="loginPassword" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Kata Sandi</label>
           <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-              </svg>
-            </div>
             <input type="password" id="loginPassword" required placeholder="••••••••"
-              class="w-full pl-10 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
-            <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 text-xs">
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition pr-14" />
+            <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-xs font-semibold text-slate-400 hover:text-slate-600">
               Lihat
             </button>
           </div>
         </div>
 
-        <!-- Notifikasi Error Login -->
-        <div id="loginErrorAlert" class="hidden p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-start gap-2">
-          <svg class="w-4 h-4 text-rose-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Alert Error Login -->
+        <div id="loginErrorAlert" class="hidden p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center gap-2">
+          <svg class="w-4 h-4 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           <span id="loginErrorText">Email atau kata sandi tidak sesuai.</span>
         </div>
 
         <button type="submit" id="loginSubmitBtn"
-          class="w-full py-3.5 px-4 bg-gradient-to-r from-hospital-600 to-brand-600 hover:from-hospital-700 hover:to-brand-700 text-white font-semibold rounded-xl text-sm shadow-lg shadow-hospital-500/25 transition-all flex items-center justify-center gap-2">
+          class="w-full py-3.5 px-4 bg-[#0f172a] hover:bg-[#1e293b] text-white font-bold rounded-xl text-sm shadow-lg shadow-slate-900/20 transition-all flex items-center justify-center gap-2">
           <span id="loginBtnSpinner" class="hidden">
             <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
             </svg>
           </span>
-          <span id="loginBtnText">Masuk ke Sistem Inventaris</span>
+          <span id="loginBtnText">Masuk ke Dashboard</span>
         </button>
 
-        <div class="text-center pt-2">
-          <p class="text-xs text-slate-400">
-            Akses terbatas untuk Staf Logistik & Kepala Bagian Tata Usaha RSUD dr. R.T. Notopuro Sidoarjo.
-          </p>
-        </div>
+        <p class="text-center text-[11px] text-slate-400 pt-2">
+          Otorisasi khusus Staf Logistik & Kepala Bagian Tata Usaha RSUD dr. R.T. Notopuro.
+        </p>
       </form>
     </div>
   </div>
 
 
   <!-- ========================================================================= -->
-  <!-- 2. DASHBOARD ADMIN UTAMA (Hanya Tampil Setelah Login Berhasil)             -->
+  <!-- 2. DASHBOARD DUA KOLOM (SIDEBAR TETAP BIRU GELAP + AREA KONTEN TERANG)    -->
   <!-- ========================================================================= -->
-  <div id="dashboardView" class="hidden min-h-screen flex flex-col fade-in">
+  <div id="dashboardView" class="hidden min-h-screen flex flex-col md:flex-row fade-in">
     
-    <!-- Top Navigation Bar -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 gap-4">
-          
-          <!-- Logo & Info Instansi -->
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-hospital-600 to-brand-500 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-hospital-500/20">
-              TU
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h1 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">RSUD dr. R.T. Notopuro</h1>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-brand-100 text-brand-800">Tata Usaha</span>
-              </div>
-              <p class="text-xs text-slate-500 hidden sm:block">Sistem Informasi Inventaris Logistik Masuk-Keluar Barang</p>
-            </div>
-          </div>
-
-          <!-- Profil User & Tombol Logout -->
-          <div class="flex items-center gap-3">
-            <div class="hidden md:flex flex-col text-right">
-              <span id="userEmailBadge" class="text-xs font-semibold text-slate-700">user@rsudnotopuro.id</span>
-              <span class="text-[10px] text-slate-400">Pegawai Terautentikasi</span>
-            </div>
-            
-            <a href="/api/barang" target="_blank" title="Akses JSON Endpoint" 
-              class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-medium transition">
-              <svg class="w-3.5 h-3.5 text-hospital-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-              </svg>
-              <span>API JSON</span>
-            </a>
-
-            <button id="logoutBtn"
-              class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-semibold transition shadow-sm">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-              </svg>
-              <span>Logout</span>
-            </button>
-          </div>
-
-        </div>
-      </div>
-    </header>
-
-    <!-- Konten Dashboard -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- ======================================================================= -->
+    <!-- KOLOM KIRI: SIDEBAR NAVIGASI (Biru Gelap #0f172a)                        -->
+    <!-- ======================================================================= -->
+    <aside class="w-full md:w-64 lg:w-72 bg-sidebar text-slate-300 md:h-screen md:sticky md:top-0 flex flex-col justify-between p-6 z-30 shadow-2xl flex-shrink-0">
       
-      <!-- Baris Tindakan Utama: Judul & Tombol Tambah Barang -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Katalog Inventaris Logistik</h2>
-          <p class="text-sm text-slate-500 mt-1">Kelola stok ATK, cetakan rekam medis, dan barang logistik operasional TU.</p>
+      <!-- Bagian Atas Sidebar -->
+      <div>
+        <!-- Judul Aplikasi di Kiri Atas -->
+        <div class="flex items-center gap-3.5 pb-6 border-b border-slate-800">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-sky-500/25">
+            TU
+          </div>
+          <div class="overflow-hidden">
+            <h1 class="text-sm font-bold text-white tracking-tight leading-tight truncate">RSUD dr. R.T. Notopuro</h1>
+            <p class="text-[11px] text-sky-400 font-semibold tracking-wide uppercase">Inventaris Tata Usaha</p>
+          </div>
         </div>
 
-        <!-- Tombol Utama: Tambah Barang Baru -->
+        <!-- Profil Pegawai Login -->
+        <div class="mt-5 mb-6 p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-bold border border-sky-500/30">
+            TU
+          </div>
+          <div class="flex-1 min-w-0">
+            <p id="sidebarUserEmail" class="text-xs font-semibold text-white truncate">pegawai@rsudnotopuro.id</p>
+            <p class="text-[10px] text-slate-400">Staf Terautentikasi</p>
+          </div>
+        </div>
+
+        <!-- Daftar Menu Vertikal dengan Ikon -->
+        <nav class="space-y-1.5">
+          <!-- Menu 1: Home Dashboard (Active) -->
+          <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-sky-600 text-white shadow-md shadow-sky-600/30 transition">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+            <span>Home Dashboard</span>
+          </a>
+
+          <!-- Menu 2: Tambah Barang (Buka Modal) -->
+          <button id="sidebarAddBtn" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Tambah Barang</span>
+          </button>
+
+          <!-- Menu 3: Mutasi Masuk -->
+          <a href="#mutasiMasuk" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+            </svg>
+            <span>Mutasi Masuk / Drop</span>
+          </a>
+
+          <!-- Menu 4: Mutasi Keluar -->
+          <a href="#mutasiKeluar" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <span>Distribusi / SBBK</span>
+          </a>
+
+          <!-- Menu 5: Endpoint JSON API -->
+          <a href="/api/barang" target="_blank" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+            </svg>
+            <span>Endpoint /api/barang</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Tautan 'Log out' di Sudut Paling Bawah Sidebar -->
+      <div class="pt-6 border-t border-slate-800">
+        <button id="logoutBtn"
+          class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition">
+          <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          <span>Log out</span>
+        </button>
+      </div>
+
+    </aside>
+
+
+    <!-- ======================================================================= -->
+    <!-- KOLOM KANAN: AREA KONTEN UTAMA (Warna Terang)                           -->
+    <!-- ======================================================================= -->
+    <main class="flex-1 bg-slate-50 min-h-screen p-6 sm:p-10 space-y-8 overflow-y-auto">
+      
+      <!-- Header Konten Utama: Teks "Home Dashboard" Berukuran Besar -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Home Dashboard</h2>
+          <p class="text-sm text-slate-500 mt-1">Sistem Pemantauan Logistik Tata Usaha RSUD dr. R.T. Notopuro Sidoarjo</p>
+        </div>
+
+        <!-- Tombol Tambah Barang Baru -->
         <button id="openAddModalBtn"
-          class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-hospital-600 to-brand-600 hover:from-hospital-700 hover:to-brand-700 text-white font-semibold rounded-xl text-sm shadow-md shadow-hospital-600/20 hover:shadow-lg transition-all">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          class="inline-flex items-center gap-2 px-5 py-3 bg-[#0f172a] hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-md shadow-slate-900/10 transition-all hover:shadow-lg">
+          <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
           <span>Tambah Barang Baru</span>
         </button>
       </div>
 
-      <!-- Kartu Ringkasan Statistik -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <!-- ===================================================================== -->
+      <!-- GRAFIK UTAMA: KARTU PUTIH LEBAR DENGAN BAR CHART VERTICAL (CHART.JS)   -->
+      <!-- Batang abu-abu terang dengan satu batang disorot warna biru gelap       -->
+      <!-- ===================================================================== -->
+      <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 md:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-slate-100 gap-2">
+          <div>
+            <h3 class="text-base font-bold text-slate-800">Distribusi Kuantitas Stok per Kategori</h3>
+            <p class="text-xs text-slate-400">Total volume barang logistik TU yang tersimpan di gudang</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <span class="inline-block w-3 h-3 rounded-sm bg-slate-200"></span> Kategori Standar
+            <span class="inline-block w-3 h-3 rounded-sm bg-[#0f172a] ml-2"></span> Kategori Terbanyak (Highlight)
+          </div>
+        </div>
+
+        <!-- Canvas Chart.js -->
+        <div class="relative h-64 md:h-72 w-full">
+          <canvas id="mainChart"></canvas>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- KARTU STATISTIK: DUA KARTU SEJAJAR HORISONTAL                         -->
+      <!-- Progress bar tebal berwarna ungu & biru tepat di atas angka metrik     -->
+      <!-- ===================================================================== -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        <!-- Total Jenis Barang -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-hospital-50 border border-hospital-100 flex items-center justify-center text-hospital-600 flex-shrink-0">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-            </svg>
+        <!-- Kartu Statistik 1: Progress Bar Tebal Ungu -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Ketersediaan Stok Fisik</h3>
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+              Optimal
+            </span>
           </div>
-          <div>
-            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Item</p>
-            <h3 id="statTotalItem" class="text-2xl font-extrabold text-slate-800 mt-0.5">0</h3>
-          </div>
-        </div>
 
-        <!-- Total Stok Fisik -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 flex-shrink-0">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-            </svg>
+          <!-- Progress Bar Tebal Berwarna Ungu -->
+          <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden mb-4">
+            <div id="statProgressBarPurple" class="h-full bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full transition-all duration-700" style="width: 78%;"></div>
           </div>
-          <div>
-            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Stok Fisik</p>
-            <h3 id="statTotalStok" class="text-2xl font-extrabold text-slate-800 mt-0.5">0</h3>
-          </div>
-        </div>
 
-        <!-- Stok Kritis / Habis -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-            </svg>
-          </div>
-          <div>
-            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Perlu Restock</p>
-            <h3 id="statStokKritis" class="text-2xl font-extrabold text-amber-600 mt-0.5">0</h3>
+          <!-- Angka Metrik Ringkasan Stok (di bawah progress bar) -->
+          <div class="flex items-baseline justify-between">
+            <div>
+              <div id="metricTotalStok" class="text-3xl font-black text-slate-800">0</div>
+              <p class="text-xs text-slate-500 mt-0.5">Total kuantitas barang siap pakai di gudang</p>
+            </div>
+            <div class="text-right">
+              <span id="metricPersenAman" class="text-lg font-extrabold text-purple-600">78%</span>
+              <p class="text-[11px] text-slate-400">Rasio Aman</p>
+            </div>
           </div>
         </div>
 
-        <!-- Kategori Aktif -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-            </svg>
+        <!-- Kartu Statistik 2: Progress Bar Tebal Biru -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Katalog & Stok Perlu Restock</h3>
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
+              Monitoring
+            </span>
           </div>
-          <div>
-            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kategori Aktif</p>
-            <h3 id="statTotalKategori" class="text-2xl font-extrabold text-slate-800 mt-0.5">0</h3>
+
+          <!-- Progress Bar Tebal Berwarna Biru -->
+          <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden mb-4">
+            <div id="statProgressBarBlue" class="h-full bg-gradient-to-r from-sky-500 to-blue-600 rounded-full transition-all duration-700" style="width: 22%;"></div>
+          </div>
+
+          <!-- Angka Metrik Ringkasan Stok (di bawah progress bar) -->
+          <div class="flex items-baseline justify-between">
+            <div>
+              <div id="metricTotalItem" class="text-3xl font-black text-slate-800">0</div>
+              <p class="text-xs text-slate-500 mt-0.5">Jenis variasi barang logistik aktif</p>
+            </div>
+            <div class="text-right">
+              <span id="metricKritis" class="text-lg font-extrabold text-amber-600">0 Kritis</span>
+              <p class="text-[11px] text-slate-400">Batas Minimum</p>
+            </div>
           </div>
         </div>
 
-      </div>
+      </section>
 
-      <!-- Bilah Pencarian & Filter Kategori -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm mb-6 flex flex-col md:flex-row gap-3">
-        <!-- Pencarian -->
-        <div class="flex-1 relative">
-          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
+      <!-- ===================================================================== -->
+      <!-- TABEL DATA TERBAGI: DUA BAGIAN BERDAMPINGAN (BORDERLESS)              -->
+      <!-- ===================================================================== -->
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Tabel Bagian 1: Ringkasan Katalog Logistik TU -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-base font-bold text-slate-800">Katalog Barang Terkini</h3>
+              <p class="text-xs text-slate-400">Daftar inventaris umum Tata Usaha</p>
+            </div>
+            <button id="refreshDataBtn" class="text-xs font-semibold text-sky-600 hover:text-sky-800 flex items-center gap-1">
+              🔄 Muat Ulang
+            </button>
           </div>
-          <input type="text" id="searchInput" placeholder="Cari nama barang, kode, atau rak..."
-            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+
+          <!-- Tabel Borderless -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-none">
+              <thead class="text-xs uppercase font-semibold text-slate-400 border-b border-slate-100">
+                <tr>
+                  <th class="py-3 px-3">Kode</th>
+                  <th class="py-3 px-3">Nama Barang</th>
+                  <th class="py-3 px-3">Kategori</th>
+                  <th class="py-3 px-3 text-right">Stok</th>
+                </tr>
+              </thead>
+              <tbody id="tableKatalogBody" class="divide-y divide-slate-50 text-slate-700">
+                <tr>
+                  <td colspan="4" class="py-8 text-center text-xs text-slate-400">Memuat data barang...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- Filter Kategori -->
-        <div class="w-full md:w-56">
-          <select id="kategoriFilter"
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition text-slate-700">
-            <option value="">Semua Kategori</option>
-          </select>
+        <!-- Tabel Bagian 2: Peringatan Stok Kritis & Perlu Restock -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-base font-bold text-slate-800">Peringatan Stok Kritis & Habis</h3>
+              <p class="text-xs text-slate-400">Barang yang memerlukan pengadaan / drop baru</p>
+            </div>
+            <span id="badgeJumlahKritis" class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+              0 Item
+            </span>
+          </div>
+
+          <!-- Tabel Borderless -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-none">
+              <thead class="text-xs uppercase font-semibold text-slate-400 border-b border-slate-100">
+                <tr>
+                  <th class="py-3 px-3">Kode</th>
+                  <th class="py-3 px-3">Nama Barang</th>
+                  <th class="py-3 px-3 text-center">Sisa</th>
+                  <th class="py-3 px-3 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody id="tableKritisBody" class="divide-y divide-slate-50 text-slate-700">
+                <tr>
+                  <td colspan="4" class="py-8 text-center text-xs text-slate-400">Memeriksa stok kritis...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- Filter Status Stok -->
-        <div class="w-full md:w-44">
-          <select id="statusFilter"
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition text-slate-700">
-            <option value="">Semua Status</option>
-            <option value="aman">Stok Aman</option>
-            <option value="kritis">Stok Kritis</option>
-            <option value="habis">Stok Habis</option>
-          </select>
-        </div>
-
-        <!-- Tombol Refresh -->
-        <button id="refreshTableBtn"
-          class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2">
-          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-          </svg>
-          <span class="hidden sm:inline">Refresh</span>
-        </button>
-      </div>
-
-      <!-- Tabel Daftar Barang -->
-      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-700">
-            <thead class="bg-slate-50/75 border-b border-slate-200 text-xs uppercase font-semibold text-slate-500">
-              <tr>
-                <th class="px-5 py-4">No</th>
-                <th class="px-5 py-4">Kode Barang</th>
-                <th class="px-5 py-4">Nama Barang</th>
-                <th class="px-5 py-4">Kategori</th>
-                <th class="px-5 py-4 text-center">Stok Fisik</th>
-                <th class="px-5 py-4">Satuan</th>
-                <th class="px-5 py-4">Lokasi Rak</th>
-                <th class="px-5 py-4 text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody id="barangTableBody" class="divide-y divide-slate-100">
-              <tr>
-                <td colspan="8" class="px-6 py-12 text-center text-slate-400">
-                  <div class="inline-flex items-center gap-2">
-                    <svg class="animate-spin w-5 h-5 text-hospital-600" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                    </svg>
-                    <span>Memuat data inventaris...</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      </section>
 
     </main>
   </div>
 
 
   <!-- ========================================================================= -->
-  <!-- 3. MODAL POP-UP INPUT BARANG BARU (INSERT SUPABASE)                        -->
+  <!-- 3. MODAL POP-UP TAMBAH BARANG (Direct INSERT ke Supabase)                 -->
   <!-- ========================================================================= -->
   <div id="addBarangModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
       
-      <!-- Modal Header -->
       <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-hospital-100 text-hospital-700 flex items-center justify-center">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-          </div>
-          <h3 class="font-bold text-slate-800 text-base">Tambah Barang Baru</h3>
-        </div>
+        <h3 class="font-bold text-slate-800 text-base">Tambah Barang Logistik Baru</h3>
         <button type="button" id="closeAddModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -372,101 +423,63 @@
         </button>
       </div>
 
-      <!-- Modal Body (Form) -->
       <form id="addBarangForm" class="p-6 space-y-4">
-        
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Kode Barang -->
           <div>
-            <label for="inputKode" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-              Kode Barang <span class="text-rose-500">*</span>
-            </label>
-            <input type="text" id="inputKode" required placeholder="misal: TU-ATK-005"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kode Barang *</label>
+            <input type="text" id="inputKode" required placeholder="TU-ATK-005"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
           </div>
-
-          <!-- Kategori -->
           <div>
-            <label for="inputKategori" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-              Kategori <span class="text-rose-500">*</span>
-            </label>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kategori *</label>
             <select id="inputKategori" required
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition">
-              <option value="">Pilih Kategori...</option>
-              <option value="Alat Tulis Kantor">Alat Tulis Kantor (ATK)</option>
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition">
+              <option value="">Pilih...</option>
+              <option value="Alat Tulis Kantor">Alat Tulis Kantor</option>
               <option value="Cetakan & Formulir">Cetakan & Formulir RS</option>
-              <option value="Kebersihan & Sanitasi Non-Medis">Kebersihan & Sanitasi Non-Medis</option>
-              <option value="Perlengkapan Komputer & IT">Perlengkapan Komputer & IT</option>
-              <option value="Perlengkapan Kantor & RT">Perlengkapan Kantor & RT</option>
+              <option value="Kebersihan & Sanitasi Non-Medis">Kebersihan & Sanitasi</option>
+              <option value="Perlengkapan IT">Perlengkapan IT</option>
               <option value="Lain-lain">Lain-lain</option>
             </select>
           </div>
         </div>
 
-        <!-- Nama Barang -->
         <div>
-          <label for="inputNama" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-            Nama Barang <span class="text-rose-500">*</span>
-          </label>
-          <input type="text" id="inputNama" required placeholder="misal: Kertas HVS F4 75 GSM Sinar Dunia"
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Barang *</label>
+          <input type="text" id="inputNama" required placeholder="misal: Kertas HVS A4 75 GSM"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <!-- Stok Awal -->
+        <div class="grid grid-cols-3 gap-3">
           <div>
-            <label for="inputStok" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-              Stok Awal <span class="text-rose-500">*</span>
-            </label>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Stok *</label>
             <input type="number" id="inputStok" required min="0" value="0"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
           </div>
-
-          <!-- Satuan -->
           <div>
-            <label for="inputSatuan" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-              Satuan <span class="text-rose-500">*</span>
-            </label>
-            <input type="text" id="inputSatuan" required placeholder="rim / pcs / dus"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Satuan *</label>
+            <input type="text" id="inputSatuan" required placeholder="rim / pcs"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
           </div>
-
-          <!-- Stok Minimum -->
           <div>
-            <label for="inputStokMin" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-              Batas Minimum
-            </label>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Min. Stok</label>
             <input type="number" id="inputStokMin" min="0" value="5"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
           </div>
         </div>
 
-        <!-- Lokasi Rak Penyimpanan -->
         <div>
-          <label for="inputRak" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-            Lokasi Rak / Penyimpanan
-          </label>
-          <input type="text" id="inputRak" placeholder="misal: Rak A-2 Logistik TU"
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition" />
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Lokasi Rak</label>
+          <input type="text" id="inputRak" placeholder="Rak A-1 Logistik TU"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
         </div>
 
-        <!-- Keterangan Tambahan -->
-        <div>
-          <label for="inputKeterangan" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-            Keterangan (Opsional)
-          </label>
-          <textarea id="inputKeterangan" rows="2" placeholder="Catatan spesifikasi pengadaan..."
-            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-hospital-500 focus:bg-white outline-none transition"></textarea>
-        </div>
-
-        <!-- Tombol Aksi Modal -->
         <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-          <button type="button" id="cancelAddModalBtn"
-            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+          <button type="button" id="cancelAddModalBtn" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
             Batal
           </button>
           <button type="submit" id="saveBarangBtn"
-            class="px-5 py-2.5 bg-gradient-to-r from-hospital-600 to-brand-600 hover:from-hospital-700 hover:to-brand-700 text-white font-semibold rounded-xl text-sm shadow-md shadow-hospital-500/25 transition flex items-center gap-2">
+            class="px-5 py-2.5 bg-[#0f172a] hover:bg-slate-800 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center gap-2">
             <span id="saveBtnSpinner" class="hidden">
               <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -476,64 +489,36 @@
             <span id="saveBtnText">Simpan ke Supabase</span>
           </button>
         </div>
-
       </form>
     </div>
   </div>
 
 
   <!-- ========================================================================= -->
-  <!-- 4. WIDGET NOTIFIKASI TOAST (Success, Error, Info)                         -->
+  <!-- 4. TOAST CONTAINER                                                        -->
   <!-- ========================================================================= -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
 
   <!-- ========================================================================= -->
-  <!-- 5. LOGIKA JAVASCRIPT FRONTEND LENGKAP                                     -->
+  <!-- 5. JAVASCRIPT FRONTEND LENGKAP                                            -->
   <!-- ========================================================================= -->
   <script>
-    // State Aplikasi
     let supabaseClient = null;
     let currentUser = null;
+    let chartInstance = null;
     let barangList = [];
 
-    // =========================================================================
-    // A. SISTEM NOTIFIKASI TOAST
-    // =========================================================================
-    function showToast(message, type = 'success') {
+    // Toast Alert
+    function showToast(msg, type = 'success') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
-      
-      let bg = 'bg-slate-800 text-white border-slate-700';
-      let icon = `
-        <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-      `;
+      let bg = 'bg-slate-900 text-white border-slate-700';
+      if (type === 'error') bg = 'bg-rose-900 text-rose-100 border-rose-700';
+      else if (type === 'info') bg = 'bg-sky-900 text-sky-100 border-sky-700';
 
-      if (type === 'error') {
-        bg = 'bg-rose-900 text-rose-100 border-rose-700';
-        icon = `
-          <svg class="w-5 h-5 text-rose-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        `;
-      } else if (type === 'info') {
-        bg = 'bg-hospital-900 text-hospital-100 border-hospital-700';
-        icon = `
-          <svg class="w-5 h-5 text-hospital-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        `;
-      }
-
-      toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border ${bg} text-sm font-medium fade-in min-w-[280px] max-w-md`;
-      toast.innerHTML = `
-        ${icon}
-        <span class="flex-1">${message}</span>
-        <button class="text-white/60 hover:text-white text-xs ml-2" onclick="this.parentElement.remove()">✕</button>
-      `;
-
+      toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border ${bg} text-xs font-semibold fade-in min-w-[260px]`;
+      toast.innerHTML = `<span class="flex-1">${msg}</span><button class="text-white/60 hover:text-white" onclick="this.parentElement.remove()">✕</button>`;
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
@@ -542,121 +527,89 @@
       }, 4000);
     }
 
-    // =========================================================================
-    // B. INISIALISASI SUPABASE CLIENT JS
-    // =========================================================================
-    async function initSupabase() {
+    // Inisialisasi Supabase
+    async function initApp() {
       try {
-        // Ambil konfigurasi URL dan Anon Key dari Vercel endpoint /api/config
-        const configRes = await fetch('/api/config');
-        if (!configRes.ok) throw new Error('Gagal memuat konfigurasi Supabase dari backend.');
+        const res = await fetch('/api/config');
+        const config = await res.json();
         
-        const config = await configRes.json();
         if (!config.supabaseUrl || !config.supabaseAnonKey) {
-          throw new Error('Kredensial Supabase belum lengkap di Vercel.');
+          throw new Error('Kredensial Supabase tidak ditemukan.');
         }
 
         supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
-          auth: {
-            persistSession: true,
-            storageKey: 'situ_rsud_auth_token',
-          }
+          auth: { persistSession: true, storageKey: 'situ_session_token' }
         });
 
-        // Cek sesi login aktif saat pertama kali buka
+        // Cek sesi login
         const { data: { session } } = await supabaseClient.auth.getSession();
-        
         if (session && session.user) {
-          handleAuthSuccess(session.user, false);
+          showDashboard(session.user);
         } else {
-          showLoginScreen();
+          showLogin();
         }
 
-        // Daftarkan listener perubahan status auth
         supabaseClient.auth.onAuthStateChange((event, session) => {
           if (event === 'SIGNED_IN' && session?.user) {
-            handleAuthSuccess(session.user, true);
+            showDashboard(session.user);
           } else if (event === 'SIGNED_OUT') {
-            showLoginScreen();
+            showLogin();
           }
         });
 
       } catch (err) {
-        console.error('[Init Error]:', err);
-        showToast('Gagal inisialisasi: ' + err.message, 'error');
-        showLoginScreen();
+        console.error(err);
+        showToast('Koneksi Supabase error: ' + err.message, 'error');
+        showLogin();
       }
     }
 
-    function showLoginScreen() {
+    function showLogin() {
       currentUser = null;
       document.getElementById('loginView').classList.remove('hidden');
       document.getElementById('dashboardView').classList.add('hidden');
     }
 
-    function handleAuthSuccess(user, notify = true) {
+    function showDashboard(user) {
       currentUser = user;
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('dashboardView').classList.remove('hidden');
-      document.getElementById('userEmailBadge').innerText = user.email || 'Pegawai TU';
-      
-      if (notify) {
-        showToast(`Selamat datang, ${user.email}! Login berhasil.`, 'success');
-      }
-
-      loadBarang();
+      document.getElementById('sidebarUserEmail').innerText = user.email || 'Pegawai TU';
+      loadData();
     }
 
-    // =========================================================================
-    // C. EVENT LISTENER FORM LOGIN
-    // =========================================================================
-    const loginForm = document.getElementById('loginForm');
-    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
-    const loginBtnSpinner = document.getElementById('loginBtnSpinner');
-    const loginBtnText = document.getElementById('loginBtnText');
-    const loginErrorAlert = document.getElementById('loginErrorAlert');
-    const loginErrorText = document.getElementById('loginErrorText');
-
-    loginForm.addEventListener('submit', async (e) => {
+    // Login Form Submit
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      loginErrorAlert.classList.add('hidden');
-
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
+      const alertBox = document.getElementById('loginErrorAlert');
+      alertBox.classList.add('hidden');
 
-      if (!supabaseClient) {
-        loginErrorText.innerText = 'Koneksi Supabase belum siap. Tunggu beberapa detik lalu coba lagi.';
-        loginErrorAlert.classList.remove('hidden');
-        return;
-      }
+      const btn = document.getElementById('loginSubmitBtn');
+      const spinner = document.getElementById('loginBtnSpinner');
+      const text = document.getElementById('loginBtnText');
 
-      // Animasi tombol login
-      loginSubmitBtn.disabled = true;
-      loginBtnSpinner.classList.remove('hidden');
-      loginBtnText.innerText = 'Memverifikasi...';
+      btn.disabled = true;
+      spinner.classList.remove('hidden');
+      text.innerText = 'Memverifikasi...';
 
       try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
-
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        // Berhasil login -> listener onAuthStateChange akan mengalihkan ke dashboard
+        showToast('Login berhasil! Selamat datang.', 'success');
       } catch (err) {
-        console.error('[Login Error]:', err);
-        loginErrorText.innerText = err.message || 'Email atau kata sandi tidak valid.';
-        loginErrorAlert.classList.remove('hidden');
-        showToast('Login gagal: ' + (err.message || 'Periksa kembali kredensial Anda.'), 'error');
+        document.getElementById('loginErrorText').innerText = err.message || 'Login gagal';
+        alertBox.classList.remove('hidden');
+        showToast(err.message, 'error');
       } finally {
-        loginSubmitBtn.disabled = false;
-        loginBtnSpinner.classList.add('hidden');
-        loginBtnText.innerText = 'Masuk ke Sistem Inventaris';
+        btn.disabled = false;
+        spinner.classList.add('hidden');
+        text.innerText = 'Masuk ke Dashboard';
       }
     });
 
-    // Toggle Lihat Password
-    document.getElementById('togglePasswordBtn').addEventListener('click', function () {
+    document.getElementById('togglePasswordBtn').addEventListener('click', function() {
       const pwd = document.getElementById('loginPassword');
       if (pwd.type === 'password') {
         pwd.type = 'text';
@@ -667,278 +620,256 @@
       }
     });
 
-    // Logout Button
     document.getElementById('logoutBtn').addEventListener('click', async () => {
-      if (confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
-        if (supabaseClient) {
-          await supabaseClient.auth.signOut();
-        }
-        showToast('Anda telah logout dari sistem.', 'info');
+      if (confirm('Keluar dari sistem inventaris?')) {
+        await supabaseClient.auth.signOut();
+        showToast('Anda telah logout.', 'info');
       }
     });
 
-    // =========================================================================
-    // D. MEMUAT & MENAMPILKAN DATA BARANG DARI SUPABASE
-    // =========================================================================
-    async function loadBarang() {
-      const tbody = document.getElementById('barangTableBody');
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="8" class="px-6 py-12 text-center text-slate-400">
-            <div class="inline-flex items-center gap-2">
-              <svg class="animate-spin w-5 h-5 text-hospital-600" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-              </svg>
-              <span>Memperbarui data inventaris...</span>
-            </div>
-          </td>
-        </tr>
-      `;
-
+    // Memuat Data Barang
+    async function loadData() {
       try {
-        // Query langsung menggunakan Supabase Client JS (memanfaatkan token login user)
-        const { data, error } = await supabaseClient
-          .from('barang')
-          .select('*')
-          .order('nama', { ascending: true });
-
+        const { data, error } = await supabaseClient.from('barang').select('*').order('nama');
         if (error) throw error;
 
         barangList = data || [];
-        updateStatistics(barangList);
-        populateCategoryOptions(barangList);
-        renderTable(barangList);
+        updateMetrics(barangList);
+        renderChart(barangList);
+        renderTables(barangList);
 
       } catch (err) {
-        console.error('[Load Barang Error]:', err);
-        showToast('Gagal memuat barang: ' + err.message, 'error');
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="px-6 py-10 text-center text-rose-500 font-medium">
-              Gagal memuat data: ${err.message}
-            </td>
-          </tr>
-        `;
+        console.error(err);
+        showToast('Gagal memuat data: ' + err.message, 'error');
       }
     }
 
-    function updateStatistics(items) {
-      document.getElementById('statTotalItem').innerText = items.length;
+    // Hitung Metrik & Progress Bar
+    function updateMetrics(items) {
+      const totalItem = items.length;
+      const totalStok = items.reduce((sum, i) => sum + (Number(i.stok) || 0), 0);
       
-      const totalStok = items.reduce((sum, item) => sum + (Number(item.stok) || 0), 0);
-      document.getElementById('statTotalStok').innerText = totalStok.toLocaleString('id-ID');
-
-      const kritisCount = items.filter(item => {
-        const s = Number(item.stok) || 0;
-        const min = Number(item.stok_minimum) || 5;
+      const kritisItems = items.filter(i => {
+        const s = Number(i.stok) || 0;
+        const min = Number(i.stok_minimum) || 5;
         return s <= min;
-      }).length;
-      document.getElementById('statStokKritis').innerText = kritisCount;
-
-      const categories = new Set(items.map(i => i.kategori).filter(Boolean));
-      document.getElementById('statTotalKategori').innerText = categories.size;
-    }
-
-    function populateCategoryOptions(items) {
-      const select = document.getElementById('kategoriFilter');
-      const current = select.value;
-      const categories = Array.from(new Set(items.map(i => i.kategori).filter(Boolean))).sort();
-
-      select.innerHTML = '<option value="">Semua Kategori</option>';
-      categories.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat;
-        opt.textContent = cat;
-        if (cat === current) opt.selected = true;
-        select.appendChild(opt);
-      });
-    }
-
-    function renderTable(items) {
-      const tbody = document.getElementById('barangTableBody');
-      const search = document.getElementById('searchInput').value.toLowerCase().trim();
-      const kat = document.getElementById('kategoriFilter').value;
-      const stFilter = document.getElementById('statusFilter').value;
-
-      const filtered = items.filter(item => {
-        const matchSearch =
-          !search ||
-          (item.nama && item.nama.toLowerCase().includes(search)) ||
-          (item.kode_barang && item.kode_barang.toLowerCase().includes(search)) ||
-          (item.lokasi_rak && item.lokasi_rak.toLowerCase().includes(search));
-
-        const matchKat = !kat || item.kategori === kat;
-
-        const s = Number(item.stok) || 0;
-        const min = Number(item.stok_minimum) || 5;
-        let stStatus = 'aman';
-        if (s === 0) stStatus = 'habis';
-        else if (s <= min) stStatus = 'kritis';
-
-        const matchStatus = !stFilter || stStatus === stFilter;
-
-        return matchSearch && matchKat && matchStatus;
       });
 
-      if (filtered.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="px-6 py-12 text-center text-slate-400">
-              <svg class="w-10 h-10 mx-auto text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-              </svg>
-              <p class="font-medium">Tidak ada data barang yang sesuai.</p>
-              <p class="text-xs text-slate-400 mt-1">Gunakan tombol "Tambah Barang Baru" di atas untuk menambahkan item.</p>
-            </td>
-          </tr>
-        `;
-        return;
+      const amanCount = totalItem - kritisItems.length;
+      const rasioAman = totalItem > 0 ? Math.round((amanCount / totalItem) * 100) : 100;
+      const rasioKritis = totalItem > 0 ? Math.round((kritisItems.length / totalItem) * 100) : 0;
+
+      // Update Angka
+      document.getElementById('metricTotalStok').innerText = totalStok.toLocaleString('id-ID');
+      document.getElementById('metricTotalItem').innerText = totalItem;
+      document.getElementById('metricPersenAman').innerText = rasioAman + '%';
+      document.getElementById('metricKritis').innerText = kritisItems.length + ' Kritis';
+      document.getElementById('badgeJumlahKritis').innerText = kritisItems.length + ' Item';
+
+      // Update Progress Bar
+      document.getElementById('statProgressBarPurple').style.width = Math.max(rasioAman, 5) + '%';
+      document.getElementById('statProgressBarBlue').style.width = Math.max(rasioKritis, 8) + '%';
+    }
+
+    // Render Chart.js: Bar Chart Vertikal (Abu-abu terang + 1 bar disorot Biru Gelap)
+    function renderChart(items) {
+      const ctx = document.getElementById('mainChart').getContext('2d');
+      
+      // Agregasi kuantitas per kategori
+      const catMap = {};
+      items.forEach(i => {
+        const cat = i.kategori || 'Lain-lain';
+        catMap[cat] = (catMap[cat] || 0) + (Number(i.stok) || 0);
+      });
+
+      let labels = Object.keys(catMap);
+      let values = Object.values(catMap);
+
+      if (labels.length === 0) {
+        labels = ['ATK', 'Cetakan & Formulir', 'Kebersihan', 'Perlengkapan Komputer', 'Lain-lain'];
+        values = [150, 85, 45, 20, 10];
       }
 
-      tbody.innerHTML = filtered.map((item, idx) => {
-        const stok = Number(item.stok) || 0;
-        const min = Number(item.stok_minimum) || 5;
+      // Cari indeks dengan nilai tertinggi untuk disorot warna biru gelap (#0f172a)
+      const maxVal = Math.max(...values, 0);
+      const maxIndex = values.indexOf(maxVal);
 
-        // Badge Status Berwarna (Aman / Kritis / Habis)
-        let badgeHtml = `
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aman
-          </span>
-        `;
+      const backgroundColors = values.map((val, idx) => {
+        return idx === maxIndex ? '#0f172a' : '#e2e8f0'; // Biru gelap untuk highlight, abu-abu terang untuk lainnya
+      });
 
-        if (stok === 0) {
-          badgeHtml = `
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 animate-pulse">
-              <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Habis
-            </span>
-          `;
-        } else if (stok <= min) {
-          badgeHtml = `
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Kritis (${stok}/${min})
-            </span>
-          `;
+      const hoverBackgroundColors = values.map((val, idx) => {
+        return idx === maxIndex ? '#1e293b' : '#cbd5e1';
+      });
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Total Kuantitas Fisik',
+            data: values,
+            backgroundColor: backgroundColors,
+            hoverBackgroundColor: hoverBackgroundColors,
+            borderRadius: 8,
+            borderSkipped: false,
+            barThickness: 36,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#0f172a',
+              titleFont: { family: 'Plus Jakarta Sans', size: 12, weight: 'bold' },
+              bodyFont: { family: 'Plus Jakarta Sans', size: 12 },
+              padding: 10,
+              cornerRadius: 8,
+              callbacks: {
+                label: function(context) {
+                  return ' ' + context.parsed.y + ' unit barang';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: {
+                color: '#64748b',
+                font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }
+              }
+            },
+            y: {
+              border: { dash: [4, 4] },
+              grid: { color: '#f1f5f9' },
+              ticks: {
+                color: '#94a3b8',
+                font: { family: 'Plus Jakarta Sans', size: 10 }
+              }
+            }
+          }
         }
-
-        return `
-          <tr class="hover:bg-slate-50/80 transition-colors duration-150">
-            <td class="px-5 py-4 text-slate-400 text-xs">${idx + 1}</td>
-            <td class="px-5 py-4 font-mono font-semibold text-xs text-hospital-700">${item.kode_barang || '-'}</td>
-            <td class="px-5 py-4 font-semibold text-slate-800">${item.nama || '-'}</td>
-            <td class="px-5 py-4 text-xs">
-              <span class="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium">${item.kategori || 'Umum'}</span>
-            </td>
-            <td class="px-5 py-4 text-center font-bold text-slate-800 text-base">${stok}</td>
-            <td class="px-5 py-4 text-slate-500 text-xs">${item.satuan || 'pcs'}</td>
-            <td class="px-5 py-4 text-slate-500 text-xs">${item.lokasi_rak || '-'}</td>
-            <td class="px-5 py-4 text-center">${badgeHtml}</td>
-          </tr>
-        `;
-      }).join('');
+      });
     }
 
-    // Filter Listeners
-    document.getElementById('searchInput').addEventListener('input', () => renderTable(barangList));
-    document.getElementById('kategoriFilter').addEventListener('change', () => renderTable(barangList));
-    document.getElementById('statusFilter').addEventListener('change', () => renderTable(barangList));
-    document.getElementById('refreshTableBtn').addEventListener('click', loadBarang);
+    // Render Dua Tabel Data Berdampingan (Borderless)
+    function renderTables(items) {
+      // 1. Tabel Ringkasan Katalog Barang (Ambil 6 item pertama)
+      const katalogBody = document.getElementById('tableKatalogBody');
+      if (items.length === 0) {
+        katalogBody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-xs text-slate-400">Belum ada barang di database.</td></tr>`;
+      } else {
+        katalogBody.innerHTML = items.slice(0, 7).map(item => `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-2.5 px-3 font-mono text-xs font-bold text-slate-500">${item.kode_barang || '-'}</td>
+            <td class="py-2.5 px-3 font-semibold text-slate-800 text-xs">${item.nama || '-'}</td>
+            <td class="py-2.5 px-3 text-[11px] text-slate-500">${item.kategori || 'Umum'}</td>
+            <td class="py-2.5 px-3 text-right font-extrabold text-slate-800 text-xs">${item.stok} <span class="text-[10px] text-slate-400 font-normal">${item.satuan || ''}</span></td>
+          </tr>
+        `).join('');
+      }
 
-    // =========================================================================
-    // E. MODAL & OPERASI INSERT BARANG KE SUPABASE
-    // =========================================================================
-    const addBarangModal = document.getElementById('addBarangModal');
-    const openAddModalBtn = document.getElementById('openAddModalBtn');
-    const closeAddModalBtn = document.getElementById('closeAddModalBtn');
-    const cancelAddModalBtn = document.getElementById('cancelAddModalBtn');
-    const addBarangForm = document.getElementById('addBarangForm');
-    const saveBarangBtn = document.getElementById('saveBarangBtn');
-    const saveBtnSpinner = document.getElementById('saveBtnSpinner');
-    const saveBtnText = document.getElementById('saveBtnText');
+      // 2. Tabel Peringatan Kritis & Habis
+      const kritisBody = document.getElementById('tableKritisBody');
+      const kritisItems = items.filter(i => {
+        const s = Number(i.stok) || 0;
+        const min = Number(i.stok_minimum) || 5;
+        return s <= min;
+      });
+
+      if (kritisItems.length === 0) {
+        kritisBody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-xs text-emerald-600 font-medium">✅ Seluruh stok barang dalam kondisi aman!</td></tr>`;
+      } else {
+        kritisBody.innerHTML = kritisItems.slice(0, 7).map(item => {
+          const s = Number(item.stok) || 0;
+          const isHabis = s === 0;
+          const statusBadge = isHabis
+            ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200">Habis</span>`
+            : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Kritis</span>`;
+
+          return `
+            <tr class="hover:bg-slate-50/80 transition-colors">
+              <td class="py-2.5 px-3 font-mono text-xs font-bold text-slate-500">${item.kode_barang || '-'}</td>
+              <td class="py-2.5 px-3 font-semibold text-slate-800 text-xs">${item.nama || '-'}</td>
+              <td class="py-2.5 px-3 text-center font-extrabold ${isHabis ? 'text-rose-600' : 'text-amber-600'} text-xs">${item.stok}</td>
+              <td class="py-2.5 px-3 text-right">${statusBadge}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    // Modal Control
+    const modal = document.getElementById('addBarangModal');
+    const form = document.getElementById('addBarangForm');
 
     function openModal() {
-      addBarangForm.reset();
-      addBarangModal.classList.remove('hidden');
+      form.reset();
+      modal.classList.remove('hidden');
       document.getElementById('inputKode').focus();
     }
-
     function closeModal() {
-      addBarangModal.classList.add('hidden');
+      modal.classList.add('hidden');
     }
 
-    openAddModalBtn.addEventListener('click', openModal);
-    closeAddModalBtn.addEventListener('click', closeModal);
-    cancelAddModalBtn.addEventListener('click', closeModal);
+    document.getElementById('openAddModalBtn').addEventListener('click', openModal);
+    document.getElementById('sidebarAddBtn').addEventListener('click', openModal);
+    document.getElementById('closeAddModalBtn').addEventListener('click', closeModal);
+    document.getElementById('cancelAddModalBtn').addEventListener('click', closeModal);
+    document.getElementById('refreshDataBtn').addEventListener('click', loadData);
 
-    // Klik di luar modal untuk menutup
-    addBarangModal.addEventListener('click', (e) => {
-      if (e.target === addBarangModal) closeModal();
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
     });
 
-    // SUBMIT: INSERT KE SUPABASE
-    addBarangForm.addEventListener('submit', async (e) => {
+    // Form INSERT Supabase
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const saveBtn = document.getElementById('saveBarangBtn');
+      const spinner = document.getElementById('saveBtnSpinner');
+      const text = document.getElementById('saveBtnText');
 
-      if (!supabaseClient) {
-        showToast('Koneksi Supabase belum siap.', 'error');
-        return;
-      }
-
-      const kode = document.getElementById('inputKode').value.trim();
-      const nama = document.getElementById('inputNama').value.trim();
-      const kategori = document.getElementById('inputKategori').value;
-      const stok = parseInt(document.getElementById('inputStok').value, 10) || 0;
-      const satuan = document.getElementById('inputSatuan').value.trim() || 'pcs';
-      const stokMin = parseInt(document.getElementById('inputStokMin').value, 10) || 5;
-      const rak = document.getElementById('inputRak').value.trim();
-      const keterangan = document.getElementById('inputKeterangan').value.trim();
-
-      // State tombol loading
-      saveBarangBtn.disabled = true;
-      saveBtnSpinner.classList.remove('hidden');
-      saveBtnText.innerText = 'Menyimpan ke Supabase...';
+      saveBtn.disabled = true;
+      spinner.classList.remove('hidden');
+      text.innerText = 'Menyimpan...';
 
       try {
         const newRecord = {
-          kode_barang: kode,
-          nama: nama,
-          kategori: kategori,
-          stok: stok,
-          satuan: satuan,
-          stok_minimum: stokMin,
-          lokasi_rak: rak,
-          keterangan: keterangan,
+          kode_barang: document.getElementById('inputKode').value.trim(),
+          nama: document.getElementById('inputNama').value.trim(),
+          kategori: document.getElementById('inputKategori').value,
+          stok: parseInt(document.getElementById('inputStok').value, 10) || 0,
+          satuan: document.getElementById('inputSatuan').value.trim() || 'pcs',
+          stok_minimum: parseInt(document.getElementById('inputStokMin').value, 10) || 5,
+          lokasi_rak: document.getElementById('inputRak').value.trim(),
         };
 
-        // Eksekusi INSERT langsung ke tabel 'barang' via Supabase Client JS
-        const { data, error } = await supabaseClient
-          .from('barang')
-          .insert([newRecord])
-          .select();
-
+        const { error } = await supabaseClient.from('barang').insert([newRecord]);
         if (error) throw error;
 
-        // Berhasil!
-        showToast(`Barang "${nama}" (${kode}) berhasil ditambahkan!`, 'success');
+        showToast(`Barang "${newRecord.nama}" berhasil disimpan!`, 'success');
         closeModal();
-        addBarangForm.reset();
-        
-        // Otomatis refresh data tabel
-        await loadBarang();
+        form.reset();
+        await loadData();
 
       } catch (err) {
-        console.error('[Insert Error]:', err);
-        showToast('Gagal menyimpan barang: ' + (err.message || 'Terjadi kesalahan database.'), 'error');
+        console.error(err);
+        showToast('Gagal simpan barang: ' + err.message, 'error');
       } finally {
-        saveBarangBtn.disabled = false;
-        saveBtnSpinner.classList.add('hidden');
-        saveBtnText.innerText = 'Simpan ke Supabase';
+        saveBtn.disabled = false;
+        spinner.classList.add('hidden');
+        text.innerText = 'Simpan ke Supabase';
       }
     });
 
-    // Inisialisasi saat DOM siap
-    window.addEventListener('DOMContentLoaded', initSupabase);
+    window.addEventListener('DOMContentLoaded', initApp);
   </script>
-
 </body>
 </html>
