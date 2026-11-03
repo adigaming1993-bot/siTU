@@ -402,8 +402,8 @@
               <thead class="text-rose-900 font-bold uppercase tracking-wider border-b border-rose-200/60">
                 <tr>
                   <th class="py-2.5 px-3">Nama Barang</th>
-                  <th class="py-2.5 px-3">Nama Peminjam</th>
-                  <th class="py-2.5 px-3">Unit / Ruangan</th>
+                  <th class="py-2.5 px-3">Peminjam & Unit</th>
+                  <th class="py-2.5 px-3">Penanggung Jawab</th>
                   <th class="py-2.5 px-3">Batas Kembali</th>
                   <th class="py-2.5 px-3 text-center">Bukti TTD</th>
                   <th class="py-2.5 px-3">Status Telat</th>
@@ -705,12 +705,14 @@
         <!-- Tabel Rekapitulasi Riwayat Peminjaman Aset (Full-Width) -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 overflow-hidden">
           <div class="overflow-x-auto">
-            <table id="tableRiwayatLaporan" class="w-full text-left text-xs border-collapse min-w-[760px]">
+            <table id="tableRiwayatLaporan" class="w-full text-left text-xs border-collapse min-w-[860px]">
               <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] border-b border-slate-200">
                 <tr>
                   <th class="py-3 px-3 text-center w-10">No</th>
                   <th class="py-3 px-3">Barang & Kode</th>
-                  <th class="py-3 px-3">Peminjam & Unit</th>
+                  <th class="py-3 px-3">Peminjam (Pemohon)</th>
+                  <th class="py-3 px-3">Unit / Ruangan</th>
+                  <th class="py-3 px-3">Penanggung Jawab</th>
                   <th class="py-3 px-3">Jumlah</th>
                   <th class="py-3 px-3">Tgl Pinjam</th>
                   <th class="py-3 px-3">Batas Kembali</th>
@@ -721,7 +723,7 @@
               </thead>
               <tbody id="laporanTableBody" class="divide-y divide-slate-100 text-slate-700">
                 <tr>
-                  <td colspan="9" class="py-8 text-center text-xs text-slate-400">Memuat data riwayat peminjaman...</td>
+                  <td colspan="11" class="py-8 text-center text-xs text-slate-400">Memuat data riwayat peminjaman...</td>
                 </tr>
               </tbody>
             </table>
@@ -1043,12 +1045,12 @@
         </form>
         </div>
 
-        <!-- Bagian 2: Daftar Staf & Mekanisme Nonaktif (Soft Delete) - TANPA TOMBOL HAPUS -->
+        <!-- Bagian 2: Daftar Staf & Manajemen Akses Pengguna -->
         <div class="p-6 bg-slate-50 border-t border-slate-200/80 space-y-3">
           <div class="flex items-center justify-between">
             <div>
               <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Daftar Staf & Status Akses</h4>
-              <p class="text-[11px] text-slate-500">Gunakan nonaktifkan akses untuk staf yang pindah tugas agar audit trail mutasi terjaga.</p>
+              <p class="text-[11px] text-slate-500">Kelola status akses aktif/nonaktif atau hapus akun staf dari sistem.</p>
             </div>
             <button type="button" onclick="loadRegisteredUsers()" class="text-xs text-purple-700 hover:text-purple-900 font-bold flex items-center gap-1">
               🔄 Refresh Staf
@@ -1062,7 +1064,7 @@
                   <th class="py-2.5 px-3">Pegawai & NIP</th>
                   <th class="py-2.5 px-3">Peran Akses</th>
                   <th class="py-2.5 px-3">Status</th>
-                  <th class="py-2.5 px-3 text-right">Aksi Akses</th>
+                  <th class="py-2.5 px-3 text-right min-w-[170px]">Aksi & Hapus</th>
                 </tr>
               </thead>
               <tbody id="userListTableBody" class="divide-y divide-slate-100">
@@ -1074,7 +1076,7 @@
           </div>
 
           <p class="text-[10px] text-slate-400 italic">
-            * Larangan Hapus Fisik: Data pengguna tidak dapat dihapus secara permanen demi integritas foreign key pada laporan mutasi dan riwayat persetujuan logistik TU.
+            * Tombol Hapus Akun akan menghapus baris profil staf dari database. Pastikan tidak ada transaksi aktif sebelum menghapus.
           </p>
         </div>
       </div>
@@ -1126,6 +1128,19 @@
             </div>
           </div>
 
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Penanggung Jawab / Staf yang Menyerahkan *</label>
+            <div class="relative">
+              <input type="text" id="pinjamPenanggungJawab" required placeholder="Nama Petugas TU Logistik"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition pr-28" />
+              <span class="absolute right-2.5 top-2.5 text-[10px] text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-200">
+                Petugas TU
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1 italic">
+              * Otomatis terisi nama staf TU yang sedang login di sistem.
+            </p>
+          </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Unit *</label>
@@ -1232,6 +1247,7 @@
   <script>
     let supabaseClient = null;
     let currentUser = null;
+    let currentUserProfile = null;
     let chartInstance = null;
     let barangList = [];
     let peminjamanList = [];
@@ -1306,6 +1322,7 @@
 
     function showLogin() {
       currentUser = null;
+      currentUserProfile = null;
       closeMobileSidebar();
       document.getElementById('loginView').classList.remove('hidden');
       document.getElementById('dashboardView').classList.add('hidden');
@@ -1324,7 +1341,7 @@
 
     async function loadUserProfile(userId) {
       try {
-        const { data } = await supabaseClient.from('profil_user').select('nama_lengkap, role, jabatan, is_active').eq('id', userId).single();
+        const { data } = await supabaseClient.from('profil_user').select('nama_lengkap, role, jabatan, is_active, email').eq('id', userId).single();
         if (data) {
           if (data.is_active === false) {
             await supabaseClient.auth.signOut();
@@ -1332,6 +1349,7 @@
             showToast('Akun Anda telah dinonaktifkan', 'error');
             return;
           }
+          currentUserProfile = data;
           document.getElementById('sidebarUserRole').innerText = `${data.role === 'kepala_tu' ? 'Kepala TU' : 'Staf Gudang'} (${data.nama_lengkap || ''})`;
         }
       } catch (e) {
@@ -1543,8 +1561,14 @@
                   <span class="font-bold text-slate-900 block">${namaBarang}</span>
                   <span class="text-[10px] text-slate-500 font-mono">${kodeBarang}</span>
                 </td>
-                <td class="py-2.5 px-3 font-semibold text-rose-950">${item.nama_peminjam || '-'}</td>
-                <td class="py-2.5 px-3 text-slate-600">${item.unit_ruangan || '-'}</td>
+                <td class="py-2.5 px-3">
+                  <span class="font-semibold text-rose-950 block">${item.nama_peminjam || '-'}</span>
+                  <span class="text-[10px] text-slate-500">${item.unit_ruangan || '-'}</span>
+                </td>
+                <td class="py-2.5 px-3 text-slate-700">
+                  <span class="font-semibold text-xs text-indigo-950 block">${item.penanggung_jawab || 'Petugas TU'}</span>
+                  <span class="text-[10px] text-slate-400">Staf Penyerah</span>
+                </td>
                 <td class="py-2.5 px-3 font-mono text-slate-600">${batas.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
                 <td class="py-2.5 px-3 text-center">
                   ${item.ttd_peminjam ? `
@@ -1575,49 +1599,6 @@
           noOverdueNotice.classList.remove('hidden');
         }
 
-        // Render Tabel Riwayat Peminjaman di dalam Modal Peminjaman
-        const riwayatTbody = document.getElementById('riwayatPinjamTableBody');
-        if (riwayatTbody) {
-          if (peminjamanList.length === 0) {
-            riwayatTbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-xs text-slate-400">Belum ada catatan peminjaman aset.</td></tr>`;
-          } else {
-            riwayatTbody.innerHTML = peminjamanList.map(item => {
-              const batas = new Date(item.batas_waktu_kembali);
-              const isOverdue = batas < now;
-              const namaBarang = item.barang?.nama || 'Barang Logistik';
-              const kodeBarang = item.barang?.kode_barang || '-';
-              const ttdThumb = item.ttd_peminjam ? `
-                <img src="${item.ttd_peminjam}" alt="TTD ${item.nama_peminjam || 'Peminjam'}"
-                     class="h-7 max-w-[64px] inline-block bg-slate-50 border border-slate-200 rounded p-0.5 shadow-xs cursor-pointer hover:scale-110 transition"
-                     onclick="openPreviewTtd('${item.ttd_peminjam}', '${item.nama_peminjam || 'Peminjam'}')"
-                     title="Klik untuk perbesar tanda tangan" />
-              ` : `<span class="text-[10px] text-slate-400 italic">Tanpa TTD</span>`;
-
-              const statusBadge = isOverdue
-                ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black bg-rose-600 text-white">Terlambat</span>`
-                : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Dipinjam</span>`;
-
-              return `
-                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                  <td class="py-2.5 px-3">
-                    <span class="font-bold text-slate-800 text-xs block">${namaBarang}</span>
-                    <span class="text-[10px] text-slate-500 font-mono">${item.nama_peminjam || '-'} (${kodeBarang})</span>
-                  </td>
-                  <td class="py-2.5 px-3 text-slate-600">${item.unit_ruangan || '-'}</td>
-                  <td class="py-2.5 px-3 font-mono text-slate-600">${batas.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
-                  <td class="py-2.5 px-3 text-center">${ttdThumb}</td>
-                  <td class="py-2.5 px-3">${statusBadge}</td>
-                  <td class="py-2.5 px-3 text-right">
-                    <button onclick="tandaiKembali('${item.id}', '${namaBarang}')"
-                      class="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg text-[11px] font-bold shadow-sm transition">
-                      ✓ Sudah Kembali
-                    </button>
-                  </td>
-                </tr>
-              `;
-            }).join('');
-          }
-        }
 
       } catch (err) {
         console.warn('Peminjaman error:', err);
@@ -2007,7 +1988,7 @@
       text.innerText = 'Mendaftarkan...';
 
       try {
-        // 1. Pendaftaran via Supabase Auth
+        // 1. Pendaftaran kredensial via Supabase Auth
         const { data: authData, error: authErr } = await supabaseClient.auth.signUp({
           email,
           password,
@@ -2023,18 +2004,26 @@
 
         if (authErr) throw authErr;
 
-        // 2. Simpan profil ke tabel profil_user
-        if (authData?.user?.id) {
-          const { error: profileErr } = await supabaseClient.from('profil_user').upsert({
-            id: authData.user.id,
+        const newUserId = authData?.user?.id;
+        if (!newUserId) {
+          throw new Error('Supabase Auth tidak mengembalikan ID pengguna baru. Pastikan email belum pernah terdaftar sebelumnya.');
+        }
+
+        // 2. Gunakan user.id yang dihasilkan untuk menyimpan profil lengkap ke tabel profil_user
+        const { error: profileErr } = await supabaseClient
+          .from('profil_user')
+          .upsert({
+            id: newUserId,
+            email: email,
             nama_lengkap: nama,
             nip: nip || null,
             role: role,
-            jabatan: jabatan,
-            no_telepon: telepon || null
+            jabatan: jabatan || 'Staf Logistik Tata Usaha',
+            no_telepon: telepon || null,
+            is_active: true
           });
-          if (profileErr) console.warn('[Profile Warning]:', profileErr.message);
-        }
+
+        if (profileErr) throw profileErr;
 
         showToast(`Akun staf "${nama}" (${email}) berhasil didaftarkan!`, 'success');
         registerUserForm.reset();
@@ -2079,8 +2068,7 @@
           const statusBadge = isActive
             ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif</span>`
             : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Nonaktif</span>`;
-
-          // AKSI HANYA: Sakelar Nonaktifkan / Aktifkan Akses (TANPA TOMBOL HAPUS / TANPA TRASH CAN)
+          // Aksi: Sakelar Nonaktifkan / Aktifkan Akses dan Tombol Hapus Akun
           const actionBtn = isActive
             ? `<button onclick="toggleUserActive('${u.id}', false, '${u.nama_lengkap || 'Staf'}')"
                  class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 transition shadow-sm">
@@ -2091,15 +2079,32 @@
                  Aktifkan Akses
                </button>`;
 
+          const deleteBtn = `
+            <button onclick="deleteUserAccount('${u.id}', '${u.nama_lengkap || 'Staf'}')"
+              class="px-2 py-1 text-[11px] font-bold rounded-lg border border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-900 transition shadow-sm inline-flex items-center gap-1"
+              title="Hapus Akun Permanen">
+              <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              <span>Hapus</span>
+            </button>
+          `;
+
+          const emailDisplay = u.email ? `<span class="text-[10px] text-sky-600 font-mono block">${u.email}</span>` : '';
+
           return `
             <tr class="hover:bg-slate-50 transition border-b border-slate-100" id="user-row-${u.id}">
               <td class="py-2.5 px-3">
                 <span class="font-bold text-slate-800 text-xs block">${u.nama_lengkap || 'Pegawai'}</span>
+                ${emailDisplay}
                 <span class="text-[10px] text-slate-400 font-mono">${u.nip ? 'NIP: ' + u.nip : (u.jabatan || '-')}</span>
               </td>
               <td class="py-2.5 px-3">${roleBadge}</td>
               <td class="py-2.5 px-3" id="user-status-cell-${u.id}">${statusBadge}</td>
-              <td class="py-2.5 px-3 text-right" id="user-action-cell-${u.id}">${actionBtn}</td>
+              <td class="py-2.5 px-3 text-right space-x-1.5" id="user-action-cell-${u.id}">
+                ${actionBtn}
+                ${deleteBtn}
+              </td>
             </tr>
           `;
         }).join('');
@@ -2131,16 +2136,26 @@
           return;
         }
 
-        // Perbarui tampilan badge dan tombol secara langsung di DOM
+        // Perbarui tampilan badge dan tombol secara langsung di DOM dengan tetap menyertakan tombol Hapus
         const statusCell = document.getElementById(`user-status-cell-${userId}`);
         const actionCell = document.getElementById(`user-action-cell-${userId}`);
         if (statusCell && actionCell) {
+          const deleteBtnHtml = `
+            <button onclick="deleteUserAccount('${userId}', '${nama}')"
+              class="px-2 py-1 text-[11px] font-bold rounded-lg border border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-900 transition shadow-sm inline-flex items-center gap-1"
+              title="Hapus Akun Permanen">
+              <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              <span>Hapus</span>
+            </button>
+          `;
           if (newStatus) {
             statusCell.innerHTML = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif</span>`;
-            actionCell.innerHTML = `<button onclick="toggleUserActive('${userId}', false, '${nama}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 transition shadow-sm">Nonaktifkan Akses</button>`;
+             actionCell.innerHTML = `<button onclick="toggleUserActive('${userId}', false, '${nama}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 transition shadow-sm">Nonaktifkan Akses</button> ${deleteBtnHtml}`;
           } else {
             statusCell.innerHTML = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Nonaktif</span>`;
-            actionCell.innerHTML = `<button onclick="toggleUserActive('${userId}', true, '${nama}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition shadow-sm">Aktifkan Akses</button>`;
+            actionCell.innerHTML = `<button onclick="toggleUserActive('${userId}', true, '${nama}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition shadow-sm">Aktifkan Akses</button> ${deleteBtnHtml}`;
           }
         }
 
@@ -2154,6 +2169,39 @@
       } catch (err) {
         alert('Gagal: ' + (err.message || 'Akses ditolak oleh RLS'));
         showToast('Gagal memperbarui status staf: ' + err.message, 'error');
+      }
+    };
+
+    // Fitur Hapus Akun Staf Permanen dari profil_user
+    window.deleteUserAccount = async function(userId, nama) {
+      if (!confirm(`⚠️ PERINGATAN: Apakah Anda yakin ingin menghapus akun staf "${nama}" secara permanen dari sistem?\n\nData profil staf ini akan dihapus dari database.`)) {
+        return;
+      }
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('profil_user')
+          .delete()
+          .eq('id', userId)
+          .select();
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          alert('Akses hapus ditolak oleh RLS. Anda tidak memiliki izin untuk menghapus akun staf ini.');
+          showToast('Akses hapus ditolak oleh RLS.', 'error');
+          return;
+        }
+
+        const rowEl = document.getElementById(`user-row-${userId}`);
+        if (rowEl) rowEl.remove();
+
+        showToast(`Akun staf "${nama}" berhasil dihapus dari sistem!`, 'success');
+        await loadRegisteredUsers();
+
+      } catch (err) {
+        alert('Gagal menghapus akun: ' + (err.message || 'Ditolak oleh RLS'));
+        showToast('Gagal menghapus akun staf: ' + err.message, 'error');
       }
     };
 
@@ -2173,6 +2221,12 @@
       d.setDate(d.getDate() + 3);
       document.getElementById('pinjamBatasWaktu').value = d.toISOString().slice(0, 16);
 
+      // Otomatis isi Penanggung Jawab dari staf yang sedang login aktif
+      const pjInput = document.getElementById('pinjamPenanggungJawab');
+      if (pjInput) {
+        const staffName = currentUserProfile?.nama_lengkap || currentUser?.email || 'Petugas Logistik TU';
+        pjInput.value = staffName;
+      }
       setTimeout(initTtdCanvas, 60);
       loadPeminjaman();
     }
@@ -2191,7 +2245,9 @@
       const saveBtn = document.getElementById('savePeminjamanBtn');
       const spinner = document.getElementById('savePeminjamanSpinner');
       const text = document.getElementById('savePeminjamanText');
-
+      const penanggungJawab = document.getElementById('pinjamPenanggungJawab')?.value.trim() || currentUserProfile?.nama_lengkap || currentUser?.email || 'Petugas Logistik TU';
+      const canvas = document.getElementById('ttdCanvas');
+      const ttdBase64 = canvas ? canvas.toDataURL('image/png') : null;
       // Validasi tanda tangan digital tidak boleh kosong
       if (!hasSignature) {
         showToast('Tanda tangan digital peminjam wajib diisi!', 'error');
@@ -2207,9 +2263,6 @@
       const batasWaktu = document.getElementById('pinjamBatasWaktu').value;
       const keterangan = document.getElementById('pinjamKeterangan').value.trim();
 
-      const canvas = document.getElementById('ttdCanvas');
-      const ttdBase64 = canvas ? canvas.toDataURL('image/png') : null;
-
       saveBtn.disabled = true;
       spinner.classList.remove('hidden');
       text.innerText = 'Menyimpan...';
@@ -2224,6 +2277,7 @@
           status: 'dipinjam',
           keterangan: keterangan,
           ttd_peminjam: ttdBase64,
+          penanggung_jawab: penanggungJawab,
           created_by: currentUser?.id || null
         };
 
@@ -2522,7 +2576,8 @@
           const barangNama = (item.barang?.nama || '').toLowerCase();
           const barangKode = (item.barang?.kode_barang || '').toLowerCase();
           const ket = (item.keterangan || '').toLowerCase();
-          const match = nama.includes(searchVal) || unit.includes(searchVal) || barangNama.includes(searchVal) || barangKode.includes(searchVal) || ket.includes(searchVal);
+          const pj = (item.penanggung_jawab || '').toLowerCase();
+          const match = nama.includes(searchVal) || unit.includes(searchVal) || pj.includes(searchVal) || barangNama.includes(searchVal) || barangKode.includes(searchVal) || ket.includes(searchVal);
           if (!match) return false;
         }
 
@@ -2585,8 +2640,13 @@
               <span class="text-[10px] text-slate-500 font-mono">${kodeBarang}</span>
             </td>
             <td class="py-2.5 px-3">
-              <span class="font-semibold text-slate-800 block">${item.nama_peminjam || '-'}</span>
-              <span class="text-[10px] text-slate-500">${item.unit_ruangan || '-'}</span>
+              <span class="font-bold text-slate-900 block">${item.nama_peminjam || '-'}</span>
+              <span class="text-[10px] text-slate-400">Pemohon</span>
+            </td>
+            <td class="py-2.5 px-3 text-slate-600">${item.unit_ruangan || '-'}</td>
+            <td class="py-2.5 px-3">
+              <span class="font-semibold text-indigo-900 block">${item.penanggung_jawab || 'Petugas TU'}</span>
+              <span class="text-[10px] text-slate-400">Staf Penyerah</span>
             </td>
             <td class="py-2.5 px-3 font-semibold text-slate-700">${item.jumlah || 1} unit</td>
             <td class="py-2.5 px-3 font-mono text-slate-600">${ambil.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
@@ -2644,7 +2704,8 @@
           const barangNama = (item.barang?.nama || '').toLowerCase();
           const barangKode = (item.barang?.kode_barang || '').toLowerCase();
           const ket = (item.keterangan || '').toLowerCase();
-          if (!nama.includes(searchVal) && !unit.includes(searchVal) && !barangNama.includes(searchVal) && !barangKode.includes(searchVal) && !ket.includes(searchVal)) return false;
+          const pj = (item.penanggung_jawab || '').toLowerCase();
+          if (!nama.includes(searchVal) && !unit.includes(searchVal) && !pj.includes(searchVal) && !barangNama.includes(searchVal) && !barangKode.includes(searchVal) && !ket.includes(searchVal)) return false;
         }
         return true;
       });
@@ -2654,7 +2715,7 @@
         return;
       }
 
-      const headers = ['No', 'Kode Barang', 'Nama Barang', 'Nama Peminjam', 'Unit Ruangan', 'Jumlah', 'Tanggal Ambil', 'Batas Waktu Kembali', 'Tanggal Kembali', 'Status Peminjaman', 'Keterangan'];
+      const headers = ['No', 'Kode Barang', 'Nama Barang', 'Nama Peminjam', 'Unit Ruangan', 'Penanggung Jawab', 'Jumlah', 'Tanggal Ambil', 'Batas Waktu Kembali', 'Tanggal Kembali', 'Status Peminjaman', 'Keterangan'];
       const rows = itemsToExport.map((item, idx) => {
         const isKembali = item.status === 'kembali';
         const isOverdue = !isKembali && new Date(item.batas_waktu_kembali) < now;
@@ -2668,6 +2729,7 @@
           `"${(item.barang?.nama || '').replace(/"/g, '""')}"`,
           `"${(item.nama_peminjam || '').replace(/"/g, '""')}"`,
           `"${(item.unit_ruangan || '').replace(/"/g, '""')}"`,
+          `"${(item.penanggung_jawab || 'Petugas TU').replace(/"/g, '""')}"`,
           item.jumlah || 1,
           `"${item.tanggal_ambil ? new Date(item.tanggal_ambil).toLocaleString('id-ID') : '-'}"`,
           `"${item.batas_waktu_kembali ? new Date(item.batas_waktu_kembali).toLocaleString('id-ID') : '-'}"`,
@@ -2705,8 +2767,9 @@
 
       if (dateSpan) dateSpan.innerText = `Tanggal Cetak: ${nowStr}`;
       if (signDateSpan) signDateSpan.innerText = nowStr;
-      if (staffNameSpan && currentUser) {
-        staffNameSpan.innerText = currentUser.email || 'Petugas Logistik TU';
+      if (staffNameSpan) {
+        const staffName = currentUserProfile?.nama_lengkap || currentUser?.email || 'Petugas Logistik TU';
+        staffNameSpan.innerText = staffName;
       }
 
       window.print();
