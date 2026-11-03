@@ -1131,14 +1131,14 @@
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Penanggung Jawab / Staf yang Menyerahkan *</label>
             <div class="relative">
-              <input type="text" id="pinjamPenanggungJawab" required placeholder="Nama Petugas TU Logistik"
-                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition pr-28" />
+              <input type="text" id="pinjamPenanggungJawab" required readonly placeholder="Nama Petugas TU Logistik"
+                class="w-full px-3.5 py-2.5 bg-gray-100 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 cursor-not-allowed select-none outline-none transition pr-28" />
               <span class="absolute right-2.5 top-2.5 text-[10px] text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-200">
-                Petugas TU
+                🔒 Terkunci (Sesi Aktif)
               </span>
             </div>
             <p class="text-[10px] text-slate-400 mt-1 italic">
-              * Otomatis terisi nama staf TU yang sedang login di sistem.
+              * Kolom otomatis terkunci dan terisi dari sesi akun staf yang sedang login.
             </p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1351,6 +1351,10 @@
           }
           currentUserProfile = data;
           document.getElementById('sidebarUserRole').innerText = `${data.role === 'kepala_tu' ? 'Kepala TU' : 'Staf Gudang'} (${data.nama_lengkap || ''})`;
+          const pjInput = document.getElementById('pinjamPenanggungJawab');
+          if (pjInput) {
+            pjInput.value = data.nama_lengkap || currentUser?.email || 'Petugas Logistik TU';
+          }
         }
       } catch (e) {
         // Abaikan jika belum ada profil
