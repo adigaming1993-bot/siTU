@@ -74,6 +74,55 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
+    @media print {
+      aside, header, #sidebarBackdrop, #mobileMenuBtn, #toastContainer, #previewTtdModal,
+      .print\:hidden, #reportToolbar, .sidebar-nav-item, nav, button {
+        display: none !important;
+      }
+      body, html, #dashboardView, main {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        width: 100% !important;
+      }
+      #riwayatLaporanContent {
+        display: block !important;
+        width: 100% !important;
+      }
+      #homeDashboardContent {
+        display: none !important;
+      }
+      #printKopSurat {
+        display: block !important;
+      }
+      #printFooterSign {
+        display: flex !important;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 8.5pt !important;
+      }
+      th, td {
+        border: 1px solid #cbd5e1 !important;
+        padding: 4px 6px !important;
+        color: #000000 !important;
+      }
+      thead {
+        background-color: #f8fafc !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      img {
+        max-height: 36px !important;
+        max-width: 72px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen">
@@ -189,12 +238,12 @@
         <!-- Daftar Menu Vertikal dengan Ikon -->
         <nav class="space-y-1.5">
           <!-- Menu 1: Home Dashboard (Active) -->
-          <a href="#" class="sidebar-nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-sky-600 text-white shadow-md shadow-sky-600/30 transition">
+          <button id="sidebarHomeBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-sky-600 text-white shadow-md shadow-sky-600/30 transition">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
             </svg>
             <span>Home Dashboard</span>
-          </a>
+          </button>
 
           <!-- Menu 2: Tambah Barang (SATU-SATUNYA PEMICU INPUT SESUAI INSTRUKSI) -->
           <button id="sidebarAddBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
@@ -226,6 +275,14 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
             <span>Catat Peminjaman</span>
+          </button>
+
+          <!-- Menu Baru: Riwayat & Laporan Aset -->
+          <button id="sidebarRiwayatBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>Riwayat & Laporan Aset</span>
           </button>
 
           <!-- Menu 6: Kelola Akun (Manajemen Pengguna via supabase.auth.signUp) -->
@@ -298,6 +355,8 @@
       <main class="flex-1 bg-slate-50 min-h-screen p-4 md:p-8 space-y-8 overflow-y-auto">
         
         <!-- Header Konten Utama: Teks "Home Dashboard" Berukuran Besar -->
+      <!-- TAB 1: KONTEN UTAMA HOME DASHBOARD -->
+      <div id="homeDashboardContent" class="space-y-8">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
           <div>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Home Dashboard</h2>
@@ -522,6 +581,172 @@
         </div>
 
       </section>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 2: HALAMAN MANDIRI RIWAYAT & LAPORAN PEMINJAMAN ASET (FULL-WIDTH)  -->
+      <!-- Dilengkapi Filter Rentang Tanggal, Filter Status, Pencarian, & Cetak  -->
+      <!-- ===================================================================== -->
+      <div id="riwayatLaporanContent" class="hidden space-y-6">
+        
+        <!-- Kop Surat Resmi (Hanya muncul saat Cetak Dokumen / Print) -->
+        <div id="printKopSurat" class="hidden print:block pb-4 mb-4 border-b-2 border-slate-900">
+          <div class="flex items-center justify-center gap-5 mb-2">
+            <div class="w-16 h-16 rounded-xl border-2 border-slate-900 flex items-center justify-center font-black text-2xl text-slate-900">
+              TU
+            </div>
+            <div class="text-center">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-900">PEMERINTAH KABUPATEN SIDOARJO</h3>
+              <h1 class="text-xl font-black uppercase tracking-tight text-slate-900">RSUD R.T. NOTOPURO</h1>
+              <p class="text-xs font-bold text-slate-700 tracking-wider uppercase">BAGIAN TATA USAHA - SUB BAGIAN LOGISTIK & INVENTARIS</p>
+              <p class="text-[10px] text-slate-600">Jl. Mojopahit No. 667 Sidoarjo | Telp: (031) 8961649 | Email: tu@rsudnotopuro.id</p>
+            </div>
+          </div>
+          <div class="border-t border-slate-900 pt-2 flex items-center justify-between text-xs font-bold text-slate-900">
+            <span>DOKUMEN RESMI: LAPORAN REKAPITULASI PEMINJAMAN ASET LOGISTIK</span>
+            <span id="printDateSpan">Tanggal Cetak: -</span>
+          </div>
+        </div>
+
+        <!-- Header Halaman di Layar Normal (Print: Hidden) -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 print:hidden">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Riwayat & Laporan Aset</h2>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-50 text-teal-700 border border-teal-200">
+                Peminjaman Aset
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">Laporan rekapitulasi, pelacakan peminjam, bukti tanda tangan digital, dan ekspor dokumen</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openPeminjamanModal()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
+              <span>+ Catat Pinjam Baru</span>
+            </button>
+            <button onclick="loadRiwayatLaporan()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition shadow-sm flex items-center gap-1">
+              <span>🔄 Refresh Data</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Bar Peralatan Filter & Tombol Cetak / Ekspor (Print: Hidden) -->
+        <div id="reportToolbar" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 space-y-4 print:hidden">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            
+            <!-- Filter Tanggal Mulai -->
+            <div>
+              <label for="filterDariTanggal" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Dari Tanggal</label>
+              <input type="date" id="filterDariTanggal"
+                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition" />
+            </div>
+
+            <!-- Filter Tanggal Sampai -->
+            <div>
+              <label for="filterSampaiTanggal" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Sampai Tanggal</label>
+              <input type="date" id="filterSampaiTanggal"
+                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition" />
+            </div>
+
+            <!-- Filter Status -->
+            <div>
+              <label for="filterStatus" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Status Peminjaman</label>
+              <select id="filterStatus"
+                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition">
+                <option value="semua">Semua Status</option>
+                <option value="dipinjam">Sedang Dipinjam</option>
+                <option value="terlambat">Lewat Jatuh Tempo (Telat)</option>
+                <option value="kembali">Sudah Dikembalikan</option>
+              </select>
+            </div>
+
+            <!-- Pencarian Cepat -->
+            <div>
+              <label for="filterSearch" class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Cari Peminjam / Unit / Aset</label>
+              <div class="relative">
+                <input type="text" id="filterSearch" placeholder="Ketik kata kunci..."
+                  class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:bg-white outline-none transition" />
+                <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Baris Aksi & Reset Filter -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-3 border-t border-slate-100 gap-3">
+            <div class="flex items-center gap-2">
+              <span id="filterResultCount" class="text-xs font-semibold text-slate-500">
+                Menampilkan 0 data
+              </span>
+              <button id="btnResetFilter" type="button" class="text-xs text-rose-600 hover:text-rose-800 font-bold underline transition">
+                Reset Filter
+              </button>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <button id="btnCetakLaporan" type="button"
+                class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                <span>Cetak Laporan (PDF/Print)</span>
+              </button>
+              <button id="btnExportCsv" type="button"
+                class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span>Export CSV/Excel</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabel Rekapitulasi Riwayat Peminjaman Aset (Full-Width) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table id="tableRiwayatLaporan" class="w-full text-left text-xs border-collapse min-w-[760px]">
+              <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] border-b border-slate-200">
+                <tr>
+                  <th class="py-3 px-3 text-center w-10">No</th>
+                  <th class="py-3 px-3">Barang & Kode</th>
+                  <th class="py-3 px-3">Peminjam & Unit</th>
+                  <th class="py-3 px-3">Jumlah</th>
+                  <th class="py-3 px-3">Tgl Pinjam</th>
+                  <th class="py-3 px-3">Batas Kembali</th>
+                  <th class="py-3 px-3 text-center">Bukti TTD</th>
+                  <th class="py-3 px-3">Status</th>
+                  <th class="py-3 px-3 text-right print:hidden">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="laporanTableBody" class="divide-y divide-slate-100 text-slate-700">
+                <tr>
+                  <td colspan="9" class="py-8 text-center text-xs text-slate-400">Memuat data riwayat peminjaman...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tanda Tangan Pengesahan Pejabat (Hanya saat Cetak / Print) -->
+        <div id="printFooterSign" class="hidden print:flex justify-between items-start pt-8 text-xs text-slate-900">
+          <div class="text-center w-56">
+            <p>Mengetahui,</p>
+            <p class="font-bold">Kepala Bagian Tata Usaha</p>
+            <div class="h-20"></div>
+            <p class="font-bold underline">dr. H. R.T. Notopuro, M.Kes</p>
+            <p class="text-[10px]">NIP. 197408152002121004</p>
+          </div>
+          <div class="text-center w-56">
+            <p>Sidoarjo, <span id="printSignDateSpan">-</span></p>
+            <p class="font-bold">Pengelola Logistik & Aset TU</p>
+            <div class="h-20"></div>
+            <p class="font-bold underline" id="printStaffNameSpan">Petugas Logistik TU</p>
+            <p class="text-[10px]">Staf Terautentikasi</p>
+          </div>
+        </div>
+
+      </div>
 
       </main>
     </div>
@@ -862,12 +1087,12 @@
   <!-- 6. MODAL 4: CATAT PEMINJAMAN ASET (Pelacakan Peminjaman)                   -->
   <!-- ========================================================================= -->
   <div id="peminjamanModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8 max-h-[90vh] flex flex-col">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
       
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
         <div>
-          <h3 class="font-bold text-slate-800 text-base">Pencatatan & Riwayat Peminjaman Aset</h3>
-          <p class="text-xs text-slate-400">Pelacakan masa pakai, bukti tanda tangan digital, dan batas pengembalian</p>
+          <h3 class="font-bold text-slate-800 text-base">Pencatatan Peminjaman Aset Baru</h3>
+          <p class="text-xs text-slate-400">Peminjaman aset logistik lengkap dengan Tanda Tangan Digital</p>
         </div>
         <button type="button" id="closePeminjamanModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -876,78 +1101,80 @@
         </button>
       </div>
 
-      <div class="overflow-y-auto flex-1">
-        <!-- Bagian 1: Formulir Pencatatan Peminjaman Aset Baru -->
-        <div class="overflow-x-auto">
-          <form id="peminjamanForm" class="p-6 space-y-4">
-            
+      <div class="overflow-x-auto">
+        <form id="peminjamanForm" class="p-6 space-y-4">
+          
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Barang / Aset yang Dipinjam *</label>
+            <select id="pinjamBarangSelect" required
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition">
+              <option value="">-- Pilih Barang --</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Barang / Aset yang Dipinjam *</label>
-              <select id="pinjamBarangSelect" required
-                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition">
-                <option value="">-- Pilih Barang --</option>
-              </select>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Staf Peminjam *</label>
-                <input type="text" id="pinjamNama" required placeholder="dr. Bambang / Ns. Ratna"
-                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Unit / Ruangan Peminjam *</label>
-                <input type="text" id="pinjamUnit" required placeholder="Instalasi Rawat Inap / Poli Anak"
-                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Unit *</label>
-                <input type="number" id="pinjamJumlah" required min="1" value="1"
-                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Batas Waktu Pengembalian *</label>
-                <input type="datetime-local" id="pinjamBatasWaktu" required
-                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
-              </div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Staf Peminjam *</label>
+              <input type="text" id="pinjamNama" required placeholder="dr. Bambang / Ns. Ratna"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Keperluan / Keterangan</label>
-              <textarea id="pinjamKeterangan" rows="2" placeholder="Keperluan rapat komite medik / seminar akreditasi..."
-                class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition"></textarea>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Unit / Ruangan Peminjam *</label>
+              <input type="text" id="pinjamUnit" required placeholder="Instalasi Rawat Inap / Poli Anak"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
             </div>
+          </div>
 
-            <!-- Tanda Tangan Digital Peminjam (Interaktif Canvas) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <div class="flex items-center justify-between mb-1.5">
-                <label class="block text-xs font-bold text-slate-600 uppercase">
-                  Tanda Tangan Digital Peminjam *
-                </label>
-                <button type="button" id="clearTtdBtn" class="text-xs text-rose-600 hover:text-rose-800 font-semibold flex items-center gap-1 transition">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                  </svg>
-                  <span>Hapus / Ulangi TTD</span>
-                </button>
-              </div>
-              <div class="relative w-full h-36 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden hover:border-indigo-400 focus-within:border-indigo-500 transition">
-                <canvas id="ttdCanvas" class="w-full h-full cursor-crosshair touch-none"></canvas>
-                <div id="ttdPlaceholder" class="pointer-events-none absolute inset-0 flex items-center justify-center text-xs text-slate-400 font-medium select-none">
-                  ✍️ Goreskan tanda tangan staf peminjam di sini
-                </div>
-              </div>
-              <p class="text-[10px] text-slate-400 mt-1 italic">
-                * Gunakan mouse pada PC atau sentuhan jari langsung di layar HP/tablet.
-              </p>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Unit *</label>
+              <input type="number" id="pinjamJumlah" required min="1" value="1"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
             </div>
 
-            <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Batas Waktu Pengembalian *</label>
+              <input type="datetime-local" id="pinjamBatasWaktu" required
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Keperluan / Keterangan</label>
+            <textarea id="pinjamKeterangan" rows="2" placeholder="Keperluan rapat komite medik / seminar akreditasi..."
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition"></textarea>
+          </div>
+
+          <!-- Tanda Tangan Digital Peminjam (Interaktif Canvas) -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-bold text-slate-600 uppercase">
+                Tanda Tangan Digital Peminjam *
+              </label>
+              <button type="button" id="clearTtdBtn" class="text-xs text-rose-600 hover:text-rose-800 font-semibold flex items-center gap-1 transition">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                <span>Hapus / Ulangi TTD</span>
+              </button>
+            </div>
+            <div class="relative w-full h-36 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden hover:border-indigo-400 focus-within:border-indigo-500 transition">
+              <canvas id="ttdCanvas" class="w-full h-full cursor-crosshair touch-none"></canvas>
+              <div id="ttdPlaceholder" class="pointer-events-none absolute inset-0 flex items-center justify-center text-xs text-slate-400 font-medium select-none">
+                ✍️ Goreskan tanda tangan staf peminjam di sini
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1 italic">
+              * Gunakan mouse pada PC atau sentuhan jari langsung di layar HP/tablet.
+            </p>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+            <button type="button" onclick="closePeminjamanModal(); switchView('riwayat');" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline">
+              Lihat Riwayat & Laporan Lengkap →
+            </button>
+            <div class="flex items-center gap-2">
               <button type="button" id="cancelPeminjamanModalBtn" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
                 Batal
               </button>
@@ -962,43 +1189,9 @@
                 <span id="savePeminjamanText">Simpan Peminjaman</span>
               </button>
             </div>
-
-          </form>
-        </div>
-
-        <!-- Bagian 2: Tabel Riwayat Peminjaman Aset & Bukti TTD -->
-        <div class="p-6 bg-slate-50 border-t border-slate-200/80 space-y-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Tabel Riwayat Peminjaman Aset</h4>
-              <p class="text-[11px] text-slate-500">Daftar peminjaman logistik aktif dan bukti tanda tangan digital</p>
-            </div>
-            <button type="button" onclick="loadPeminjaman()" class="text-xs text-indigo-700 hover:text-indigo-900 font-bold flex items-center gap-1">
-              🔄 Refresh Riwayat
-            </button>
           </div>
 
-          <div class="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
-            <table class="w-full text-left text-xs border-none min-w-[620px]">
-              <thead class="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-100">
-                <tr>
-                  <th class="py-2.5 px-3">Barang & Peminjam</th>
-                  <th class="py-2.5 px-3">Unit / Ruangan</th>
-                  <th class="py-2.5 px-3">Batas Waktu</th>
-                  <th class="py-2.5 px-3 text-center">Bukti TTD</th>
-                  <th class="py-2.5 px-3">Status</th>
-                  <th class="py-2.5 px-3 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="riwayatPinjamTableBody" class="divide-y divide-slate-100 text-slate-700">
-                <tr>
-                  <td colspan="6" class="py-4 text-center text-slate-400">Memuat riwayat peminjaman...</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
+        </form>
       </div>
     </div>
   </div>
@@ -1272,6 +1465,7 @@
 
         // 2. Ambil Data Peminjaman & Deteksi Keterlambatan
         await loadPeminjaman();
+        await loadRiwayatLaporan();
 
       } catch (err) {
         console.error(err);
@@ -1447,6 +1641,7 @@
 
         showToast(`Aset "${namaBarang}" berhasil dikembalikan!`, 'success');
         await loadPeminjaman();
+        await loadRiwayatLaporan();
 
       } catch (err) {
         showToast('Gagal memproses pengembalian: ' + err.message, 'error');
@@ -2038,6 +2233,7 @@
         showToast(`Peminjaman aset untuk ${nama} berhasil dicatat dengan TTD!`, 'success');
         closePeminjamanModal();
         await loadPeminjaman();
+        await loadRiwayatLaporan();
 
       } catch (err) {
         console.error(err);
@@ -2170,6 +2366,369 @@
       });
     }
 
+
+    // =========================================================================
+    // SISTEM TAB / VIEW SWITCHING (DASHBOARD VS RIWAYAT & LAPORAN)
+    // =========================================================================
+    const homeDashboardContent = document.getElementById('homeDashboardContent');
+    const riwayatLaporanContent = document.getElementById('riwayatLaporanContent');
+    const sidebarHomeBtn = document.getElementById('sidebarHomeBtn');
+    const sidebarRiwayatBtn = document.getElementById('sidebarRiwayatBtn');
+
+    window.switchView = function(viewName) {
+      if (viewName === 'riwayat') {
+        if (homeDashboardContent) homeDashboardContent.classList.add('hidden');
+        if (riwayatLaporanContent) riwayatLaporanContent.classList.remove('hidden');
+
+        if (sidebarHomeBtn) {
+          sidebarHomeBtn.className = "sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition";
+        }
+        if (sidebarRiwayatBtn) {
+          sidebarRiwayatBtn.className = "sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-sky-600 text-white shadow-md shadow-sky-600/30 transition";
+        }
+
+        loadRiwayatLaporan();
+      } else {
+        if (riwayatLaporanContent) riwayatLaporanContent.classList.add('hidden');
+        if (homeDashboardContent) homeDashboardContent.classList.remove('hidden');
+
+        if (sidebarHomeBtn) {
+          sidebarHomeBtn.className = "sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-sky-600 text-white shadow-md shadow-sky-600/30 transition";
+        }
+        if (sidebarRiwayatBtn) {
+          sidebarRiwayatBtn.className = "sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition";
+        }
+      }
+
+      if (window.innerWidth < 768 && typeof closeMobileSidebar === 'function') {
+        closeMobileSidebar();
+      }
+    };
+
+    if (sidebarHomeBtn) sidebarHomeBtn.addEventListener('click', () => switchView('dashboard'));
+    if (sidebarRiwayatBtn) sidebarRiwayatBtn.addEventListener('click', () => switchView('riwayat'));
+
+    // =========================================================================
+    // FITUR LAPORAN, FILTER, EXPORT CSV & PRINT DOKUMEN RESMI
+    // =========================================================================
+    let rawPeminjamanList = [];
+
+    async function loadRiwayatLaporan() {
+      const tbody = document.getElementById('laporanTableBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-xs text-slate-400">
+        <div class="inline-flex items-center gap-2">
+          <svg class="animate-spin w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+          <span>Mengambil data riwayat peminjaman dari Supabase...</span>
+        </div>
+      </td></tr>`;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('peminjaman')
+          .select('*, barang:barang_id(nama, kode_barang, kategori)')
+          .order('tanggal_ambil', { ascending: false });
+
+        if (error) {
+          console.error('Error loadRiwayatLaporan:', error);
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="9" class="py-6 px-4 text-center text-xs text-rose-700 bg-rose-50/70 border border-rose-200 rounded-xl">
+                <p class="font-bold mb-1">⚠️ Gagal memuat data peminjaman dari Supabase</p>
+                <p class="text-rose-600 text-[11px] mb-2 font-mono">${error.message || 'Tabel belum ada atau akses dibatasi RLS'}</p>
+                <p class="text-[11px] text-slate-600">Pastikan Anda telah menjalankan skrip migrasi SQL di menu <b>SQL Editor Supabase</b>:</p>
+                <code class="inline-block mt-1 px-3 py-1 bg-white border border-rose-200 rounded text-rose-800 font-mono text-[10px]">database/fix_rls_and_ttd.sql</code>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        rawPeminjamanList = data || [];
+
+        if (rawPeminjamanList.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="9" class="py-10 text-center text-xs text-slate-400">
+                <div class="flex flex-col items-center justify-center gap-2">
+                  <span class="text-2xl">📋</span>
+                  <span class="font-medium">Belum ada riwayat peminjaman aset</span>
+                  <button onclick="openPeminjamanModal()" class="mt-1 text-xs text-indigo-600 hover:text-indigo-800 font-bold underline">
+                    + Catat Peminjaman Pertama
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+          updateFilterResultCount(0);
+          return;
+        }
+
+        renderFilteredLaporan();
+
+      } catch (err) {
+        console.error('Exception loadRiwayatLaporan:', err);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="py-6 px-4 text-center text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-xl">
+              <p class="font-bold mb-1">Terjadi kesalahan sistem saat memuat riwayat:</p>
+              <p class="text-[11px] font-mono text-rose-600">${err.message || err}</p>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function renderFilteredLaporan() {
+      const tbody = document.getElementById('laporanTableBody');
+      if (!tbody) return;
+
+      const dariVal = document.getElementById('filterDariTanggal')?.value;
+      const sampaiVal = document.getElementById('filterSampaiTanggal')?.value;
+      const statusVal = document.getElementById('filterStatus')?.value || 'semua';
+      const searchVal = (document.getElementById('filterSearch')?.value || '').trim().toLowerCase();
+
+      const now = new Date();
+
+      const filtered = rawPeminjamanList.filter(item => {
+        const isKembali = item.status === 'kembali';
+        const isOverdue = !isKembali && new Date(item.batas_waktu_kembali) < now;
+        const isDipinjam = !isKembali && !isOverdue;
+
+        if (statusVal === 'dipinjam' && !isDipinjam) return false;
+        if (statusVal === 'terlambat' && !isOverdue) return false;
+        if (statusVal === 'kembali' && !isKembali) return false;
+
+        if (dariVal) {
+          const itemDate = new Date(item.tanggal_ambil);
+          const dariDate = new Date(dariVal);
+          dariDate.setHours(0, 0, 0, 0);
+          if (itemDate < dariDate) return false;
+        }
+        if (sampaiVal) {
+          const itemDate = new Date(item.tanggal_ambil);
+          const sampaiDate = new Date(sampaiVal);
+          sampaiDate.setHours(23, 59, 59, 999);
+          if (itemDate > sampaiDate) return false;
+        }
+
+        if (searchVal) {
+          const nama = (item.nama_peminjam || '').toLowerCase();
+          const unit = (item.unit_ruangan || '').toLowerCase();
+          const barangNama = (item.barang?.nama || '').toLowerCase();
+          const barangKode = (item.barang?.kode_barang || '').toLowerCase();
+          const ket = (item.keterangan || '').toLowerCase();
+          const match = nama.includes(searchVal) || unit.includes(searchVal) || barangNama.includes(searchVal) || barangKode.includes(searchVal) || ket.includes(searchVal);
+          if (!match) return false;
+        }
+
+        return true;
+      });
+
+      updateFilterResultCount(filtered.length);
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="py-8 text-center text-xs text-slate-400">
+              Tidak ada data peminjaman yang sesuai dengan filter yang dipilih.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((item, idx) => {
+        const batas = new Date(item.batas_waktu_kembali);
+        const ambil = new Date(item.tanggal_ambil);
+        const isKembali = item.status === 'kembali';
+        const isOverdue = !isKembali && batas < now;
+
+        const namaBarang = item.barang?.nama || 'Barang Logistik';
+        const kodeBarang = item.barang?.kode_barang || '-';
+
+        let statusBadge = '';
+        if (isKembali) {
+          statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300">Kembali</span>`;
+        } else if (isOverdue) {
+          const diffDays = Math.max(1, Math.floor((now - batas) / (1000 * 60 * 60 * 24)));
+          statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black bg-rose-600 text-white">Terlambat ${diffDays}h</span>`;
+        } else {
+          statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Dipinjam</span>`;
+        }
+
+        const ttdThumb = item.ttd_peminjam ? `
+          <img src="${item.ttd_peminjam}" alt="TTD ${item.nama_peminjam || 'Peminjam'}"
+               class="h-7 max-w-[64px] inline-block bg-white border border-slate-200 rounded p-0.5 shadow-xs cursor-pointer hover:scale-110 transition"
+               onclick="openPreviewTtd('${item.ttd_peminjam}', '${item.nama_peminjam || 'Peminjam'}')"
+               title="Klik untuk perbesar tanda tangan" />
+        ` : `<span class="text-[10px] text-slate-400 italic">Tanpa TTD</span>`;
+
+        const aksiBtn = isKembali ? `
+          <span class="text-[10px] text-slate-400 font-medium">Selesai</span>
+        ` : `
+          <button onclick="tandaiKembali('${item.id}', '${namaBarang}')"
+            class="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg text-[11px] font-bold shadow-sm transition">
+            ✓ Sudah Kembali
+          </button>
+        `;
+
+        return `
+          <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+            <td class="py-2.5 px-3 text-center text-slate-400 font-mono">${idx + 1}</td>
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-800 text-xs block">${namaBarang}</span>
+              <span class="text-[10px] text-slate-500 font-mono">${kodeBarang}</span>
+            </td>
+            <td class="py-2.5 px-3">
+              <span class="font-semibold text-slate-800 block">${item.nama_peminjam || '-'}</span>
+              <span class="text-[10px] text-slate-500">${item.unit_ruangan || '-'}</span>
+            </td>
+            <td class="py-2.5 px-3 font-semibold text-slate-700">${item.jumlah || 1} unit</td>
+            <td class="py-2.5 px-3 font-mono text-slate-600">${ambil.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+            <td class="py-2.5 px-3 font-mono text-slate-600">${batas.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+            <td class="py-2.5 px-3 text-center">${ttdThumb}</td>
+            <td class="py-2.5 px-3">${statusBadge}</td>
+            <td class="py-2.5 px-3 text-right print:hidden">${aksiBtn}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateFilterResultCount(count) {
+      const el = document.getElementById('filterResultCount');
+      if (el) el.innerText = `Menampilkan ${count} dari ${rawPeminjamanList.length} data`;
+    }
+
+    function exportToCsv() {
+      if (rawPeminjamanList.length === 0) {
+        showToast('Tidak ada data riwayat untuk diekspor!', 'error');
+        return;
+      }
+
+      const dariVal = document.getElementById('filterDariTanggal')?.value;
+      const sampaiVal = document.getElementById('filterSampaiTanggal')?.value;
+      const statusVal = document.getElementById('filterStatus')?.value || 'semua';
+      const searchVal = (document.getElementById('filterSearch')?.value || '').trim().toLowerCase();
+      const now = new Date();
+
+      const itemsToExport = rawPeminjamanList.filter(item => {
+        const isKembali = item.status === 'kembali';
+        const isOverdue = !isKembali && new Date(item.batas_waktu_kembali) < now;
+        const isDipinjam = !isKembali && !isOverdue;
+
+        if (statusVal === 'dipinjam' && !isDipinjam) return false;
+        if (statusVal === 'terlambat' && !isOverdue) return false;
+        if (statusVal === 'kembali' && !isKembali) return false;
+
+        if (dariVal) {
+          const itemDate = new Date(item.tanggal_ambil);
+          const dariDate = new Date(dariVal);
+          dariDate.setHours(0, 0, 0, 0);
+          if (itemDate < dariDate) return false;
+        }
+        if (sampaiVal) {
+          const itemDate = new Date(item.tanggal_ambil);
+          const sampaiDate = new Date(sampaiVal);
+          sampaiDate.setHours(23, 59, 59, 999);
+          if (itemDate > sampaiDate) return false;
+        }
+
+        if (searchVal) {
+          const nama = (item.nama_peminjam || '').toLowerCase();
+          const unit = (item.unit_ruangan || '').toLowerCase();
+          const barangNama = (item.barang?.nama || '').toLowerCase();
+          const barangKode = (item.barang?.kode_barang || '').toLowerCase();
+          const ket = (item.keterangan || '').toLowerCase();
+          if (!nama.includes(searchVal) && !unit.includes(searchVal) && !barangNama.includes(searchVal) && !barangKode.includes(searchVal) && !ket.includes(searchVal)) return false;
+        }
+        return true;
+      });
+
+      if (itemsToExport.length === 0) {
+        showToast('Tidak ada baris data sesuai filter yang dipilih!', 'error');
+        return;
+      }
+
+      const headers = ['No', 'Kode Barang', 'Nama Barang', 'Nama Peminjam', 'Unit Ruangan', 'Jumlah', 'Tanggal Ambil', 'Batas Waktu Kembali', 'Tanggal Kembali', 'Status Peminjaman', 'Keterangan'];
+      const rows = itemsToExport.map((item, idx) => {
+        const isKembali = item.status === 'kembali';
+        const isOverdue = !isKembali && new Date(item.batas_waktu_kembali) < now;
+        let statusText = 'Dipinjam';
+        if (isKembali) statusText = 'Sudah Dikembalikan';
+        else if (isOverdue) statusText = 'Terlambat';
+
+        return [
+          idx + 1,
+          `"${(item.barang?.kode_barang || '').replace(/"/g, '""')}"`,
+          `"${(item.barang?.nama || '').replace(/"/g, '""')}"`,
+          `"${(item.nama_peminjam || '').replace(/"/g, '""')}"`,
+          `"${(item.unit_ruangan || '').replace(/"/g, '""')}"`,
+          item.jumlah || 1,
+          `"${item.tanggal_ambil ? new Date(item.tanggal_ambil).toLocaleString('id-ID') : '-'}"`,
+          `"${item.batas_waktu_kembali ? new Date(item.batas_waktu_kembali).toLocaleString('id-ID') : '-'}"`,
+          `"${item.tanggal_kembali ? new Date(item.tanggal_kembali).toLocaleString('id-ID') : '-'}"`,
+          `"${statusText}"`,
+          `"${(item.keterangan || '').replace(/"/g, '""')}"`
+        ].join(',');
+      });
+
+      const csvContent = headers.join(',') + '\n' + rows.join('\n');
+      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const dateStr = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `Laporan_Peminjaman_Aset_RSUD_RT_Notopuro_${dateStr}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast('File CSV/Excel laporan peminjaman berhasil diunduh!', 'success');
+    }
+
+    function printLaporan() {
+      const dateSpan = document.getElementById('printDateSpan');
+      const signDateSpan = document.getElementById('printSignDateSpan');
+      const staffNameSpan = document.getElementById('printStaffNameSpan');
+
+      const nowStr = new Date().toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+
+      if (dateSpan) dateSpan.innerText = `Tanggal Cetak: ${nowStr}`;
+      if (signDateSpan) signDateSpan.innerText = nowStr;
+      if (staffNameSpan && currentUser) {
+        staffNameSpan.innerText = currentUser.email || 'Petugas Logistik TU';
+      }
+
+      window.print();
+    }
+
+    document.getElementById('filterDariTanggal')?.addEventListener('change', renderFilteredLaporan);
+    document.getElementById('filterSampaiTanggal')?.addEventListener('change', renderFilteredLaporan);
+    document.getElementById('filterStatus')?.addEventListener('change', renderFilteredLaporan);
+    document.getElementById('filterSearch')?.addEventListener('input', renderFilteredLaporan);
+    document.getElementById('btnResetFilter')?.addEventListener('click', () => {
+      const d1 = document.getElementById('filterDariTanggal');
+      const d2 = document.getElementById('filterSampaiTanggal');
+      const s = document.getElementById('filterStatus');
+      const q = document.getElementById('filterSearch');
+      if (d1) d1.value = '';
+      if (d2) d2.value = '';
+      if (s) s.value = 'semua';
+      if (q) q.value = '';
+      renderFilteredLaporan();
+    });
+    document.getElementById('btnCetakLaporan')?.addEventListener('click', printLaporan);
+    document.getElementById('btnExportCsv')?.addEventListener('click', exportToCsv);
     document.getElementById('refreshDataBtn').addEventListener('click', loadData);
 
     window.addEventListener('DOMContentLoaded', initApp);
