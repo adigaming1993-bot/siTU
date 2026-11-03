@@ -245,6 +245,14 @@
             <span>Home Dashboard</span>
           </button>
 
+          <!-- Menu: + Catat Peminjaman (Tepat di bawah Home Dashboard) -->
+          <button id="sidebarPeminjamanBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>+ Catat Peminjaman</span>
+          </button>
+
           <!-- Menu 2: Tambah Barang (SATU-SATUNYA PEMICU INPUT SESUAI INSTRUKSI) -->
           <button id="sidebarAddBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
             <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,15 +277,7 @@
             <span>Distribusi / SBBK</span>
           </button>
 
-          <!-- Menu 5: Peminjaman Aset / Pelacakan -->
-          <button id="sidebarPeminjamanBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
-            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <span>Catat Peminjaman</span>
-          </button>
-
-          <!-- Menu Baru: Riwayat & Laporan Aset -->
+          <!-- Menu: Riwayat & Laporan Aset -->
           <button id="sidebarRiwayatBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
             <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -620,9 +620,6 @@
             <p class="text-xs sm:text-sm text-slate-500 mt-1">Laporan rekapitulasi, pelacakan peminjam, bukti tanda tangan digital, dan ekspor dokumen</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="openPeminjamanModal()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
-              <span>+ Catat Pinjam Baru</span>
-            </button>
             <button onclick="loadRiwayatLaporan()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition shadow-sm flex items-center gap-1">
               <span>🔄 Refresh Data</span>
             </button>
