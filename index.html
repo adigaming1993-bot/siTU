@@ -339,13 +339,14 @@
 
           <!-- Tabel Ringkas Peminjaman Terlambat (Borderless) -->
           <div class="overflow-x-auto bg-white/70 backdrop-blur-sm rounded-xl border border-rose-100 p-2">
-            <table class="w-full text-left text-xs border-none min-w-[540px]">
+            <table class="w-full text-left text-xs border-none min-w-[620px]">
               <thead class="text-rose-900 font-bold uppercase tracking-wider border-b border-rose-200/60">
                 <tr>
                   <th class="py-2.5 px-3">Nama Barang</th>
                   <th class="py-2.5 px-3">Nama Peminjam</th>
                   <th class="py-2.5 px-3">Unit / Ruangan</th>
                   <th class="py-2.5 px-3">Batas Kembali</th>
+                  <th class="py-2.5 px-3 text-center">Bukti TTD</th>
                   <th class="py-2.5 px-3">Status Telat</th>
                   <th class="py-2.5 px-3 text-right">Aksi</th>
                 </tr>
@@ -861,12 +862,12 @@
   <!-- 6. MODAL 4: CATAT PEMINJAMAN ASET (Pelacakan Peminjaman)                   -->
   <!-- ========================================================================= -->
   <div id="peminjamanModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8 max-h-[90vh] flex flex-col">
       
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
         <div>
-          <h3 class="font-bold text-slate-800 text-base">Pencatatan Peminjaman Aset</h3>
-          <p class="text-xs text-slate-400">Pelacakan masa pakai dan batas waktu pengembalian</p>
+          <h3 class="font-bold text-slate-800 text-base">Pencatatan & Riwayat Peminjaman Aset</h3>
+          <p class="text-xs text-slate-400">Pelacakan masa pakai, bukti tanda tangan digital, dan batas pengembalian</p>
         </div>
         <button type="button" id="closePeminjamanModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -875,68 +876,129 @@
         </button>
       </div>
 
-      <div class="overflow-x-auto">
-      <form id="peminjamanForm" class="p-6 space-y-4">
-        
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Barang / Aset yang Dipinjam *</label>
-          <select id="pinjamBarangSelect" required
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition">
-            <option value="">-- Pilih Barang --</option>
-          </select>
+      <div class="overflow-y-auto flex-1">
+        <!-- Bagian 1: Formulir Pencatatan Peminjaman Aset Baru -->
+        <div class="overflow-x-auto">
+          <form id="peminjamanForm" class="p-6 space-y-4">
+            
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Barang / Aset yang Dipinjam *</label>
+              <select id="pinjamBarangSelect" required
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition">
+                <option value="">-- Pilih Barang --</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Staf Peminjam *</label>
+                <input type="text" id="pinjamNama" required placeholder="dr. Bambang / Ns. Ratna"
+                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Unit / Ruangan Peminjam *</label>
+                <input type="text" id="pinjamUnit" required placeholder="Instalasi Rawat Inap / Poli Anak"
+                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Unit *</label>
+                <input type="number" id="pinjamJumlah" required min="1" value="1"
+                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Batas Waktu Pengembalian *</label>
+                <input type="datetime-local" id="pinjamBatasWaktu" required
+                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Keperluan / Keterangan</label>
+              <textarea id="pinjamKeterangan" rows="2" placeholder="Keperluan rapat komite medik / seminar akreditasi..."
+                class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition"></textarea>
+            </div>
+
+            <!-- Tanda Tangan Digital Peminjam (Interaktif Canvas) -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="block text-xs font-bold text-slate-600 uppercase">
+                  Tanda Tangan Digital Peminjam *
+                </label>
+                <button type="button" id="clearTtdBtn" class="text-xs text-rose-600 hover:text-rose-800 font-semibold flex items-center gap-1 transition">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                  <span>Hapus / Ulangi TTD</span>
+                </button>
+              </div>
+              <div class="relative w-full h-36 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden hover:border-indigo-400 focus-within:border-indigo-500 transition">
+                <canvas id="ttdCanvas" class="w-full h-full cursor-crosshair touch-none"></canvas>
+                <div id="ttdPlaceholder" class="pointer-events-none absolute inset-0 flex items-center justify-center text-xs text-slate-400 font-medium select-none">
+                  ✍️ Goreskan tanda tangan staf peminjam di sini
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1 italic">
+                * Gunakan mouse pada PC atau sentuhan jari langsung di layar HP/tablet.
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+              <button type="button" id="cancelPeminjamanModalBtn" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+                Batal
+              </button>
+              <button type="submit" id="savePeminjamanBtn"
+                class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center gap-2">
+                <span id="savePeminjamanSpinner" class="hidden">
+                  <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                  </svg>
+                </span>
+                <span id="savePeminjamanText">Simpan Peminjaman</span>
+              </button>
+            </div>
+
+          </form>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Staf Peminjam *</label>
-            <input type="text" id="pinjamNama" required placeholder="dr. Bambang / Ns. Ratna"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+        <!-- Bagian 2: Tabel Riwayat Peminjaman Aset & Bukti TTD -->
+        <div class="p-6 bg-slate-50 border-t border-slate-200/80 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Tabel Riwayat Peminjaman Aset</h4>
+              <p class="text-[11px] text-slate-500">Daftar peminjaman logistik aktif dan bukti tanda tangan digital</p>
+            </div>
+            <button type="button" onclick="loadPeminjaman()" class="text-xs text-indigo-700 hover:text-indigo-900 font-bold flex items-center gap-1">
+              🔄 Refresh Riwayat
+            </button>
           </div>
 
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Unit / Ruangan Peminjam *</label>
-            <input type="text" id="pinjamUnit" required placeholder="Instalasi Rawat Inap / Poli Anak"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+          <div class="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
+            <table class="w-full text-left text-xs border-none min-w-[620px]">
+              <thead class="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-100">
+                <tr>
+                  <th class="py-2.5 px-3">Barang & Peminjam</th>
+                  <th class="py-2.5 px-3">Unit / Ruangan</th>
+                  <th class="py-2.5 px-3">Batas Waktu</th>
+                  <th class="py-2.5 px-3 text-center">Bukti TTD</th>
+                  <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2.5 px-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="riwayatPinjamTableBody" class="divide-y divide-slate-100 text-slate-700">
+                <tr>
+                  <td colspan="6" class="py-4 text-center text-slate-400">Memuat riwayat peminjaman...</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Unit *</label>
-            <input type="number" id="pinjamJumlah" required min="1" value="1"
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Batas Waktu Pengembalian *</label>
-            <input type="datetime-local" id="pinjamBatasWaktu" required
-              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Keperluan / Keterangan</label>
-          <textarea id="pinjamKeterangan" rows="2" placeholder="Keperluan rapat komite medik / seminar akreditasi..."
-            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition"></textarea>
-        </div>
-
-        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-          <button type="button" id="cancelPeminjamanModalBtn" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
-            Batal
-          </button>
-          <button type="submit" id="savePeminjamanBtn"
-            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center gap-2">
-            <span id="savePeminjamanSpinner" class="hidden">
-              <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-              </svg>
-            </span>
-            <span id="savePeminjamanText">Simpan Peminjaman</span>
-          </button>
-        </div>
-
-      </form>
       </div>
     </div>
   </div>
@@ -946,6 +1008,29 @@
   <!-- 7. TOAST CONTAINER                                                        -->
   <!-- ========================================================================= -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ========================================================================= -->
+  <!-- 7b. MODAL PREVIEW TANDA TANGAN DIGITAL                                     -->
+  <!-- ========================================================================= -->
+  <div id="previewTtdModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-slate-100 p-6 text-center space-y-4 fade-in">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-sm font-bold text-slate-800">Bukti Tanda Tangan Digital</h3>
+        <button type="button" onclick="closePreviewTtdModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-center min-h-[140px]">
+        <img id="previewTtdImg" src="" alt="Tanda Tangan Peminjam" class="max-h-36 max-w-full object-contain">
+      </div>
+      <p id="previewTtdNama" class="text-xs font-semibold text-slate-700"></p>
+      <button type="button" onclick="closePreviewTtdModal()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">
+        Tutup
+      </button>
+    </div>
+  </div>
 
 
   <!-- ========================================================================= -->
@@ -990,13 +1075,26 @@
           auth: { persistSession: true, storageKey: 'situ_session_token' }
         });
 
-        // Cek sesi login aktif
+        // Cek sesi login aktif & status akun
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
+          const { data: prof } = await supabaseClient
+            .from('profil_user')
+            .select('is_active')
+            .eq('id', session.user.id)
+            .single();
+
+          if (prof && prof.is_active === false) {
+            await supabaseClient.auth.signOut();
+            showLogin();
+            showToast('Akun Anda telah dinonaktifkan', 'error');
+            return;
+          }
           showDashboard(session.user);
         } else {
           showLogin();
         }
+        setupTtdCanvasListeners();
 
         supabaseClient.auth.onAuthStateChange((event, session) => {
           if (event === 'SIGNED_IN' && session?.user) {
@@ -1038,7 +1136,7 @@
           if (data.is_active === false) {
             await supabaseClient.auth.signOut();
             showLogin();
-            showToast('Akses akun ini telah dinonaktifkan oleh Administrator TU (Pindah tugas / mutasi dinas).', 'error');
+            showToast('Akun Anda telah dinonaktifkan', 'error');
             return;
           }
           document.getElementById('sidebarUserRole').innerText = `${data.role === 'kepala_tu' ? 'Kepala TU' : 'Staf Gudang'} (${data.nama_lengkap || ''})`;
@@ -1078,7 +1176,7 @@
 
           if (prof && prof.is_active === false) {
             await supabaseClient.auth.signOut();
-            throw new Error('Akses akun Anda telah dinonaktifkan oleh Administrator TU (Pindah tugas / mutasi dinas). Hubungi Kepala Bagian Tata Usaha.');
+            throw new Error('Akun Anda telah dinonaktifkan');
           }
         }
 
@@ -1254,6 +1352,14 @@
                 <td class="py-2.5 px-3 font-semibold text-rose-950">${item.nama_peminjam || '-'}</td>
                 <td class="py-2.5 px-3 text-slate-600">${item.unit_ruangan || '-'}</td>
                 <td class="py-2.5 px-3 font-mono text-slate-600">${batas.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                <td class="py-2.5 px-3 text-center">
+                  ${item.ttd_peminjam ? `
+                    <img src="${item.ttd_peminjam}" alt="TTD ${item.nama_peminjam || 'Peminjam'}"
+                         class="h-7 max-w-[64px] inline-block bg-white border border-rose-200 rounded p-0.5 shadow-xs cursor-pointer hover:scale-110 transition"
+                         onclick="openPreviewTtd('${item.ttd_peminjam}', '${item.nama_peminjam || 'Peminjam'}')"
+                         title="Klik untuk lihat TTD" />
+                  ` : `<span class="text-[10px] text-slate-400 italic">Tanpa TTD</span>`}
+                </td>
                 <td class="py-2.5 px-3">
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black bg-rose-600 text-white">
                     Lewat ${diffDays} Hari
@@ -1273,6 +1379,50 @@
           // Tidak ada keterlambatan -> sembunyikan peringatan merah
           alertSection.classList.add('hidden');
           noOverdueNotice.classList.remove('hidden');
+        }
+
+        // Render Tabel Riwayat Peminjaman di dalam Modal Peminjaman
+        const riwayatTbody = document.getElementById('riwayatPinjamTableBody');
+        if (riwayatTbody) {
+          if (peminjamanList.length === 0) {
+            riwayatTbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-xs text-slate-400">Belum ada catatan peminjaman aset.</td></tr>`;
+          } else {
+            riwayatTbody.innerHTML = peminjamanList.map(item => {
+              const batas = new Date(item.batas_waktu_kembali);
+              const isOverdue = batas < now;
+              const namaBarang = item.barang?.nama || 'Barang Logistik';
+              const kodeBarang = item.barang?.kode_barang || '-';
+              const ttdThumb = item.ttd_peminjam ? `
+                <img src="${item.ttd_peminjam}" alt="TTD ${item.nama_peminjam || 'Peminjam'}"
+                     class="h-7 max-w-[64px] inline-block bg-slate-50 border border-slate-200 rounded p-0.5 shadow-xs cursor-pointer hover:scale-110 transition"
+                     onclick="openPreviewTtd('${item.ttd_peminjam}', '${item.nama_peminjam || 'Peminjam'}')"
+                     title="Klik untuk perbesar tanda tangan" />
+              ` : `<span class="text-[10px] text-slate-400 italic">Tanpa TTD</span>`;
+
+              const statusBadge = isOverdue
+                ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black bg-rose-600 text-white">Terlambat</span>`
+                : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Dipinjam</span>`;
+
+              return `
+                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                  <td class="py-2.5 px-3">
+                    <span class="font-bold text-slate-800 text-xs block">${namaBarang}</span>
+                    <span class="text-[10px] text-slate-500 font-mono">${item.nama_peminjam || '-'} (${kodeBarang})</span>
+                  </td>
+                  <td class="py-2.5 px-3 text-slate-600">${item.unit_ruangan || '-'}</td>
+                  <td class="py-2.5 px-3 font-mono text-slate-600">${batas.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                  <td class="py-2.5 px-3 text-center">${ttdThumb}</td>
+                  <td class="py-2.5 px-3">${statusBadge}</td>
+                  <td class="py-2.5 px-3 text-right">
+                    <button onclick="tandaiKembali('${item.id}', '${namaBarang}')"
+                      class="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg text-[11px] font-bold shadow-sm transition">
+                      ✓ Sudah Kembali
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join('');
+          }
         }
 
       } catch (err) {
@@ -1733,7 +1883,7 @@
 
           const statusBadge = isActive
             ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif</span>`
-            : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-300"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif</span>`;
+            : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Nonaktif</span>`;
 
           // AKSI HANYA: Sakelar Nonaktifkan / Aktifkan Akses (TANPA TOMBOL HAPUS / TANPA TRASH CAN)
           const actionBtn = isActive
@@ -1743,18 +1893,18 @@
                </button>`
             : `<button onclick="toggleUserActive('${u.id}', true, '${u.nama_lengkap || 'Staf'}')"
                  class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition shadow-sm">
-                 Aktifkan Kembali
+                 Aktifkan Akses
                </button>`;
 
           return `
-            <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100" id="user-row-${u.id}">
               <td class="py-2.5 px-3">
                 <span class="font-bold text-slate-800 text-xs block">${u.nama_lengkap || 'Pegawai'}</span>
                 <span class="text-[10px] text-slate-400 font-mono">${u.nip ? 'NIP: ' + u.nip : (u.jabatan || '-')}</span>
               </td>
               <td class="py-2.5 px-3">${roleBadge}</td>
-              <td class="py-2.5 px-3">${statusBadge}</td>
-              <td class="py-2.5 px-3 text-right">${actionBtn}</td>
+              <td class="py-2.5 px-3" id="user-status-cell-${u.id}">${statusBadge}</td>
+              <td class="py-2.5 px-3 text-right" id="user-action-cell-${u.id}">${actionBtn}</td>
             </tr>
           `;
         }).join('');
@@ -1771,12 +1921,33 @@
       if (!confirm(`Konfirmasi ${actionText} akun staf "${nama}"?\n\nCatatan: Riwayat persetujuan mutasi dan berita acara logistik sebelumnya tetap aman tersimpan.`)) return;
 
       try {
-        const { error } = await supabaseClient
+        const { data, error } = await supabaseClient
           .from('profil_user')
           .update({ is_active: newStatus })
-          .eq('id', userId);
+          .eq('id', userId)
+          .select();
 
         if (error) throw error;
+
+        // Validasi jika baris tidak ter-update karena RLS
+        if (!data || data.length === 0) {
+          alert('Akses ditolak oleh RLS. Anda tidak memiliki izin untuk mengubah status akun staf ini.');
+          showToast('Akses ditolak oleh RLS. Hubungi Kepala Bagian TU.', 'error');
+          return;
+        }
+
+        // Perbarui tampilan badge dan tombol secara langsung di DOM
+        const statusCell = document.getElementById(`user-status-cell-${userId}`);
+        const actionCell = document.getElementById(`user-action-cell-${userId}`);
+        if (statusCell && actionCell) {
+          if (newStatus) {
+            statusCell.innerHTML = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif</span>`;
+            actionCell.innerHTML = `<button onclick="toggleUserActive('${userId}', false, '${nama}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 transition shadow-sm">Nonaktifkan Akses</button>`;
+          } else {
+            statusCell.innerHTML = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Nonaktif</span>`;
+            actionCell.innerHTML = `<button onclick="toggleUserActive('${userId}', true, '${nama}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition shadow-sm">Aktifkan Akses</button>`;
+          }
+        }
 
         const msg = newStatus
           ? `Akses staf "${nama}" telah diaktifkan kembali.`
@@ -1786,6 +1957,7 @@
         await loadRegisteredUsers();
 
       } catch (err) {
+        alert('Gagal: ' + (err.message || 'Akses ditolak oleh RLS'));
         showToast('Gagal memperbarui status staf: ' + err.message, 'error');
       }
     };
@@ -1798,12 +1970,16 @@
 
     function openPeminjamanModal() {
       peminjamanForm.reset();
+      clearTtdCanvas();
       peminjamanModal.classList.remove('hidden');
 
       // Default batas waktu = 3 hari ke depan
       const d = new Date();
       d.setDate(d.getDate() + 3);
       document.getElementById('pinjamBatasWaktu').value = d.toISOString().slice(0, 16);
+
+      setTimeout(initTtdCanvas, 60);
+      loadPeminjaman();
     }
     function closePeminjamanModal() {
       peminjamanModal.classList.add('hidden');
@@ -1821,12 +1997,23 @@
       const spinner = document.getElementById('savePeminjamanSpinner');
       const text = document.getElementById('savePeminjamanText');
 
+      // Validasi tanda tangan digital tidak boleh kosong
+      if (!hasSignature) {
+        showToast('Tanda tangan digital peminjam wajib diisi!', 'error');
+        const canvas = document.getElementById('ttdCanvas');
+        if (canvas) canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
       const barangId = document.getElementById('pinjamBarangSelect').value;
       const nama = document.getElementById('pinjamNama').value.trim();
       const unit = document.getElementById('pinjamUnit').value.trim();
       const jumlah = parseInt(document.getElementById('pinjamJumlah').value, 10);
       const batasWaktu = document.getElementById('pinjamBatasWaktu').value;
       const keterangan = document.getElementById('pinjamKeterangan').value.trim();
+
+      const canvas = document.getElementById('ttdCanvas');
+      const ttdBase64 = canvas ? canvas.toDataURL('image/png') : null;
 
       saveBtn.disabled = true;
       spinner.classList.remove('hidden');
@@ -1841,13 +2028,14 @@
           batas_waktu_kembali: new Date(batasWaktu).toISOString(),
           status: 'dipinjam',
           keterangan: keterangan,
+          ttd_peminjam: ttdBase64,
           created_by: currentUser?.id || null
         };
 
         const { error } = await supabaseClient.from('peminjaman').insert([pinjamRecord]);
         if (error) throw error;
 
-        showToast(`Peminjaman aset untuk ${nama} berhasil dicatat!`, 'success');
+        showToast(`Peminjaman aset untuk ${nama} berhasil dicatat dengan TTD!`, 'success');
         closePeminjamanModal();
         await loadPeminjaman();
 
@@ -1860,6 +2048,127 @@
         text.innerText = 'Simpan Peminjaman';
       }
     });
+
+    // =========================================================================
+    // CANVAS TANDA TANGAN DIGITAL (MOUSE & TOUCH EVENTS)
+    // =========================================================================
+    let isDrawingTtd = false;
+    let hasSignature = false;
+
+    function getCanvasCoordinates(e, canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else if (e.changedTouches && e.changedTouches.length > 0) {
+        clientX = e.changedTouches[0].clientX;
+        clientY = e.changedTouches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
+
+    function initTtdCanvas() {
+      const canvas = document.getElementById('ttdCanvas');
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.floor(rect.width) || 450;
+      const h = Math.floor(rect.height) || 140;
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+    }
+
+    function clearTtdCanvas() {
+      const canvas = document.getElementById('ttdCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hasSignature = false;
+      const placeholder = document.getElementById('ttdPlaceholder');
+      if (placeholder) placeholder.style.display = 'flex';
+    }
+
+    function setupTtdCanvasListeners() {
+      const canvas = document.getElementById('ttdCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const startDraw = (e) => {
+        if (e.cancelable) e.preventDefault();
+        isDrawingTtd = true;
+        const coords = getCanvasCoordinates(e, canvas);
+        ctx.beginPath();
+        ctx.moveTo(coords.x, coords.y);
+      };
+
+      const moveDraw = (e) => {
+        if (!isDrawingTtd) return;
+        if (e.cancelable) e.preventDefault();
+        const coords = getCanvasCoordinates(e, canvas);
+        ctx.lineTo(coords.x, coords.y);
+        ctx.stroke();
+        hasSignature = true;
+        const placeholder = document.getElementById('ttdPlaceholder');
+        if (placeholder) placeholder.style.display = 'none';
+      };
+
+      const endDraw = (e) => {
+        if (isDrawingTtd) {
+          isDrawingTtd = false;
+          ctx.closePath();
+        }
+      };
+
+      canvas.addEventListener('mousedown', startDraw);
+      canvas.addEventListener('mousemove', moveDraw);
+      canvas.addEventListener('mouseup', endDraw);
+      canvas.addEventListener('mouseleave', endDraw);
+
+      canvas.addEventListener('touchstart', startDraw, { passive: false });
+      canvas.addEventListener('touchmove', moveDraw, { passive: false });
+      canvas.addEventListener('touchend', endDraw, { passive: false });
+      canvas.addEventListener('touchcancel', endDraw, { passive: false });
+
+      const clearBtn = document.getElementById('clearTtdBtn');
+      if (clearBtn) clearBtn.addEventListener('click', clearTtdCanvas);
+    }
+
+    window.openPreviewTtd = function(src, name) {
+      const modal = document.getElementById('previewTtdModal');
+      const img = document.getElementById('previewTtdImg');
+      const nameEl = document.getElementById('previewTtdNama');
+      if (!modal || !img) return;
+      img.src = src;
+      if (nameEl) nameEl.innerText = `Peminjam: ${name}`;
+      modal.classList.remove('hidden');
+    };
+
+    window.closePreviewTtdModal = function() {
+      const modal = document.getElementById('previewTtdModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    const previewTtdModalEl = document.getElementById('previewTtdModal');
+    if (previewTtdModalEl) {
+      previewTtdModalEl.addEventListener('click', (e) => {
+        if (e.target === previewTtdModalEl) closePreviewTtdModal();
+      });
+    }
 
     document.getElementById('refreshDataBtn').addEventListener('click', loadData);
 
