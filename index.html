@@ -1131,8 +1131,8 @@
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Penanggung Jawab / Staf yang Menyerahkan *</label>
             <div class="relative">
-              <input type="text" id="pinjamPenanggungJawab" required readonly placeholder="Nama Petugas TU Logistik"
-                class="w-full px-3.5 py-2.5 bg-gray-100 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 cursor-not-allowed select-none outline-none transition pr-28" />
+              <input type="text" id="pinjamPenanggungJawab" readonly disabled placeholder="Nama Petugas TU Logistik"
+                class="w-full px-3.5 py-2.5 bg-gray-200 cursor-not-allowed text-gray-500 pointer-events-none border border-slate-300 rounded-xl text-sm font-semibold select-none outline-none transition pr-28" />
               <span class="absolute right-2.5 top-2.5 text-[10px] text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-200">
                 🔒 Terkunci (Sesi Aktif)
               </span>
@@ -2282,7 +2282,7 @@
           keterangan: keterangan,
           ttd_peminjam: ttdBase64,
           penanggung_jawab: penanggungJawab,
-          created_by: currentUser?.id || null
+          created_by: currentUser?.id || (await supabaseClient.auth.getSession())?.data?.session?.user?.id || null
         };
 
         const { error } = await supabaseClient.from('peminjaman').insert([pinjamRecord]);
