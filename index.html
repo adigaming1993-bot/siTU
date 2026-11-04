@@ -249,8 +249,8 @@
             <span>+ Catat Peminjaman</span>
           </button>
 
-          <!-- Menu 2: Tambah Barang (SATU-SATUNYA PEMICU INPUT SESUAI INSTRUKSI) -->
-          <button id="sidebarAddBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+          <!-- Menu 2: Tambah Barang (Terhubung Form Input Data Barang ke Supabase) -->
+          <button id="sidebarAddBtn" onclick="openAddModal()" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
             <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
@@ -506,29 +506,45 @@
       <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         <!-- Tabel Bagian 1: Ringkasan Katalog Logistik TU -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
-          <div class="flex items-center justify-between mb-4">
+        <div id="tableKatalogContainer" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div>
-              <h3 class="text-base font-bold text-slate-800">Katalog Barang Terkini</h3>
-              <p class="text-xs text-slate-400">Daftar inventaris umum Tata Usaha</p>
+              <h3 class="text-base font-bold text-slate-800">Daftar & Katalog Barang</h3>
+              <p class="text-xs text-slate-400">Manajemen inventaris umum Tata Usaha</p>
             </div>
-            <span class="text-[11px] font-semibold text-slate-400">Terbanyak Disimpan</span>
+            <div class="flex items-center gap-2">
+              <div class="relative">
+                <input type="text" id="katalogSearchInput" placeholder="Cari nama / kode..."
+                  class="pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition w-36 sm:w-44" />
+                <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+              <button type="button" onclick="openAddModal()"
+                class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition flex items-center gap-1 shadow-sm whitespace-nowrap">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span>+ Tambah</span>
+              </button>
+            </div>
           </div>
 
           <!-- Tabel Borderless -->
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm border-none min-w-[460px]">
-              <thead class="text-xs uppercase font-semibold text-slate-400 border-b border-slate-100">
+          <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+            <table class="w-full text-left text-sm border-none min-w-[500px]">
+              <thead class="text-xs uppercase font-semibold text-slate-400 border-b border-slate-100 sticky top-0 bg-white z-10">
                 <tr>
                   <th class="py-3 px-3">Kode</th>
                   <th class="py-3 px-3">Nama Barang</th>
                   <th class="py-3 px-3">Kategori</th>
                   <th class="py-3 px-3 text-right">Stok</th>
+                  <th class="py-3 px-3 text-center w-28">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tableKatalogBody" class="divide-y divide-slate-50 text-slate-700">
                 <tr>
-                  <td colspan="4" class="py-8 text-center text-xs text-slate-400">Memuat data barang...</td>
+                  <td colspan="5" class="py-8 text-center text-xs text-slate-400">Memuat data barang...</td>
                 </tr>
               </tbody>
             </table>
@@ -548,25 +564,25 @@
           </div>
 
           <!-- Tabel Borderless -->
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm border-none min-w-[420px]">
-              <thead class="text-xs uppercase font-semibold text-slate-400 border-b border-slate-100">
+          <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+            <table class="w-full text-left text-sm border-none min-w-[460px]">
+              <thead class="text-xs uppercase font-semibold text-slate-400 border-b border-slate-100 sticky top-0 bg-white z-10">
                 <tr>
                   <th class="py-3 px-3">Kode</th>
                   <th class="py-3 px-3">Nama Barang</th>
                   <th class="py-3 px-3 text-center">Sisa</th>
-                  <th class="py-3 px-3 text-right">Status</th>
+                  <th class="py-3 px-3 text-center">Status</th>
+                  <th class="py-3 px-3 text-center w-28">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tableKritisBody" class="divide-y divide-slate-50 text-slate-700">
                 <tr>
-                  <td colspan="4" class="py-8 text-center text-xs text-slate-400">Memeriksa stok kritis...</td>
+                  <td colspan="5" class="py-8 text-center text-xs text-slate-400">Memeriksa stok kritis...</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-
       </section>
       </div>
 
@@ -744,8 +760,11 @@
     <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
       
       <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-        <h3 class="font-bold text-slate-800 text-base">Tambah Barang Logistik Baru</h3>
-        <button type="button" id="closeAddModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+        <div>
+          <h3 class="font-bold text-slate-800 text-base">Tambah Barang Logistik Baru</h3>
+          <p class="text-xs text-slate-400">Input inventaris baru terhubung ke tabel barang Supabase</p>
+        </div>
+        <button type="button" id="closeAddModalBtn" onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
@@ -806,7 +825,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-          <button type="button" id="cancelAddModalBtn" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+          <button type="button" id="cancelAddModalBtn" onclick="closeAddModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
             Batal
           </button>
           <button type="submit" id="saveBarangBtn"
@@ -1233,6 +1252,27 @@
     let chartInstance = null;
     let barangList = [];
     let peminjamanList = [];
+
+    // Helper sanitasi string & HTML
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function escapeJsString(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '&quot;')
+        .replace(/\n/g, ' ')
+        .replace(/\r/g, '');
+    }
 
     // Sistem Notifikasi Toast
     function showToast(msg, type = 'success') {
@@ -1713,35 +1753,80 @@
       });
     }
 
-    // Render Dua Tabel Data Berdampingan (Borderless)
+    // =========================================================================
+    // RENDER TABEL KATALOG BARANG & PERINGATAN KRITIS
+    // =========================================================================
     function renderTables(items) {
-      // 1. Tabel Ringkasan Katalog Barang
+      renderKatalogTable(items || []);
+      renderKritisTable(items || []);
+    }
+
+    // 1. Tabel Utama: Daftar & Katalog Barang Terkini
+    function renderKatalogTable(items) {
       const katalogBody = document.getElementById('tableKatalogBody');
-      if (items.length === 0) {
-        katalogBody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-xs text-slate-400">Belum ada barang di database.</td></tr>`;
-      } else {
-        katalogBody.innerHTML = items.slice(0, 7).map(item => `
-          <tr class="hover:bg-slate-50/80 transition-colors">
-            <td class="py-2.5 px-3 font-mono text-xs font-bold text-slate-500">${item.kode_barang || '-'}</td>
-            <td class="py-2.5 px-3 font-semibold text-slate-800 text-xs">${item.nama || '-'}</td>
-            <td class="py-2.5 px-3 text-[11px] text-slate-500">${item.kategori || 'Umum'}</td>
-            <td class="py-2.5 px-3 text-right font-extrabold text-slate-800 text-xs">${item.stok} <span class="text-[10px] text-slate-400 font-normal">${item.satuan || ''}</span></td>
+      if (!katalogBody) return;
+
+      const searchInput = document.getElementById('katalogSearchInput');
+      const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+      const list = items || [];
+      const filtered = query
+        ? list.filter(b => 
+            (b.nama && b.nama.toLowerCase().includes(query)) ||
+            (b.kode_barang && b.kode_barang.toLowerCase().includes(query)) ||
+            (b.kategori && b.kategori.toLowerCase().includes(query))
+          )
+        : list;
+
+      if (filtered.length === 0) {
+        katalogBody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-8 text-center text-xs text-slate-400">
+              ${query ? `Tidak ada barang yang cocok dengan kata kunci "${escapeHtml(query)}".` : 'Belum ada barang di database.'}
+            </td>
           </tr>
-        `).join('');
+        `;
+        return;
       }
 
-      // 2. Tabel Peringatan Kritis & Habis
+      katalogBody.innerHTML = filtered.map(item => `
+        <tr class="hover:bg-slate-50/80 transition-colors">
+          <td class="py-2.5 px-3 font-mono text-xs font-bold text-slate-500">${escapeHtml(item.kode_barang || '-')}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-800 text-xs">${escapeHtml(item.nama || '-')}</td>
+          <td class="py-2.5 px-3 text-[11px] text-slate-500">${escapeHtml(item.kategori || 'Umum')}</td>
+          <td class="py-2.5 px-3 text-right font-extrabold text-slate-800 text-xs">
+            ${item.stok} <span class="text-[10px] text-slate-400 font-normal">${escapeHtml(item.satuan || '')}</span>
+          </td>
+          <td class="py-2.5 px-3 text-center">
+            <button type="button" onclick="hapusBarang('${item.id}', '${escapeJsString(item.nama || '')}')"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white border border-rose-200 transition shadow-xs"
+              title="Hapus Barang">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              <span>Hapus</span>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 2. Tabel Peringatan Kritis & Habis
+    function renderKritisTable(items) {
       const kritisBody = document.getElementById('tableKritisBody');
-      const kritisItems = items.filter(i => {
+      if (!kritisBody) return;
+
+      const list = items || [];
+      const kritisItems = list.filter(i => {
         const s = Number(i.stok) || 0;
         const min = Number(i.stok_minimum) || 5;
         return s <= min;
       });
 
       if (kritisItems.length === 0) {
-        kritisBody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-xs text-emerald-600 font-medium">✅ Seluruh stok barang dalam kondisi aman!</td></tr>`;
+        kritisBody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-xs text-emerald-600 font-medium">✅ Seluruh stok barang dalam kondisi aman!</td></tr>`;
       } else {
-        kritisBody.innerHTML = kritisItems.slice(0, 7).map(item => {
+        kritisBody.innerHTML = kritisItems.map(item => {
           const s = Number(item.stok) || 0;
           const isHabis = s === 0;
           const statusBadge = isHabis
@@ -1750,10 +1835,20 @@
 
           return `
             <tr class="hover:bg-slate-50/80 transition-colors">
-              <td class="py-2.5 px-3 font-mono text-xs font-bold text-slate-500">${item.kode_barang || '-'}</td>
-              <td class="py-2.5 px-3 font-semibold text-slate-800 text-xs">${item.nama || '-'}</td>
+              <td class="py-2.5 px-3 font-mono text-xs font-bold text-slate-500">${escapeHtml(item.kode_barang || '-')}</td>
+              <td class="py-2.5 px-3 font-semibold text-slate-800 text-xs">${escapeHtml(item.nama || '-')}</td>
               <td class="py-2.5 px-3 text-center font-extrabold ${isHabis ? 'text-rose-600' : 'text-amber-600'} text-xs">${item.stok}</td>
-              <td class="py-2.5 px-3 text-right">${statusBadge}</td>
+              <td class="py-2.5 px-3 text-center">${statusBadge}</td>
+              <td class="py-2.5 px-3 text-center">
+                <button type="button" onclick="hapusBarang('${item.id}', '${escapeJsString(item.nama || '')}')"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white border border-rose-200 transition shadow-xs"
+                  title="Hapus Barang">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                  <span>Hapus</span>
+                </button>
+              </td>
             </tr>
           `;
         }).join('');
@@ -1761,64 +1856,168 @@
     }
 
     // =========================================================================
-    // MODAL 1: FORM TAMBAH BARANG (SATU-SATUNYA PEMICU DARI SIDEBAR)
+    // FUNGSI HAPUS BARANG (SUPABASE: DELETE FROM barang WHERE id = ...)
+    // =========================================================================
+    window.hapusBarang = async function(id, nama) {
+      if (!id) {
+        showToast('ID barang tidak valid.', 'error');
+        return;
+      }
+
+      const namaBarang = nama || 'item ini';
+      const confirmed = window.confirm(
+        `⚠️ KONFIRMASI PENGHAPUSAN BARANG LOGISTIK\n\n` +
+        `Apakah Anda yakin ingin menghapus "${namaBarang}" dari katalog inventaris?\n\n` +
+        `Data barang ini akan dihapus secara permanen dari tabel barang di database Supabase.`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        if (!supabaseClient) {
+          throw new Error('Koneksi Supabase belum terinisialisasi. Silakan refresh halaman.');
+        }
+
+        // Supabase: DELETE FROM barang WHERE id = ...
+        const { error } = await supabaseClient
+          .from('barang')
+          .delete()
+          .eq('id', id);
+
+        if (error) {
+          throw error;
+        }
+
+        showToast(`Barang "${namaBarang}" berhasil dihapus dari database!`, 'success');
+
+        // Muat ulang seluruh katalog barang & perbarui visual dashboard
+        await loadData();
+
+      } catch (err) {
+        console.error('Error hapus barang:', err);
+        let msg = err.message || 'Terjadi kesalahan sistem.';
+        if (msg.includes('foreign key') || msg.includes('violates foreign key constraint') || err.code === '23503') {
+          msg = `Barang "${namaBarang}" tidak dapat dihapus karena masih tercatat pada transaksi mutasi logistik atau riwayat peminjaman aset. Hapus mutasi/peminjaman terkait terlebih dahulu jika ingin menghapus barang ini.`;
+        } else if (msg.includes('row-level security') || msg.includes('policy')) {
+          msg = `Akses hapus ditolak oleh kebijakan keamanan (RLS) Supabase. Pastikan Anda memiliki wewenang staf yang sesuai.`;
+        }
+        alert('Gagal Menghapus Barang:\n' + msg);
+        showToast('Gagal hapus: ' + msg, 'error');
+      }
+    };
+    window.deleteBarang = window.hapusBarang;
+
+    // =========================================================================
+    // MODAL 1: FORM TAMBAH BARANG (DIPICU DARI SIDEBAR 'TAMBAH BARANG')
     // =========================================================================
     const addBarangModal = document.getElementById('addBarangModal');
     const addBarangForm = document.getElementById('addBarangForm');
 
     function openAddModal() {
-      addBarangForm.reset();
-      addBarangModal.classList.remove('hidden');
-      document.getElementById('inputKode').focus();
-    }
-    function closeAddModal() {
-      addBarangModal.classList.add('hidden');
-    }
-
-    // Sidebar adalah satu-satunya pemicu form input
-    document.getElementById('sidebarAddBtn').addEventListener('click', openAddModal);
-    document.getElementById('closeAddModalBtn').addEventListener('click', closeAddModal);
-    document.getElementById('cancelAddModalBtn').addEventListener('click', closeAddModal);
-    addBarangModal.addEventListener('click', (e) => { if (e.target === addBarangModal) closeAddModal(); });
-
-    addBarangForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const saveBtn = document.getElementById('saveBarangBtn');
-      const spinner = document.getElementById('saveBtnSpinner');
-      const text = document.getElementById('saveBtnText');
-
-      saveBtn.disabled = true;
-      spinner.classList.remove('hidden');
-      text.innerText = 'Menyimpan...';
-
-      try {
-        const newRecord = {
-          kode_barang: document.getElementById('inputKode').value.trim(),
-          nama: document.getElementById('inputNama').value.trim(),
-          kategori: document.getElementById('inputKategori').value,
-          stok: parseInt(document.getElementById('inputStok').value, 10) || 0,
-          satuan: document.getElementById('inputSatuan').value.trim() || 'pcs',
-          stok_minimum: parseInt(document.getElementById('inputStokMin').value, 10) || 5,
-          lokasi_rak: document.getElementById('inputRak').value.trim(),
-        };
-
-        const { error } = await supabaseClient.from('barang').insert([newRecord]);
-        if (error) throw error;
-
-        showToast(`Barang "${newRecord.nama}" berhasil disimpan ke Supabase!`, 'success');
-        closeAddModal();
-        addBarangForm.reset();
-        await loadData();
-
-      } catch (err) {
-        console.error(err);
-        showToast('Gagal simpan barang: ' + err.message, 'error');
-      } finally {
-        saveBtn.disabled = false;
-        spinner.classList.add('hidden');
-        text.innerText = 'Simpan ke Supabase';
+      // Kembalikan view ke dashboard jika sedang berada di tab Riwayat & Laporan
+      if (typeof switchView === 'function') {
+        switchView('dashboard');
       }
-    });
+      if (typeof closeMobileSidebar === 'function' && window.innerWidth < 768) {
+        closeMobileSidebar();
+      }
+      if (addBarangForm) addBarangForm.reset();
+      if (addBarangModal) addBarangModal.classList.remove('hidden');
+      setTimeout(() => {
+        const inputKode = document.getElementById('inputKode');
+        if (inputKode) inputKode.focus();
+      }, 100);
+    }
+    window.openAddModal = openAddModal;
+
+    function closeAddModal() {
+      if (addBarangModal) addBarangModal.classList.add('hidden');
+    }
+    window.closeAddModal = closeAddModal;
+
+    // Event listener pemicu modal tambah barang dari sidebar dan tombol dialog
+    const sidebarAddBtnEl = document.getElementById('sidebarAddBtn');
+    if (sidebarAddBtnEl) sidebarAddBtnEl.addEventListener('click', openAddModal);
+
+    const closeAddBtnEl = document.getElementById('closeAddModalBtn');
+    if (closeAddBtnEl) closeAddBtnEl.addEventListener('click', closeAddModal);
+
+    const cancelAddBtnEl = document.getElementById('cancelAddModalBtn');
+    if (cancelAddBtnEl) cancelAddBtnEl.addEventListener('click', closeAddModal);
+
+    if (addBarangModal) {
+      addBarangModal.addEventListener('click', (e) => {
+        if (e.target === addBarangModal) closeAddModal();
+      });
+    }
+
+    // Submit Form Tambah Barang Baru -> Simpan ke Tabel Supabase 'barang'
+    if (addBarangForm) {
+      addBarangForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const saveBtn = document.getElementById('saveBarangBtn');
+        const spinner = document.getElementById('saveBtnSpinner');
+        const text = document.getElementById('saveBtnText');
+
+        saveBtn.disabled = true;
+        spinner.classList.remove('hidden');
+        text.innerText = 'Menyimpan...';
+
+        try {
+          const kode = document.getElementById('inputKode').value.trim();
+          const nama = document.getElementById('inputNama').value.trim();
+          const kategori = document.getElementById('inputKategori').value;
+          const stok = parseInt(document.getElementById('inputStok').value, 10) || 0;
+          const satuan = document.getElementById('inputSatuan').value.trim() || 'pcs';
+          const stokMin = parseInt(document.getElementById('inputStokMin').value, 10) || 5;
+          const lokasiRak = document.getElementById('inputRak').value.trim();
+
+          if (!kode || !nama || !kategori) {
+            throw new Error('Mohon lengkapi kode barang, nama, dan kategori.');
+          }
+
+          const newRecord = {
+            kode_barang: kode,
+            nama: nama,
+            kategori: kategori,
+            stok: stok,
+            satuan: satuan,
+            stok_minimum: stokMin,
+            lokasi_rak: lokasiRak || null
+          };
+
+          const activeUserId = currentUser?.id || (await supabaseClient?.auth?.getSession())?.data?.session?.user?.id;
+          if (activeUserId) {
+            newRecord.created_by = activeUserId;
+          }
+
+          const { data, error } = await supabaseClient.from('barang').insert([newRecord]).select();
+          if (error) throw error;
+
+          showToast(`Barang "${newRecord.nama}" berhasil disimpan ke Supabase!`, 'success');
+          closeAddModal();
+          addBarangForm.reset();
+          await loadData();
+
+          // Arahkan tampilan secara halus ke tabel barang
+          const tableContainer = document.getElementById('tableKatalogContainer');
+          if (tableContainer) {
+            tableContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+
+        } catch (err) {
+          console.error('Error simpan barang:', err);
+          alert('Gagal simpan barang: ' + (err.message || 'Terjadi kesalahan sistem'));
+          showToast('Gagal simpan barang: ' + err.message, 'error');
+        } finally {
+          saveBtn.disabled = false;
+          spinner.classList.add('hidden');
+          text.innerText = 'Simpan ke Supabase';
+        }
+      });
+    }
 
     // =========================================================================
     // MODAL 2: TRANSAKSI MUTASI (MUTASI MASUK / DISTRIBUSI KELUAR)
@@ -2779,6 +2978,9 @@
     document.getElementById('btnCetakLaporan')?.addEventListener('click', printLaporan);
     document.getElementById('btnExportCsv')?.addEventListener('click', exportToCsv);
     document.getElementById('refreshDataBtn').addEventListener('click', loadData);
+    document.getElementById('katalogSearchInput')?.addEventListener('input', () => {
+      renderKatalogTable(barangList);
+    });
 
     window.addEventListener('DOMContentLoaded', initApp);
   </script>
