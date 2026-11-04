@@ -1540,7 +1540,7 @@
         if (session && session.user) {
           const { data: prof } = await supabaseClient
             .from('profil_user')
-            .select('is_active')
+            .select('role, is_active')
             .eq('id', session.user.id)
             .single();
 
@@ -1550,6 +1550,20 @@
             showToast('Akun Anda telah dinonaktifkan', 'error');
             return;
           }
+
+          // Verifikasi Otorisasi: Pastikan peran Kepala Bagian Tata Usaha (kepala_tu) dan Staf Logistik diizinkan
+          if (prof && prof.role) {
+            const normalizedRole = (prof.role || '').toLowerCase();
+            const allowedRoles = ['staf_gudang', 'kepala_tu', 'admin', 'kepala bagian tata usaha', 'staf logistik tata usaha'];
+            const isAuthorized = allowedRoles.includes(normalizedRole) || normalizedRole.includes('kepala') || normalizedRole.includes('staf');
+            if (!isAuthorized) {
+              await supabaseClient.auth.signOut();
+              showLogin();
+              showToast('Akses ditolak: Peran akun tidak memiliki otorisasi masuk ke dashboard.', 'error');
+              return;
+            }
+          }
+
           showDashboard(session.user);
         } else {
           showLogin();
@@ -1601,10 +1615,20 @@
             return;
           }
           currentUserProfile = data;
-          document.getElementById('sidebarUserRole').innerText = `${data.role === 'kepala_tu' ? 'Kepala TU' : 'Staf Gudang'} (${data.nama_lengkap || ''})`;
+
+          // Format label role: Kepala Bagian Tata Usaha atau Staf Logistik TU
+          const normalizedRole = (data.role || '').toLowerCase();
+          const isKepalaTU = normalizedRole === 'kepala_tu' || normalizedRole.includes('kepala') || (data.jabatan && data.jabatan.toLowerCase().includes('kepala'));
+          const roleLabel = isKepalaTU ? 'Kepala Bagian Tata Usaha' : 'Staf Logistik TU';
+
+          const roleEl = document.getElementById('sidebarUserRole');
+          if (roleEl) {
+            roleEl.innerText = `${roleLabel} (${data.nama_lengkap || ''})`;
+          }
+
           const pjInput = document.getElementById('pinjamPenanggungJawab');
           if (pjInput) {
-            pjInput.value = data.nama_lengkap || currentUser?.email || 'Petugas Logistik TU';
+            pjInput.value = data.nama_lengkap || currentUser?.email || (isKepalaTU ? 'Kepala Bagian Tata Usaha' : 'Petugas Logistik TU');
           }
         }
       } catch (e) {
@@ -1632,20 +1656,30 @@
         const { data: authResult, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        // Cek apakah akun aktif (Sistem Nonaktif / Soft Delete)
+        // Cek status akun & verifikasi otorisasi peran (Staf Logistik & Kepala Bagian Tata Usaha)
         if (authResult?.user?.id) {
           const { data: prof } = await supabaseClient
             .from('profil_user')
-            .select('is_active')
+            .select('role, jabatan, is_active')
             .eq('id', authResult.user.id)
             .single();
 
           if (prof && prof.is_active === false) {
             await supabaseClient.auth.signOut();
-            throw new Error('Akun Anda telah dinonaktifkan');
+            throw new Error('Akun Anda telah dinonaktifkan.');
+          }
+
+          // Verifikasi Otorisasi: Mengizinkan akun dengan peran Kepala Bagian Tata Usaha (kepala_tu) maupun Staf Logistik (staf_gudang / admin)
+          if (prof && prof.role) {
+            const normalizedRole = (prof.role || '').toLowerCase();
+            const allowedRoles = ['staf_gudang', 'kepala_tu', 'admin', 'kepala bagian tata usaha', 'staf logistik tata usaha'];
+            const isAuthorized = allowedRoles.includes(normalizedRole) || normalizedRole.includes('kepala') || normalizedRole.includes('staf');
+            if (!isAuthorized) {
+              await supabaseClient.auth.signOut();
+              throw new Error('Akses ditolak: Akun Anda tidak memiliki otorisasi peran untuk masuk.');
+            }
           }
         }
-
         showToast('Login berhasil! Selamat datang di Sistem Inventaris.', 'success');
       } catch (err) {
         document.getElementById('loginErrorText').innerText = err.message || 'Login gagal';
@@ -2433,6 +2467,8 @@
 
     function openManageUserModal() {
       registerUserForm.reset();
+      const jabatanInput = document.getElementById('inputUserJabatan');
+      if (jabatanInput) jabatanInput.value = 'Staf Logistik Tata Usaha';
       manageUserModal.classList.remove('hidden');
       document.getElementById('inputUserEmail').focus();
       loadRegisteredUsers();
@@ -2445,6 +2481,19 @@
     document.getElementById('closeManageUserModalBtn').addEventListener('click', closeManageUserModal);
     document.getElementById('cancelManageUserModalBtn').addEventListener('click', closeManageUserModal);
     manageUserModal.addEventListener('click', (e) => { if (e.target === manageUserModal) closeManageUserModal(); });
+
+    // Otomatisasi Kolom Jabatan berdasarkan Pilihan Peran Akses (Role)
+    const inputUserRoleEl = document.getElementById('inputUserRole');
+    const inputUserJabatanEl = document.getElementById('inputUserJabatan');
+    if (inputUserRoleEl && inputUserJabatanEl) {
+      inputUserRoleEl.addEventListener('change', function() {
+        if (this.value === 'kepala_tu' || this.value === 'Kepala Bagian Tata Usaha') {
+          inputUserJabatanEl.value = 'Kepala Bagian Tata Usaha';
+        } else if (this.value === 'staf_gudang' || this.value === 'Staf Logistik & Gudang TU') {
+          inputUserJabatanEl.value = 'Staf Logistik Tata Usaha';
+        }
+      });
+    }
 
     registerUserForm.addEventListener('submit', async (e) => {
       e.preventDefault();
