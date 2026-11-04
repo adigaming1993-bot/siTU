@@ -265,22 +265,6 @@
             <span>Kelola Data Barang</span>
           </button>
 
-          <!-- Menu 3: Mutasi Masuk (Terhubung Modal Transaksi) -->
-          <button id="sidebarMutasiMasukBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
-            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-            </svg>
-            <span>Mutasi Masuk / Drop</span>
-          </button>
-
-          <!-- Menu 4: Distribusi (Mutasi Keluar / SBBK) -->
-          <button id="sidebarMutasiKeluarBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
-            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-            </svg>
-            <span>Distribusi / SBBK</span>
-          </button>
-
           <!-- Menu: Riwayat & Laporan Aset -->
           <button id="sidebarRiwayatBtn" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
             <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1349,27 +1333,80 @@
         .replace(/\r/g, '');
     }
 
+    // Cache persisten untuk data master barang (penanganan orphan data saat barang terhapus)
+    let cachedBarangMap = {};
+    try {
+      const stored = localStorage.getItem('situ_cached_barang_map');
+      if (stored) cachedBarangMap = JSON.parse(stored);
+    } catch {
+      cachedBarangMap = {};
+    }
+
+    function updateBarangCache(items) {
+      if (!Array.isArray(items)) return;
+      let updated = false;
+      items.forEach(b => {
+        if (b && b.id) {
+          cachedBarangMap[b.id] = {
+            id: b.id,
+            nama: b.nama,
+            kode_barang: b.kode_barang,
+            kategori: b.kategori
+          };
+          updated = true;
+        }
+      });
+      if (updated) {
+        try {
+          localStorage.setItem('situ_cached_barang_map', JSON.stringify(cachedBarangMap));
+        } catch {}
+      }
+    }
+
     // Helper proteksi data barang pada peminjaman (penanganan relasi null / orphan data)
     function getBarangInfoPeminjaman(item) {
       if (!item) return { nama: 'Barang (Telah Dihapus)', kode: '-', isOrphan: true };
 
-      // 1. Cek relasi barang yang di-join oleh Supabase
+      // 1. Cek relasi barang yang di-join oleh Supabase (bisa berupa objek atau array 1 elemen)
       const relBarang = Array.isArray(item.barang) ? item.barang[0] : item.barang;
 
-      // 2. Jika relasi null, cari di cache barangList jika ID masih tersimpan
-      const cachedBarang = (!relBarang && item.barang_id && Array.isArray(barangList))
-        ? barangList.find(b => b.id === item.barang_id)
+      // 2. Cek cache barangList yang sedang aktif di memori
+      const activeBarang = (!relBarang && item.barang_id && Array.isArray(barangList))
+        ? barangList.find(b => b && b.id === item.barang_id)
         : null;
 
-      const barang = relBarang || cachedBarang;
+      // 3. Cek persistent cache map jika barang sudah dihapus dari master katalog
+      const cachedBarang = (!relBarang && !activeBarang && item.barang_id && cachedBarangMap[item.barang_id])
+        ? cachedBarangMap[item.barang_id]
+        : null;
 
-      // 3. Cek data statis yang mungkin tersimpan langsung di baris peminjaman
+      const barang = relBarang || activeBarang || cachedBarang;
+
+      // 4. Cek field statis yang mungkin tersimpan langsung pada baris data peminjaman
       const staticNama = item.nama_barang || item.barang_nama;
       const staticKode = item.kode_barang || item.barang_kode;
 
-      const isOrphan = !barang || !barang.nama;
-      const nama = barang?.nama || staticNama || 'Barang (Telah Dihapus)';
-      const kode = barang?.kode_barang || staticKode || (item.barang_id ? `ID: ${String(item.barang_id).slice(0, 8)}...` : '-');
+      const isOrphan = !relBarang && !activeBarang;
+
+      let nama = 'Barang (Telah Dihapus)';
+      if (relBarang?.nama) {
+        nama = relBarang.nama;
+      } else if (activeBarang?.nama) {
+        nama = activeBarang.nama;
+      } else if (cachedBarang?.nama) {
+        nama = `${cachedBarang.nama} (Telah Dihapus)`;
+      } else if (staticNama) {
+        nama = `${staticNama} (Telah Dihapus)`;
+      }
+
+      let kode = '-';
+      if (barang?.kode_barang) {
+        kode = barang.kode_barang;
+      } else if (staticKode) {
+        kode = staticKode;
+      } else if (item.barang_id) {
+        kode = `ID: ${String(item.barang_id).slice(0, 8)}...`;
+      }
 
       return { nama, kode, isOrphan };
     }
@@ -1602,6 +1639,7 @@
         if (barangError) throw barangError;
 
         barangList = barangData || [];
+        updateBarangCache(barangList);
         updateMetrics(barangList);
         renderChart(barangList);
         renderTables(barangList);
@@ -2206,8 +2244,8 @@
       mutasiModal.classList.add('hidden');
     }
 
-    document.getElementById('sidebarMutasiMasukBtn').addEventListener('click', () => openMutasiModal('masuk'));
-    document.getElementById('sidebarMutasiKeluarBtn').addEventListener('click', () => openMutasiModal('keluar'));
+    document.getElementById('sidebarMutasiMasukBtn')?.addEventListener('click', () => openMutasiModal('masuk'));
+    document.getElementById('sidebarMutasiKeluarBtn')?.addEventListener('click', () => openMutasiModal('keluar'));
     document.getElementById('closeMutasiModalBtn').addEventListener('click', closeMutasiModal);
     document.getElementById('cancelMutasiModalBtn').addEventListener('click', closeMutasiModal);
     mutasiModal.addEventListener('click', (e) => { if (e.target === mutasiModal) closeMutasiModal(); });
