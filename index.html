@@ -762,6 +762,19 @@
           </div>
         </div>
 
+        <!-- Alert Error Merah untuk Operasi Hapus Barang (Trigger / Dipinjam) -->
+        <div id="kelolaBarangAlertError" class="hidden p-4 rounded-2xl bg-rose-50 border-2 border-rose-300 text-rose-900 text-sm font-semibold flex items-center justify-between gap-3 shadow-sm fade-in">
+          <div class="flex items-center gap-2.5">
+            <svg class="w-5 h-5 text-rose-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <span id="kelolaBarangAlertText">Gagal: Barang masih dipinjam</span>
+          </div>
+          <button type="button" onclick="document.getElementById('kelolaBarangAlertError').classList.add('hidden')" class="text-rose-500 hover:text-rose-800 p-1 rounded-lg font-bold text-sm">
+            ✕
+          </button>
+        </div>
+
         <!-- Kartu Tabel Utama Kelola Data Barang -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
@@ -1336,6 +1349,31 @@
         .replace(/\r/g, '');
     }
 
+    // Helper proteksi data barang pada peminjaman (penanganan relasi null / orphan data)
+    function getBarangInfoPeminjaman(item) {
+      if (!item) return { nama: 'Barang (Telah Dihapus)', kode: '-', isOrphan: true };
+
+      // 1. Cek relasi barang yang di-join oleh Supabase
+      const relBarang = Array.isArray(item.barang) ? item.barang[0] : item.barang;
+
+      // 2. Jika relasi null, cari di cache barangList jika ID masih tersimpan
+      const cachedBarang = (!relBarang && item.barang_id && Array.isArray(barangList))
+        ? barangList.find(b => b.id === item.barang_id)
+        : null;
+
+      const barang = relBarang || cachedBarang;
+
+      // 3. Cek data statis yang mungkin tersimpan langsung di baris peminjaman
+      const staticNama = item.nama_barang || item.barang_nama;
+      const staticKode = item.kode_barang || item.barang_kode;
+
+      const isOrphan = !barang || !barang.nama;
+      const nama = barang?.nama || staticNama || 'Barang (Telah Dihapus)';
+      const kode = barang?.kode_barang || staticKode || (item.barang_id ? `ID: ${String(item.barang_id).slice(0, 8)}...` : '-');
+
+      return { nama, kode, isOrphan };
+    }
+
     // Sistem Notifikasi Toast
     function showToast(msg, type = 'success') {
       const container = document.getElementById('toastContainer');
@@ -1641,14 +1679,16 @@
           overdueTableBody.innerHTML = overdueList.map(item => {
             const batas = new Date(item.batas_waktu_kembali);
             const diffDays = Math.max(1, Math.floor((now - batas) / (1000 * 60 * 60 * 24)));
-            const namaBarang = item.barang?.nama || 'Barang Logistik';
-            const kodeBarang = item.barang?.kode_barang || '-';
+            const { nama: namaBarang, kode: kodeBarang, isOrphan } = getBarangInfoPeminjaman(item);
 
             return `
               <tr class="hover:bg-rose-100/50 transition">
                 <td class="py-2.5 px-3">
-                  <span class="font-bold text-slate-900 block">${namaBarang}</span>
-                  <span class="text-[10px] text-slate-500 font-mono">${kodeBarang}</span>
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-bold text-slate-900 block">${escapeHtml(namaBarang)}</span>
+                    ${isOrphan ? `<span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-600 border border-rose-200">Terhapus</span>` : ''}
+                  </div>
+                  <span class="text-[10px] text-slate-500 font-mono">${escapeHtml(kodeBarang)}</span>
                 </td>
                 <td class="py-2.5 px-3">
                   <span class="font-semibold text-rose-950 block">${item.nama_peminjam || '-'}</span>
@@ -1975,20 +2015,57 @@
         }
 
         showToast(`Barang "${namaBarang}" berhasil dihapus dari database!`, 'success');
+        const alertEl = document.getElementById('kelolaBarangAlertError');
+        if (alertEl) alertEl.classList.add('hidden');
 
         // Muat ulang seluruh katalog barang & perbarui visual dashboard
         await loadData();
 
       } catch (err) {
         console.error('Error hapus barang:', err);
-        let msg = err.message || 'Terjadi kesalahan sistem.';
-        if (msg.includes('foreign key') || msg.includes('violates foreign key constraint') || err.code === '23503') {
-          msg = `Barang "${namaBarang}" tidak dapat dihapus karena masih tercatat pada transaksi mutasi logistik atau riwayat peminjaman aset. Hapus mutasi/peminjaman terkait terlebih dahulu jika ingin menghapus barang ini.`;
-        } else if (msg.includes('row-level security') || msg.includes('policy')) {
-          msg = `Akses hapus ditolak oleh kebijakan keamanan (RLS) Supabase. Pastikan Anda memiliki wewenang staf yang sesuai.`;
+
+        // Tangkap pesan asli dari trigger database Supabase
+        const rawMessage = (err?.message || err?.details || err?.hint || (typeof err === 'string' ? err : '')).toString().trim();
+        const lowerMsg = rawMessage.toLowerCase();
+
+        let pesanError = '';
+
+        if (lowerMsg.includes('dipinjam') || lowerMsg.includes('pinjam') || lowerMsg.includes('peminjaman')) {
+          if (lowerMsg.includes('masih dipinjam') || lowerMsg.includes('sedang dipinjam')) {
+            pesanError = 'Gagal: Barang masih dipinjam';
+          } else if (lowerMsg.includes('violates foreign key') || lowerMsg.includes('constraint')) {
+            pesanError = 'Gagal: Barang masih dipinjam atau tercatat dalam riwayat peminjaman aset';
+          } else {
+            const cleanTrigger = rawMessage.replace(/^(error|exception):\s*/i, '').trim();
+            pesanError = cleanTrigger.toLowerCase().startsWith('gagal:') ? cleanTrigger : `Gagal: ${cleanTrigger}`;
+          }
+        } else if (lowerMsg.includes('mutasi')) {
+          pesanError = 'Gagal: Barang masih memiliki riwayat transaksi mutasi logistik';
+        } else if (lowerMsg.includes('violates foreign key constraint') || err?.code === '23503') {
+          pesanError = 'Gagal: Barang tidak dapat dihapus karena masih terkait data transaksi aktif';
+        } else if (lowerMsg.includes('row-level security') || lowerMsg.includes('policy') || err?.code === '42501') {
+          pesanError = 'Gagal: Akses hapus ditolak oleh kebijakan keamanan (RLS) Supabase';
+        } else if (rawMessage) {
+          const cleanMsg = rawMessage.replace(/^(error|exception):\s*/i, '').trim();
+          pesanError = cleanMsg.toLowerCase().startsWith('gagal:') ? cleanMsg : `Gagal: ${cleanMsg}`;
+        } else {
+          pesanError = 'Gagal: Barang masih dipinjam atau tidak dapat dihapus';
         }
-        alert('Gagal Menghapus Barang:\n' + msg);
-        showToast('Gagal hapus: ' + msg, 'error');
+
+        // 1. Tampilkan notifikasi merah (Toast)
+        showToast(pesanError, 'error');
+
+        // 2. Tampilkan banner alert merah pada halaman Kelola Data Barang
+        const alertEl = document.getElementById('kelolaBarangAlertError');
+        const alertText = document.getElementById('kelolaBarangAlertText');
+        if (alertEl && alertText) {
+          alertText.innerText = pesanError;
+          alertEl.classList.remove('hidden');
+          alertEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // 3. Tampilkan dialog alert konfirmasi kepada pengguna
+        alert(pesanError);
       }
     };
     window.deleteBarang = window.hapusBarang;
@@ -2839,14 +2916,15 @@
           if (itemDate > sampaiDate) return false;
         }
 
+        const { nama: namaBarang, kode: kodeBarang } = getBarangInfoPeminjaman(item);
         if (searchVal) {
           const nama = (item.nama_peminjam || '').toLowerCase();
           const unit = (item.unit_ruangan || '').toLowerCase();
-          const barangNama = (item.barang?.nama || '').toLowerCase();
-          const barangKode = (item.barang?.kode_barang || '').toLowerCase();
+          const bNama = (namaBarang || '').toLowerCase();
+          const bKode = (kodeBarang || '').toLowerCase();
           const ket = (item.keterangan || '').toLowerCase();
           const pj = (item.penanggung_jawab || '').toLowerCase();
-          const match = nama.includes(searchVal) || unit.includes(searchVal) || pj.includes(searchVal) || barangNama.includes(searchVal) || barangKode.includes(searchVal) || ket.includes(searchVal);
+          const match = nama.includes(searchVal) || unit.includes(searchVal) || pj.includes(searchVal) || bNama.includes(searchVal) || bKode.includes(searchVal) || ket.includes(searchVal);
           if (!match) return false;
         }
 
@@ -2872,8 +2950,7 @@
         const isKembali = item.status === 'kembali';
         const isOverdue = !isKembali && batas < now;
 
-        const namaBarang = item.barang?.nama || 'Barang Logistik';
-        const kodeBarang = item.barang?.kode_barang || '-';
+        const { nama: namaBarang, kode: kodeBarang, isOrphan } = getBarangInfoPeminjaman(item);
 
         let statusBadge = '';
         if (isKembali) {
@@ -2895,7 +2972,7 @@
         const aksiBtn = isKembali ? `
           <span class="text-[10px] text-slate-400 font-medium">Selesai</span>
         ` : `
-          <button onclick="tandaiKembali('${item.id}', '${namaBarang}')"
+          <button onclick="tandaiKembali('${item.id}', '${escapeJsString(namaBarang)}')"
             class="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg text-[11px] font-bold shadow-sm transition">
             ✓ Sudah Kembali
           </button>
@@ -2905,16 +2982,19 @@
           <tr class="hover:bg-slate-50 transition border-b border-slate-100">
             <td class="py-2.5 px-3 text-center text-slate-400 font-mono">${idx + 1}</td>
             <td class="py-2.5 px-3">
-              <span class="font-bold text-slate-800 text-xs block">${namaBarang}</span>
-              <span class="text-[10px] text-slate-500 font-mono">${kodeBarang}</span>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-bold text-slate-800 text-xs block">${escapeHtml(namaBarang)}</span>
+                ${isOrphan ? `<span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-600 border border-rose-200">Terhapus</span>` : ''}
+              </div>
+              <span class="text-[10px] text-slate-500 font-mono">${escapeHtml(kodeBarang)}</span>
             </td>
             <td class="py-2.5 px-3">
-              <span class="font-bold text-slate-900 block">${item.nama_peminjam || '-'}</span>
+              <span class="font-bold text-slate-900 block">${escapeHtml(item.nama_peminjam || '-')}</span>
               <span class="text-[10px] text-slate-400">Pemohon</span>
             </td>
-            <td class="py-2.5 px-3 text-slate-600">${item.unit_ruangan || '-'}</td>
+            <td class="py-2.5 px-3 text-slate-600">${escapeHtml(item.unit_ruangan || '-')}</td>
             <td class="py-2.5 px-3">
-              <span class="font-semibold text-indigo-900 block">${item.penanggung_jawab || 'Petugas TU'}</span>
+              <span class="font-semibold text-indigo-900 block">${escapeHtml(item.penanggung_jawab || 'Petugas TU')}</span>
               <span class="text-[10px] text-slate-400">Staf Penyerah</span>
             </td>
             <td class="py-2.5 px-3 font-semibold text-slate-700">${item.jumlah || 1} unit</td>
@@ -2967,14 +3047,15 @@
           if (itemDate > sampaiDate) return false;
         }
 
+        const { nama: namaBarang, kode: kodeBarang } = getBarangInfoPeminjaman(item);
         if (searchVal) {
           const nama = (item.nama_peminjam || '').toLowerCase();
           const unit = (item.unit_ruangan || '').toLowerCase();
-          const barangNama = (item.barang?.nama || '').toLowerCase();
-          const barangKode = (item.barang?.kode_barang || '').toLowerCase();
+          const bNama = (namaBarang || '').toLowerCase();
+          const bKode = (kodeBarang || '').toLowerCase();
           const ket = (item.keterangan || '').toLowerCase();
           const pj = (item.penanggung_jawab || '').toLowerCase();
-          if (!nama.includes(searchVal) && !unit.includes(searchVal) && !pj.includes(searchVal) && !barangNama.includes(searchVal) && !barangKode.includes(searchVal) && !ket.includes(searchVal)) return false;
+          if (!nama.includes(searchVal) && !unit.includes(searchVal) && !pj.includes(searchVal) && !bNama.includes(searchVal) && !bKode.includes(searchVal) && !ket.includes(searchVal)) return false;
         }
         return true;
       });
@@ -2992,10 +3073,11 @@
         if (isKembali) statusText = 'Sudah Dikembalikan';
         else if (isOverdue) statusText = 'Terlambat';
 
+        const { nama: namaBarang, kode: kodeBarang } = getBarangInfoPeminjaman(item);
         return [
           idx + 1,
-          `"${(item.barang?.kode_barang || '').replace(/"/g, '""')}"`,
-          `"${(item.barang?.nama || '').replace(/"/g, '""')}"`,
+          `"${kodeBarang.replace(/"/g, '""')}"`,
+          `"${namaBarang.replace(/"/g, '""')}"`,
           `"${(item.nama_peminjam || '').replace(/"/g, '""')}"`,
           `"${(item.unit_ruangan || '').replace(/"/g, '""')}"`,
           `"${(item.penanggung_jawab || 'Petugas TU').replace(/"/g, '""')}"`,
