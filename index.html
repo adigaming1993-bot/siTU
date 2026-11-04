@@ -249,12 +249,20 @@
             <span>+ Catat Peminjaman</span>
           </button>
 
-          <!-- Menu 2: Tambah Barang (Terhubung Form Input Data Barang ke Supabase) -->
+          <!-- Menu: Tambah Barang (Fokus Form Input Barang Baru) -->
           <button id="sidebarAddBtn" onclick="openAddModal()" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
             <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <span>Tambah Barang</span>
+          </button>
+
+          <!-- Menu: Kelola Data Barang (Halaman Manajemen & Hapus Barang) -->
+          <button id="sidebarKelolaBarangBtn" onclick="switchView('kelola')" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+            <span>Kelola Data Barang</span>
           </button>
 
           <!-- Menu 3: Mutasi Masuk (Terhubung Modal Transaksi) -->
@@ -505,53 +513,37 @@
       <!-- ===================================================================== -->
       <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        <!-- Tabel Bagian 1: Ringkasan Katalog Logistik TU -->
+        <!-- Tabel Bagian 1: Ringkasan Katalog Logistik TU (Read-Only) -->
         <div id="tableKatalogContainer" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div class="flex items-center justify-between mb-4">
             <div>
               <h3 class="text-base font-bold text-slate-800">Daftar & Katalog Barang</h3>
-              <p class="text-xs text-slate-400">Manajemen inventaris umum Tata Usaha</p>
+              <p class="text-xs text-slate-400">Ringkasan inventaris umum Tata Usaha (Read-Only)</p>
             </div>
-            <div class="flex items-center gap-2">
-              <div class="relative">
-                <input type="text" id="katalogSearchInput" placeholder="Cari nama / kode..."
-                  class="pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition w-36 sm:w-44" />
-                <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </div>
-              <button type="button" onclick="openAddModal()"
-                class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition flex items-center gap-1 shadow-sm whitespace-nowrap">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                <span>+ Tambah</span>
-              </button>
-            </div>
+            <span class="text-[11px] font-semibold text-slate-400">Monitoring Logistik</span>
           </div>
 
-          <!-- Tabel Borderless -->
+          <!-- Tabel Borderless (Read-Only) -->
           <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
-            <table class="w-full text-left text-sm border-none min-w-[500px]">
+            <table class="w-full text-left text-sm border-none min-w-[460px]">
               <thead class="text-xs uppercase font-semibold text-slate-400 border-b border-slate-100 sticky top-0 bg-white z-10">
                 <tr>
                   <th class="py-3 px-3">Kode</th>
                   <th class="py-3 px-3">Nama Barang</th>
                   <th class="py-3 px-3">Kategori</th>
                   <th class="py-3 px-3 text-right">Stok</th>
-                  <th class="py-3 px-3 text-center w-28">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tableKatalogBody" class="divide-y divide-slate-50 text-slate-700">
                 <tr>
-                  <td colspan="5" class="py-8 text-center text-xs text-slate-400">Memuat data barang...</td>
+                  <td colspan="4" class="py-8 text-center text-xs text-slate-400">Memuat data barang...</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- Tabel Bagian 2: Peringatan Stok Kritis & Perlu Restock -->
+        <!-- Tabel Bagian 2: Peringatan Stok Kritis & Perlu Restock (Read-Only) -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
           <div class="flex items-center justify-between mb-4">
             <div>
@@ -563,21 +555,20 @@
             </span>
           </div>
 
-          <!-- Tabel Borderless -->
+          <!-- Tabel Borderless (Read-Only) -->
           <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
-            <table class="w-full text-left text-sm border-none min-w-[460px]">
+            <table class="w-full text-left text-sm border-none min-w-[420px]">
               <thead class="text-xs uppercase font-semibold text-slate-400 border-b border-slate-100 sticky top-0 bg-white z-10">
                 <tr>
                   <th class="py-3 px-3">Kode</th>
                   <th class="py-3 px-3">Nama Barang</th>
                   <th class="py-3 px-3 text-center">Sisa</th>
                   <th class="py-3 px-3 text-center">Status</th>
-                  <th class="py-3 px-3 text-center w-28">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tableKritisBody" class="divide-y divide-slate-50 text-slate-700">
                 <tr>
-                  <td colspan="5" class="py-8 text-center text-xs text-slate-400">Memeriksa stok kritis...</td>
+                  <td colspan="4" class="py-8 text-center text-xs text-slate-400">Memeriksa stok kritis...</td>
                 </tr>
               </tbody>
             </table>
@@ -743,6 +734,77 @@
             <div class="h-20"></div>
             <p class="font-bold underline" id="printStaffNameSpan">Petugas Logistik TU</p>
             <p class="text-[10px]">Staf Terautentikasi</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 3: HALAMAN MANDIRI KELOLA DATA BARANG (MANAJEMEN BARANG & HAPUS)  -->
+      <!-- ===================================================================== -->
+      <div id="kelolaBarangContent" class="hidden space-y-6">
+        
+        <!-- Header Halaman -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Kelola Data Barang</h2>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-50 text-cyan-700 border border-cyan-200">
+                Manajemen Logistik
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">Katalog inventaris master logistik Tata Usaha, pemantauan stok rak, dan aksi penghapusan barang</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="loadData()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5">
+              <span>🔄 Refresh Data</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Kartu Tabel Utama Kelola Data Barang -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-bold text-slate-800">Daftar Inventaris Barang Logistik TU</h3>
+              <p class="text-xs text-slate-400">Pilih tombol Hapus (ikon tempat sampah) pada item yang ingin dihapus dari database</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="relative w-full sm:w-64">
+                <input type="text" id="kelolaBarangSearchInput" placeholder="Cari nama, kode, kategori..." 
+                  class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
+                <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+              <span id="kelolaTotalBadge" class="text-xs font-extrabold px-3 py-1.5 rounded-xl bg-sky-50 text-sky-700 border border-sky-200 whitespace-nowrap">
+                0 Barang
+              </span>
+            </div>
+          </div>
+
+          <!-- Tabel Kelola Data Barang dengan Tombol Hapus -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse min-w-[760px]">
+              <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] border-b border-slate-200">
+                <tr>
+                  <th class="py-3 px-3 text-center w-12">No</th>
+                  <th class="py-3 px-3">Kode Barang</th>
+                  <th class="py-3 px-3">Nama Barang</th>
+                  <th class="py-3 px-3">Kategori</th>
+                  <th class="py-3 px-3 text-right">Stok Fisik</th>
+                  <th class="py-3 px-3">Satuan</th>
+                  <th class="py-3 px-3 text-center">Batas Min</th>
+                  <th class="py-3 px-3">Lokasi Rak</th>
+                  <th class="py-3 px-3 text-center w-28">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tableKelolaBarangBody" class="divide-y divide-slate-100 text-slate-700">
+                <tr>
+                  <td colspan="9" class="py-8 text-center text-xs text-slate-400">Memuat data barang...</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -1505,6 +1567,7 @@
         updateMetrics(barangList);
         renderChart(barangList);
         renderTables(barangList);
+        renderKelolaTable(barangList);
         populateDropdowns(barangList);
 
         // 2. Ambil Data Peminjaman & Deteksi Keterlambatan
@@ -1761,35 +1824,18 @@
       renderKritisTable(items || []);
     }
 
-    // 1. Tabel Utama: Daftar & Katalog Barang Terkini
+    // 1. Tabel Dashboard: Daftar & Katalog Barang Terkini (Read-Only)
     function renderKatalogTable(items) {
       const katalogBody = document.getElementById('tableKatalogBody');
       if (!katalogBody) return;
 
-      const searchInput = document.getElementById('katalogSearchInput');
-      const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-
       const list = items || [];
-      const filtered = query
-        ? list.filter(b => 
-            (b.nama && b.nama.toLowerCase().includes(query)) ||
-            (b.kode_barang && b.kode_barang.toLowerCase().includes(query)) ||
-            (b.kategori && b.kategori.toLowerCase().includes(query))
-          )
-        : list;
-
-      if (filtered.length === 0) {
-        katalogBody.innerHTML = `
-          <tr>
-            <td colspan="5" class="py-8 text-center text-xs text-slate-400">
-              ${query ? `Tidak ada barang yang cocok dengan kata kunci "${escapeHtml(query)}".` : 'Belum ada barang di database.'}
-            </td>
-          </tr>
-        `;
+      if (list.length === 0) {
+        katalogBody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-xs text-slate-400">Belum ada barang di database.</td></tr>`;
         return;
       }
 
-      katalogBody.innerHTML = filtered.map(item => `
+      katalogBody.innerHTML = list.map(item => `
         <tr class="hover:bg-slate-50/80 transition-colors">
           <td class="py-2.5 px-3 font-mono text-xs font-bold text-slate-500">${escapeHtml(item.kode_barang || '-')}</td>
           <td class="py-2.5 px-3 font-semibold text-slate-800 text-xs">${escapeHtml(item.nama || '-')}</td>
@@ -1797,21 +1843,11 @@
           <td class="py-2.5 px-3 text-right font-extrabold text-slate-800 text-xs">
             ${item.stok} <span class="text-[10px] text-slate-400 font-normal">${escapeHtml(item.satuan || '')}</span>
           </td>
-          <td class="py-2.5 px-3 text-center">
-            <button type="button" onclick="hapusBarang('${item.id}', '${escapeJsString(item.nama || '')}')"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white border border-rose-200 transition shadow-xs"
-              title="Hapus Barang">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-              <span>Hapus</span>
-            </button>
-          </td>
         </tr>
       `).join('');
     }
 
-    // 2. Tabel Peringatan Kritis & Habis
+    // 2. Tabel Dashboard: Peringatan Kritis & Habis (Read-Only)
     function renderKritisTable(items) {
       const kritisBody = document.getElementById('tableKritisBody');
       if (!kritisBody) return;
@@ -1824,7 +1860,7 @@
       });
 
       if (kritisItems.length === 0) {
-        kritisBody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-xs text-emerald-600 font-medium">✅ Seluruh stok barang dalam kondisi aman!</td></tr>`;
+        kritisBody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-xs text-emerald-600 font-medium">✅ Seluruh stok barang dalam kondisi aman!</td></tr>`;
       } else {
         kritisBody.innerHTML = kritisItems.map(item => {
           const s = Number(item.stok) || 0;
@@ -1839,20 +1875,68 @@
               <td class="py-2.5 px-3 font-semibold text-slate-800 text-xs">${escapeHtml(item.nama || '-')}</td>
               <td class="py-2.5 px-3 text-center font-extrabold ${isHabis ? 'text-rose-600' : 'text-amber-600'} text-xs">${item.stok}</td>
               <td class="py-2.5 px-3 text-center">${statusBadge}</td>
-              <td class="py-2.5 px-3 text-center">
-                <button type="button" onclick="hapusBarang('${item.id}', '${escapeJsString(item.nama || '')}')"
-                  class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white border border-rose-200 transition shadow-xs"
-                  title="Hapus Barang">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                  </svg>
-                  <span>Hapus</span>
-                </button>
-              </td>
             </tr>
           `;
         }).join('');
       }
+    }
+
+    // 3. Tabel Halaman Baru: Kelola Data Barang (Lengkap dengan Aksi Hapus / Tempat Sampah)
+    function renderKelolaTable(items) {
+      const tbody = document.getElementById('tableKelolaBarangBody');
+      const badge = document.getElementById('kelolaTotalBadge');
+      if (!tbody) return;
+
+      const searchInput = document.getElementById('kelolaBarangSearchInput');
+      const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+      const list = items || [];
+      const filtered = query
+        ? list.filter(b => 
+            (b.nama && b.nama.toLowerCase().includes(query)) ||
+            (b.kode_barang && b.kode_barang.toLowerCase().includes(query)) ||
+            (b.kategori && b.kategori.toLowerCase().includes(query)) ||
+            (b.lokasi_rak && b.lokasi_rak.toLowerCase().includes(query))
+          )
+        : list;
+
+      if (badge) {
+        badge.innerText = `${filtered.length} Barang`;
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="py-8 text-center text-xs text-slate-400">
+              ${query ? `Tidak ada barang yang cocok dengan kata kunci "${escapeHtml(query)}".` : 'Belum ada data barang di database Supabase.'}
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((item, idx) => `
+        <tr class="hover:bg-slate-50/80 transition-colors">
+          <td class="py-2.5 px-3 text-center text-slate-400 font-mono text-xs">${idx + 1}</td>
+          <td class="py-2.5 px-3 font-mono text-xs font-bold text-slate-600">${escapeHtml(item.kode_barang || '-')}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-800 text-xs">${escapeHtml(item.nama || '-')}</td>
+          <td class="py-2.5 px-3 text-[11px] text-slate-500">${escapeHtml(item.kategori || 'Umum')}</td>
+          <td class="py-2.5 px-3 text-right font-extrabold text-slate-800 text-xs">${item.stok}</td>
+          <td class="py-2.5 px-3 text-[11px] text-slate-500 font-medium">${escapeHtml(item.satuan || 'pcs')}</td>
+          <td class="py-2.5 px-3 text-center text-xs text-slate-600">${item.stok_minimum || 5}</td>
+          <td class="py-2.5 px-3 text-xs text-slate-500">${escapeHtml(item.lokasi_rak || '-')}</td>
+          <td class="py-2.5 px-3 text-center">
+            <button type="button" onclick="hapusBarang('${item.id}', '${escapeJsString(item.nama || '')}')"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white border border-rose-200 transition shadow-xs"
+              title="Hapus Barang">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              <span>Hapus</span>
+            </button>
+          </td>
+        </tr>
+      `).join('');
     }
 
     // =========================================================================
@@ -1916,10 +2000,6 @@
     const addBarangForm = document.getElementById('addBarangForm');
 
     function openAddModal() {
-      // Kembalikan view ke dashboard jika sedang berada di tab Riwayat & Laporan
-      if (typeof switchView === 'function') {
-        switchView('dashboard');
-      }
       if (typeof closeMobileSidebar === 'function' && window.innerWidth < 768) {
         closeMobileSidebar();
       }
@@ -2001,8 +2081,7 @@
           addBarangForm.reset();
           await loadData();
 
-          // Arahkan tampilan secara halus ke tabel barang
-          const tableContainer = document.getElementById('tableKatalogContainer');
+          const tableContainer = document.getElementById('tableKelolaBarangBody') || document.getElementById('tableKatalogContainer');
           if (tableContainer) {
             tableContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }
@@ -2611,32 +2690,36 @@
     // =========================================================================
     const homeDashboardContent = document.getElementById('homeDashboardContent');
     const riwayatLaporanContent = document.getElementById('riwayatLaporanContent');
+    const kelolaBarangContent = document.getElementById('kelolaBarangContent');
     const sidebarHomeBtn = document.getElementById('sidebarHomeBtn');
+    const sidebarKelolaBarangBtn = document.getElementById('sidebarKelolaBarangBtn');
     const sidebarRiwayatBtn = document.getElementById('sidebarRiwayatBtn');
 
     window.switchView = function(viewName) {
+      const activeClass = "sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-sky-600 text-white shadow-md shadow-sky-600/30 transition";
+      const inactiveClass = "sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition";
+
+      // Sembunyikan semua tab
+      if (homeDashboardContent) homeDashboardContent.classList.add('hidden');
+      if (riwayatLaporanContent) riwayatLaporanContent.classList.add('hidden');
+      if (kelolaBarangContent) kelolaBarangContent.classList.add('hidden');
+
+      // Reset status tombol navigasi sidebar
+      if (sidebarHomeBtn) sidebarHomeBtn.className = inactiveClass;
+      if (sidebarKelolaBarangBtn) sidebarKelolaBarangBtn.className = inactiveClass;
+      if (sidebarRiwayatBtn) sidebarRiwayatBtn.className = inactiveClass;
+
       if (viewName === 'riwayat') {
-        if (homeDashboardContent) homeDashboardContent.classList.add('hidden');
         if (riwayatLaporanContent) riwayatLaporanContent.classList.remove('hidden');
-
-        if (sidebarHomeBtn) {
-          sidebarHomeBtn.className = "sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition";
-        }
-        if (sidebarRiwayatBtn) {
-          sidebarRiwayatBtn.className = "sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-sky-600 text-white shadow-md shadow-sky-600/30 transition";
-        }
-
+        if (sidebarRiwayatBtn) sidebarRiwayatBtn.className = activeClass;
         loadRiwayatLaporan();
+      } else if (viewName === 'kelola') {
+        if (kelolaBarangContent) kelolaBarangContent.classList.remove('hidden');
+        if (sidebarKelolaBarangBtn) sidebarKelolaBarangBtn.className = activeClass;
+        renderKelolaTable(barangList);
       } else {
-        if (riwayatLaporanContent) riwayatLaporanContent.classList.add('hidden');
         if (homeDashboardContent) homeDashboardContent.classList.remove('hidden');
-
-        if (sidebarHomeBtn) {
-          sidebarHomeBtn.className = "sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-sky-600 text-white shadow-md shadow-sky-600/30 transition";
-        }
-        if (sidebarRiwayatBtn) {
-          sidebarRiwayatBtn.className = "sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition";
-        }
+        if (sidebarHomeBtn) sidebarHomeBtn.className = activeClass;
       }
 
       if (window.innerWidth < 768 && typeof closeMobileSidebar === 'function') {
@@ -2645,6 +2728,7 @@
     };
 
     if (sidebarHomeBtn) sidebarHomeBtn.addEventListener('click', () => switchView('dashboard'));
+    if (sidebarKelolaBarangBtn) sidebarKelolaBarangBtn.addEventListener('click', () => switchView('kelola'));
     if (sidebarRiwayatBtn) sidebarRiwayatBtn.addEventListener('click', () => switchView('riwayat'));
 
     // =========================================================================
@@ -2978,8 +3062,8 @@
     document.getElementById('btnCetakLaporan')?.addEventListener('click', printLaporan);
     document.getElementById('btnExportCsv')?.addEventListener('click', exportToCsv);
     document.getElementById('refreshDataBtn').addEventListener('click', loadData);
-    document.getElementById('katalogSearchInput')?.addEventListener('input', () => {
-      renderKatalogTable(barangList);
+    document.getElementById('kelolaBarangSearchInput')?.addEventListener('input', () => {
+      renderKelolaTable(barangList);
     });
 
     window.addEventListener('DOMContentLoaded', initApp);
