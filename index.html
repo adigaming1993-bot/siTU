@@ -117,9 +117,20 @@
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      img {
+      table img {
         max-height: 36px !important;
         max-width: 72px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      #printKopSurat img {
+        width: 90px !important;
+        height: 90px !important;
+        max-width: none !important;
+        max-height: none !important;
+        object-fit: contain !important;
+        transform: scale(1.8) !important;
+        margin-right: 24px !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -580,7 +591,7 @@
         <!-- Kop Surat Resmi (Hanya muncul saat Cetak Dokumen / Print) -->
         <div id="printKopSurat" class="hidden print:block pb-4 mb-4 border-b-2 border-slate-900">
           <div class="flex items-center justify-center gap-4 mb-2">
-            <img src="logo-rsud.png" alt="Logo RSUD" class="w-20 h-20 object-contain flex-shrink-0" style="width: 80px; height: 80px; object-fit: contain;">
+            <img src="logo-rsud.png" alt="Logo RSUD" style="width: 90px !important; height: 90px !important; max-width: none !important; max-height: none !important; object-fit: contain; transform: scale(1.8); margin-right: 24px;">
             <div class="text-center">
               <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-900">PEMERINTAH KABUPATEN SIDOARJO</h3>
               <h1 class="text-xl font-black uppercase tracking-tight text-slate-900">RSUD R.T. NOTOPURO</h1>
