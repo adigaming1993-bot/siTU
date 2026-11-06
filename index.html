@@ -2977,10 +2977,10 @@
 
       const email = document.getElementById('inputUserEmail').value.trim();
       const password = document.getElementById('inputUserPassword').value;
-      const nama = document.getElementById('inputUserNama').value.trim();
-      const nip = document.getElementById('inputUserNip').value.trim();
-      const role = document.getElementById('inputUserRole').value;
-      const jabatan = document.getElementById('inputUserJabatan').value.trim();
+      const namaLengkapValue = document.getElementById('inputUserNama').value.trim();
+      const nipValue = document.getElementById('inputUserNip').value.trim();
+      const roleValue = document.getElementById('inputUserRole').value;
+      const jabatanValue = document.getElementById('inputUserJabatan').value.trim();
       const telepon = document.getElementById('inputUserTelepon').value.trim();
 
       saveBtn.disabled = true;
@@ -2988,21 +2988,21 @@
       text.innerText = 'Mendaftarkan...';
 
       try {
-        // 1. Pendaftaran kredensial via Supabase Auth dengan metadata nama kolom persis huruf kecil
-        const userMetadata = {
-          nama_lengkap: nama,
-          nip: nip || null,
-          role: role,
-          jabatan: jabatan || role || 'Staf',
-          no_whatsapp: telepon || null,
-          no_telepon: telepon || null
-        };
+        const supabase = supabaseClient;
 
-        const { data: authData, error: authErr } = await supabaseClient.auth.signUp({
+        // 1. Pendaftaran kredensial via Supabase Auth
+        const { data, error: authErr } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: userMetadata
+            data: {
+              nama_lengkap: namaLengkapValue,
+              nip: nipValue || '-',
+              role: roleValue,
+              jabatan: jabatanValue,
+              no_whatsapp: telepon || null,
+              no_telepon: telepon || null
+            }
           }
         });
 
@@ -3014,47 +3014,38 @@
           throw new Error(msg);
         }
 
-        const newUserId = authData?.user?.id;
-        if (!newUserId) {
+        if (!data?.user?.id) {
           throw new Error('Supabase Auth tidak mengembalikan ID pengguna baru. Pastikan email belum pernah terdaftar sebelumnya.');
         }
 
-        // 2. Gunakan user.id yang dihasilkan untuk menyimpan profil lengkap ke tabel profil_user
-        // Nama kolom dikirim persis sesuai skema tabel Supabase: nip, jabatan, no_whatsapp
-        const profilePayload = {
-          id: newUserId,
-          email: email,
-          nama_lengkap: nama,
-          nip: nip || null,
-          role: role,
-          jabatan: jabatan || role || 'Staf',
-          no_whatsapp: telepon || null,
-          is_active: true
-        };
-
-        let { error: profileErr } = await supabaseClient
+        // 2. Perintah INSERT manual ke tabel profil_user
+        const { data: profileData, error: profileError } = await supabase
           .from('profil_user')
-          .upsert(profilePayload);
+          .insert([
+            {
+              id: data.user.id,
+              nama_lengkap: namaLengkapValue,
+              nip: nipValue || '-',
+              role: roleValue,
+              jabatan: jabatanValue
+            }
+          ]);
 
-        // Fallback jika database Supabase masih menggunakan enum user_role
-        if (profileErr && profileErr.message && profileErr.message.includes('enum user_role')) {
-          profilePayload.role = role.toLowerCase().includes('kepala') ? 'kepala_tu' : 'staf_gudang';
-          const retry = await supabaseClient.from('profil_user').upsert(profilePayload);
-          profileErr = retry.error;
+        if (profileError) {
+          alert('Gagal menyimpan profil staf ke database:\n' + (profileError.message || JSON.stringify(profileError)));
+          showToast('Gagal menyimpan profil staf: ' + profileError.message, 'error');
+          return;
         }
 
-        // Fallback jika tabel profil_user di database masih menggunakan no_telepon alih-alih no_whatsapp
-        if (profileErr && profileErr.message && profileErr.message.includes('no_whatsapp')) {
-          delete profilePayload.no_whatsapp;
-          profilePayload.no_telepon = telepon || null;
-          const retry = await supabaseClient.from('profil_user').upsert(profilePayload);
-          profileErr = retry.error;
-        }
-        if (profileErr) throw profileErr;
-
-        showToast(`Akun staf "${nama}" (${email}) berhasil didaftarkan!`, 'success');
+        alert(`Sukses: Akun staf "${namaLengkapValue}" berhasil didaftarkan!`);
+        showToast(`Akun staf "${namaLengkapValue}" (${email}) berhasil didaftarkan!`, 'success');
         registerUserForm.reset();
+        const jabatanInput = document.getElementById('inputUserJabatan');
+        if (jabatanInput) jabatanInput.value = 'Staf';
+        const roleInput = document.getElementById('inputUserRole');
+        if (roleInput) roleInput.value = 'Staf';
         await loadRegisteredUsers();
+
       } catch (err) {
         console.error(err);
         showToast('Gagal mendaftarkan staf: ' + err.message, 'error');
