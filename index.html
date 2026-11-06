@@ -1638,6 +1638,7 @@
     let chartInstance = null;
     let barangList = [];
     let peminjamanList = [];
+    let isRegisteringNewStaff = false;
 
     // Helper sanitasi string & HTML
     function escapeHtml(str) {
@@ -1810,6 +1811,11 @@
         setupTtdCanvasListeners();
 
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
+          // Lewati pengecekan akun jika proses pendaftaran staf baru sedang berlangsung
+          if (isRegisteringNewStaff) {
+            return;
+          }
+
           if (event === 'SIGNED_IN' && session?.user) {
             const { data: prof } = await supabaseClient
               .from('profil_user')
@@ -2975,39 +2981,46 @@
       const spinner = document.getElementById('saveUserSpinner');
       const text = document.getElementById('saveUserText');
 
-      const email = document.getElementById('inputUserEmail').value.trim();
-      const password = document.getElementById('inputUserPassword').value;
+      const emailValue = document.getElementById('inputUserEmail').value.trim();
+      const passwordValue = document.getElementById('inputUserPassword').value;
       const namaLengkapValue = document.getElementById('inputUserNama').value.trim();
       const nipValue = document.getElementById('inputUserNip').value.trim();
       const roleValue = document.getElementById('inputUserRole').value;
       const jabatanValue = document.getElementById('inputUserJabatan').value.trim();
-      const telepon = document.getElementById('inputUserTelepon').value.trim();
+      const teleponValue = document.getElementById('inputUserTelepon').value.trim();
 
       saveBtn.disabled = true;
       spinner.classList.remove('hidden');
       text.innerText = 'Mendaftarkan...';
 
+      // Setel flag menjadi true tepat sebelum signUp
+      isRegisteringNewStaff = true;
+
       try {
         const supabase = supabaseClient;
 
+        // Simpan sesi admin aktif sebelum signUp untuk menjaga admin tetap login
+        const { data: { session: currentAdminSession } } = await supabase.auth.getSession();
+
         // 1. Pendaftaran kredensial via Supabase Auth
-        const { data, error: authErr } = await supabase.auth.signUp({
-          email,
-          password,
+        const { data, error } = await supabase.auth.signUp({
+          email: emailValue,
+          password: passwordValue,
           options: {
+            // Cegah user baru agar tidak otomatis mengambil alih sesi login admin saat ini
             data: {
               nama_lengkap: namaLengkapValue,
               nip: nipValue || '-',
               role: roleValue,
               jabatan: jabatanValue,
-              no_whatsapp: telepon || null,
-              no_telepon: telepon || null
+              no_whatsapp: teleponValue || null,
+              no_telepon: teleponValue || null
             }
           }
         });
 
-        if (authErr) {
-          let msg = authErr.message || 'Gagal mendaftar auth';
+        if (error) {
+          let msg = error.message || 'Gagal mendaftar auth';
           if (msg.includes('Database error saving new user')) {
             msg = 'Database error: Gagal menyimpan data user baru. Pastikan NIP unik dan tidak duplikat dengan pegawai lain.';
           }
@@ -3031,6 +3044,18 @@
             }
           ]);
 
+        // Pulihkan sesi admin aktif agar admin tetap berada di dashboard
+        if (currentAdminSession?.access_token) {
+          try {
+            await supabase.auth.setSession({
+              access_token: currentAdminSession.access_token,
+              refresh_token: currentAdminSession.refresh_token
+            });
+          } catch (sessionErr) {
+            console.warn('Pemulihan sesi admin:', sessionErr);
+          }
+        }
+
         if (profileError) {
           alert('Gagal menyimpan profil staf ke database:\n' + (profileError.message || JSON.stringify(profileError)));
           showToast('Gagal menyimpan profil staf: ' + profileError.message, 'error');
@@ -3038,7 +3063,7 @@
         }
 
         alert(`Sukses: Akun staf "${namaLengkapValue}" berhasil didaftarkan!`);
-        showToast(`Akun staf "${namaLengkapValue}" (${email}) berhasil didaftarkan!`, 'success');
+        showToast(`Akun staf "${namaLengkapValue}" (${emailValue}) berhasil didaftarkan!`, 'success');
         registerUserForm.reset();
         const jabatanInput = document.getElementById('inputUserJabatan');
         if (jabatanInput) jabatanInput.value = 'Staf';
@@ -3051,6 +3076,10 @@
         showToast('Gagal mendaftarkan staf: ' + err.message, 'error');
         alert('Pendaftaran Staf Gagal:\n' + err.message);
       } finally {
+        // Kembalikan flag ke false setelah proses selesai
+        setTimeout(() => {
+          isRegisteringNewStaff = false;
+        }, 500);
         saveBtn.disabled = false;
         spinner.classList.add('hidden');
         text.innerText = 'Daftarkan Akun Staf';
