@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Dashboard | Sistem Inventaris TU RSUD R.T. Notopuro</title>
+  <title>SIAPIN - Sistem Aplikasi Peminjaman Inventaris | RSUD R.T. Notopuro</title>
 
   <!-- Google Font: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -123,14 +123,25 @@
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      #printKopSurat img {
-        width: 90px !important;
-        height: 90px !important;
-        max-width: none !important;
-        max-height: none !important;
+      #printKopSurat img.kop-logo-kiri {
+        width: 75px !important;
+        height: 85px !important;
+        max-width: 75px !important;
+        max-height: 85px !important;
         object-fit: contain !important;
-        transform: scale(1.8) !important;
-        margin-right: 24px !important;
+        transform: none !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      #printKopSurat img.kop-logo-kanan {
+        width: 80px !important;
+        height: 80px !important;
+        max-width: 80px !important;
+        max-height: 80px !important;
+        object-fit: contain !important;
+        transform: none !important;
+        margin: 0 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -150,9 +161,11 @@
         <div class="w-20 h-20 mx-auto mb-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center p-2 shadow-inner">
           <img src="logo-rsud.png" alt="Logo RSUD" class="w-full h-full object-contain drop-shadow">
         </div>
-        <h2 class="text-xl font-extrabold tracking-tight">RSUD R.T. Notopuro</h2>
-        <p class="text-xs text-slate-300 mt-1 uppercase tracking-widest font-semibold">Sistem Inventaris Tata Usaha</p>
-      </div>
+        <h2 class="text-xl font-extrabold tracking-tight text-white">RSUD R.T. Notopuro</h2>
+        <div class="mt-2">
+          <div class="text-2xl font-black tracking-wider text-sky-400">SIAPIN</div>
+          <p class="text-xs text-slate-300 font-medium tracking-normal mt-0.5">(Sistem Aplikasi Peminjaman Inventaris)</p>
+        </div>
 
       <!-- Form Login -->
       <form id="loginForm" class="p-8 space-y-5">
@@ -218,7 +231,8 @@
             <img src="logo-rsud.png" alt="Logo RSUD" class="w-12 h-auto object-contain drop-shadow-sm flex-shrink-0">
             <div class="overflow-hidden">
               <h1 class="text-sm font-bold text-white tracking-tight leading-tight truncate">RSUD R.T. Notopuro</h1>
-              <p class="text-[11px] text-sky-400 font-semibold tracking-wide uppercase">Inventaris Tata Usaha</p>
+              <div class="text-sm font-black text-sky-400 tracking-wide">SIAPIN</div>
+              <p class="text-[10px] text-slate-300 font-medium leading-tight truncate">(Sistem Aplikasi Peminjaman Inventaris)</p>
             </div>
           </div>
           <button id="closeSidebarBtn" type="button" aria-label="Tutup Menu" class="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
@@ -276,6 +290,14 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
             </svg>
             <span>Kelola Data Barang</span>
+          </button>
+
+          <!-- Menu: Kelola Stok (Update Stok Fisik Langsung) -->
+          <button id="sidebarKelolaStokBtn" onclick="switchView('stok')" class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+            <span>Kelola Stok</span>
           </button>
 
           <!-- Menu: Riwayat & Laporan Aset -->
@@ -337,10 +359,10 @@
             <img src="logo-rsud.png" alt="Logo RSUD" class="w-8 h-auto object-contain drop-shadow-sm flex-shrink-0">
             <div>
               <h1 class="text-xs font-bold text-white leading-tight">RSUD R.T. Notopuro</h1>
-              <p class="text-[10px] text-sky-400 font-medium">Inventaris Tata Usaha</p>
+              <div class="text-xs font-black text-sky-400">SIAPIN</div>
+              <p class="text-[9px] text-slate-300 font-medium leading-tight">(Sistem Aplikasi Peminjaman Inventaris)</p>
             </div>
           </div>
-        </div>
         <div class="flex items-center gap-2">
           <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Online
@@ -589,17 +611,29 @@
       <div id="riwayatLaporanContent" class="hidden space-y-6">
         
         <!-- Kop Surat Resmi (Hanya muncul saat Cetak Dokumen / Print) -->
-        <div id="printKopSurat" class="hidden print:block pb-4 mb-4 border-b-2 border-slate-900">
-          <div class="flex items-center justify-center gap-4 mb-2">
-            <img src="logo-rsud.png" alt="Logo RSUD" style="width: 90px !important; height: 90px !important; max-width: none !important; max-height: none !important; object-fit: contain; transform: scale(1.8); margin-right: 24px;">
-            <div class="text-center">
-              <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-900">PEMERINTAH KABUPATEN SIDOARJO</h3>
-              <h1 class="text-xl font-black uppercase tracking-tight text-slate-900">RSUD R.T. NOTOPURO</h1>
-              <p class="text-xs font-bold text-slate-700 tracking-wider uppercase">BAGIAN TATA USAHA - SUB BAGIAN LOGISTIK & INVENTARIS</p>
-              <p class="text-[10px] text-slate-600">Jl. Mojopahit No. 667 Sidoarjo | Telp: (031) 8961649 | Email: rsudrtnotopurosda@gmail.com</p>
+        <div id="printKopSurat" class="hidden print:block pb-2 mb-4">
+          <div class="flex items-center justify-between border-b-4 border-double border-black pb-3 mb-4">
+            <!-- a. Kiri: Logo Pemkab Sidoarjo -->
+            <div class="flex-shrink-0 flex items-center justify-start" style="width: 85px;">
+              <img src="logo-sidoarjo.png" alt="Logo Pemkab Sidoarjo" class="kop-logo-kiri" style="width: 75px; height: 85px; object-fit: contain;">
+            </div>
+
+            <!-- b. Tengah: Teks Kop Surat Resmi (Times New Roman / Serif) -->
+            <div class="flex-1 text-center font-serif px-2" style="font-family: 'Times New Roman', Times, serif;">
+              <div class="text-base font-bold uppercase tracking-wide leading-tight text-black">PEMERINTAH KABUPATEN SIDOARJO</div>
+              <div class="text-lg font-extrabold uppercase tracking-wide leading-tight text-black">RUMAH SAKIT UMUM DAERAH</div>
+              <div class="text-lg font-extrabold uppercase tracking-wide leading-tight text-black">R.T. NOTOPURO SIDOARJO</div>
+              <div class="text-xs text-black mt-1 leading-normal">Jalan Mojopahit No. 667, Sidoarjo, Jawa Timur 61215</div>
+              <div class="text-xs text-black leading-normal">Telepon (031) 8961649, Laman rsudrtnotopuro.sidoarjokab.go.id,</div>
+              <div class="text-xs text-black leading-normal">Pos-el rsudrtnotopuro@sidoarjokab.go.id</div>
+            </div>
+
+            <!-- c. Kanan: Logo RSUD R.T. Notopuro -->
+            <div class="flex-shrink-0 flex items-center justify-end" style="width: 85px;">
+              <img src="logo-rsud.png" alt="Logo RSUD R.T. Notopuro" class="kop-logo-kanan" style="width: 80px; height: 80px; object-fit: contain;">
             </div>
           </div>
-          <div class="border-t border-slate-900 pt-2 flex items-center justify-between text-xs font-bold text-slate-900">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-900 pb-1 mb-2">
             <span>DOKUMEN RESMI: LAPORAN REKAPITULASI PEMINJAMAN ASET LOGISTIK</span>
             <span id="printDateSpan">Tanggal Cetak: -</span>
           </div>
@@ -649,8 +683,9 @@
                 <option value="semua">Semua Status</option>
                 <option value="dipinjam">Sedang Dipinjam</option>
                 <option value="terlambat">Lewat Jatuh Tempo (Telat)</option>
-                <option value="kembali">Sudah Dikembalikan</option>
-              </select>
+                <option value="kembali">Kembali Normal</option>
+                <option value="rusak">Kembali (Barang Rusak)</option>
+                <option value="mutasi">Mutasi / Habis Pakai</option>
             </div>
 
             <!-- Pencarian Cepat -->
@@ -826,6 +861,89 @@
               <tbody id="tableKelolaBarangBody" class="divide-y divide-slate-100 text-slate-700">
                 <tr>
                   <td colspan="9" class="py-8 text-center text-xs text-slate-400">Memuat data barang...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 4: HALAMAN KELOLA STOK (UPDATE STOK FISIK LANGSUNG)               -->
+      <!-- ===================================================================== -->
+      <div id="kelolaStokContent" class="hidden space-y-6">
+        
+        <!-- Header Halaman Kelola Stok -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">Kelola Stok Barang</h2>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Update Stok Fisik
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">Penyesuaian cepat jumlah stok fisik logistik Tata Usaha secara langsung ke database master barang</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="loadData()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5">
+              <span>🔄 Refresh Data</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Kartu Tabel Kelola Stok -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-bold text-slate-800">Daftar Stok Fisik Barang Logistik TU</h3>
+              <p class="text-xs text-slate-400">Gunakan tombol <b>+</b> untuk menambah stok atau <b>-</b> untuk mengurangi stok secara langsung</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="relative w-full sm:w-48">
+                <input type="text" id="kelolaStokSearchInput" placeholder="Cari nama, kode..." 
+                  class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition" />
+                <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+              <div class="w-full sm:w-48">
+                <select id="kelolaStokKategoriSelect"
+                  class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition">
+                  <option value="">Semua Kategori</option>
+                  <option value="Alat Tulis Kantor">Alat Tulis Kantor (ATK)</option>
+                  <option value="Cetakan & Formulir">Cetakan & Formulir RS</option>
+                  <option value="Kebersihan & Sanitasi Non-Medis">Kebersihan & Sanitasi</option>
+                  <option value="Perlengkapan IT">Perlengkapan Komputer & IT</option>
+                  <option value="Perlengkapan Kantor">Perlengkapan Kantor</option>
+                  <option value="Perlengkapan Rumah Tangga TU">Perlengkapan Rumah Tangga TU</option>
+                  <option value="Lain-lain">Lain-lain</option>
+                </select>
+              </div>
+              <span id="kelolaStokTotalBadge" class="text-xs font-extrabold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">
+                0 Barang
+              </span>
+            </div>
+          </div>
+
+          <!-- Tabel Stok -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse min-w-[760px]">
+              <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] border-b border-slate-200">
+                <tr>
+                  <th class="py-3 px-3 text-center w-12">No</th>
+                  <th class="py-3 px-3">Kode Barang</th>
+                  <th class="py-3 px-3">Nama Barang</th>
+                  <th class="py-3 px-3">Kategori</th>
+                  <th class="py-3 px-3 text-center">Stok Saat Ini</th>
+                  <th class="py-3 px-3">Satuan</th>
+                  <th class="py-3 px-3 text-center">Batas Min</th>
+                  <th class="py-3 px-3 text-center w-64">Penyesuaian Stok Fisik</th>
+                </tr>
+              </thead>
+              <tbody id="tableKelolaStokBody" class="divide-y divide-slate-100 text-slate-700">
+                <tr>
+                  <td colspan="8" class="py-8 text-center text-xs text-slate-400">Memuat data barang...</td>
                 </tr>
               </tbody>
             </table>
@@ -1099,14 +1217,14 @@
               <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Peran Akses (Role) *</label>
               <select id="inputUserRole" required
                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition">
-                <option value="staf_gudang">Staf Logistik & Gudang TU</option>
-                <option value="kepala_tu">Kepala Bagian Tata Usaha</option>
+                <option value="Staf">Staf</option>
+                <option value="Kepala Sub Bagian Tata Usaha dan Rumah Tangga">Kepala Sub Bagian Tata Usaha dan Rumah Tangga</option>
               </select>
             </div>
 
             <div>
               <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jabatan / Posisi</label>
-              <input type="text" id="inputUserJabatan" value="Staf Logistik Tata Usaha" placeholder="misal: Pengelola Barang TU"
+              <input type="text" id="inputUserJabatan" value="Staf" placeholder="misal: Staf"
                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition" />
             </div>
           </div>
@@ -1396,6 +1514,100 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: KONDISI PENGEMBALIAN BARANG / ASET (NORMAL, RUSAK, MUTASI)         -->
+  <!-- ========================================================================= -->
+  <div id="modalPengembalian" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8 flex flex-col">
+      <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-900 to-indigo-950 text-white">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">
+            🔄
+          </div>
+          <div>
+            <h3 class="font-bold text-base">Proses Pengembalian Barang</h3>
+            <p class="text-xs text-slate-300">Pilih kondisi pengembalian aset logistik TU</p>
+          </div>
+        </div>
+        <button type="button" onclick="tutupModalPengembalian()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form id="formPengembalian" class="p-6 space-y-4">
+        <input type="hidden" id="kembaliPeminjamanId" />
+        <input type="hidden" id="kembaliBarangId" />
+        <input type="hidden" id="kembaliJumlahPinjam" />
+
+        <!-- Detail Barang yang Dikembalikan -->
+        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+          <div class="text-xs text-slate-500 font-medium">Aset / Barang:</div>
+          <div id="kembaliNamaBarang" class="text-sm font-bold text-slate-900">-</div>
+          <div class="flex items-center gap-4 text-xs text-slate-600 pt-1">
+            <span>Peminjam: <b id="kembaliNamaPeminjam" class="text-slate-800">-</b></span>
+            <span>Jumlah: <b id="kembaliJumlahText" class="text-indigo-700">1 unit</b></span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Pilih Kondisi Pengembalian *</label>
+          
+          <div class="space-y-2.5">
+            <!-- Pilihan 1: Kembali Normal -->
+            <label class="flex items-start gap-3 p-3 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 cursor-pointer transition">
+              <input type="radio" name="kondisiPengembalian" value="Kembali" checked class="mt-1 text-emerald-600 focus:ring-emerald-500">
+              <div class="text-xs">
+                <div class="font-bold text-emerald-900">1. Kembali Normal</div>
+                <div class="text-slate-600 text-[11px] mt-0.5">Barang dalam kondisi baik/layak. Status peminjaman menjadi <b class="text-emerald-700">Kembali</b> dan stok barang otomatis <b>ditambahkan kembali</b> ke stok master gudang.</div>
+              </div>
+            </label>
+
+            <!-- Pilihan 2: Kembali (Barang Rusak) -->
+            <label class="flex items-start gap-3 p-3 rounded-xl border border-amber-200 bg-amber-50/50 hover:bg-amber-50 cursor-pointer transition">
+              <input type="radio" name="kondisiPengembalian" value="Kembali - Rusak" class="mt-1 text-amber-600 focus:ring-amber-500">
+              <div class="text-xs">
+                <div class="font-bold text-amber-900">2. Kembali (Barang Rusak)</div>
+                <div class="text-slate-600 text-[11px] mt-0.5">Barang rusak saat pemakaian. Status peminjaman menjadi <b class="text-amber-700">Kembali - Rusak</b>. Dicatat terpisah dan <b>stok siap pakai tidak bertambah</b> ke gudang.</div>
+              </div>
+            </label>
+
+            <!-- Pilihan 3: Mutasi / Habis Pakai -->
+            <label class="flex items-start gap-3 p-3 rounded-xl border border-purple-200 bg-purple-50/50 hover:bg-purple-50 cursor-pointer transition">
+              <input type="radio" name="kondisiPengembalian" value="Mutasi" class="mt-1 text-purple-600 focus:ring-purple-500">
+              <div class="text-xs">
+                <div class="font-bold text-purple-900">3. Mutasi / Habis Pakai</div>
+                <div class="text-slate-600 text-[11px] mt-0.5">Barang habis pakai atau diserahterimakan permanen ke unit kerja peminjam. Status peminjaman menjadi <b class="text-purple-700">Mutasi</b>. <b>Stok tidak kembali</b> ke gudang utama.</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Catatan Tambahan (Opsional)</label>
+          <input type="text" id="kembaliCatatan" placeholder="misal: Kerusakan pada kabel, habis untuk kegiatan rapat, dll."
+            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <button type="button" onclick="tutupModalPengembalian()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition">
+            Batal
+          </button>
+          <button type="submit" id="kembaliSubmitBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center gap-1.5">
+            <span id="kembaliSpinner" class="hidden">
+              <svg class="animate-spin w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+            </span>
+            <span id="kembaliSubmitText">Simpan Pengembalian</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 
   <!-- ========================================================================= -->
   <!-- 8. JAVASCRIPT FRONTEND LENGKAP                                            -->
@@ -1539,33 +1751,37 @@
           auth: { persistSession: true, storageKey: 'situ_session_token' }
         });
 
-        // Cek sesi login aktif & status akun
+        // Cek sesi login aktif & status akun di tabel profil_user
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
           const { data: prof } = await supabaseClient
             .from('profil_user')
-            .select('role, is_active')
-            .eq('id', session.user.id)
-            .single();
+            .select('id, email, nama_lengkap, role, jabatan, is_active')
+            .or(`id.eq.${session.user.id},email.eq.${session.user.email}`)
+            .maybeSingle();
 
-          if (prof && prof.is_active === false) {
+          if (!prof || prof.is_active === false) {
             await supabaseClient.auth.signOut();
             showLogin();
-            showToast('Akun Anda telah dinonaktifkan', 'error');
+            const alertBox = document.getElementById('loginErrorAlert');
+            if (alertBox) {
+              document.getElementById('loginErrorText').innerText = 'Akses Ditolak: Akun Anda telah dihapus atau dinonaktifkan dari sistem.';
+              alertBox.classList.remove('hidden');
+            }
+            showToast('Akses Ditolak: Akun Anda telah dihapus atau dinonaktifkan dari sistem.', 'error');
             return;
           }
 
-          // Verifikasi Otorisasi: Pastikan peran Kepala Bagian Tata Usaha (kepala_tu) dan Staf Logistik diizinkan
-          if (prof && prof.role) {
-            const normalizedRole = (prof.role || '').toLowerCase();
-            const allowedRoles = ['staf_gudang', 'kepala_tu', 'admin', 'kepala bagian tata usaha', 'staf logistik tata usaha'];
-            const isAuthorized = allowedRoles.includes(normalizedRole) || normalizedRole.includes('kepala') || normalizedRole.includes('staf');
-            if (!isAuthorized) {
-              await supabaseClient.auth.signOut();
-              showLogin();
-              showToast('Akses ditolak: Peran akun tidak memiliki otorisasi masuk ke dashboard.', 'error');
-              return;
-            }
+          // Verifikasi Otorisasi: Pastikan peran Staf dan Kepala Sub Bagian TU & RT diizinkan
+          const normalizedRole = (prof.role || '').toLowerCase();
+          const normalizedJabatan = (prof.jabatan || '').toLowerCase();
+          const allowedRoles = ['staf', 'kepala sub bagian tata usaha dan rumah tangga', 'staf_gudang', 'kepala_tu', 'admin', 'kepala bagian tata usaha', 'staf logistik tata usaha'];
+          const isAuthorized = allowedRoles.includes(normalizedRole) || normalizedRole.includes('kepala') || normalizedRole.includes('staf') || normalizedJabatan.includes('kepala') || normalizedJabatan.includes('staf');
+          if (!isAuthorized) {
+            await supabaseClient.auth.signOut();
+            showLogin();
+            showToast('Akses Ditolak: Peran akun tidak memiliki otorisasi masuk ke dashboard.', 'error');
+            return;
           }
 
           showDashboard(session.user);
@@ -1574,8 +1790,25 @@
         }
         setupTtdCanvasListeners();
 
-        supabaseClient.auth.onAuthStateChange((event, session) => {
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
           if (event === 'SIGNED_IN' && session?.user) {
+            const { data: prof } = await supabaseClient
+              .from('profil_user')
+              .select('id, email, nama_lengkap, role, jabatan, is_active')
+              .or(`id.eq.${session.user.id},email.eq.${session.user.email}`)
+              .maybeSingle();
+
+            if (!prof || prof.is_active === false) {
+              await supabaseClient.auth.signOut();
+              showLogin();
+              const alertBox = document.getElementById('loginErrorAlert');
+              if (alertBox) {
+                document.getElementById('loginErrorText').innerText = 'Akses Ditolak: Akun Anda telah dihapus atau dinonaktifkan dari sistem.';
+                alertBox.classList.remove('hidden');
+              }
+              showToast('Akses Ditolak: Akun Anda telah dihapus atau dinonaktifkan dari sistem.', 'error');
+              return;
+            }
             showDashboard(session.user);
           } else if (event === 'SIGNED_OUT') {
             showLogin();
@@ -1610,33 +1843,36 @@
 
     async function loadUserProfile(userId) {
       try {
-        const { data } = await supabaseClient.from('profil_user').select('nama_lengkap, role, jabatan, is_active, email').eq('id', userId).single();
-        if (data) {
-          if (data.is_active === false) {
-            await supabaseClient.auth.signOut();
-            showLogin();
-            showToast('Akun Anda telah dinonaktifkan', 'error');
-            return;
+        const { data } = await supabaseClient.from('profil_user').select('nama_lengkap, role, jabatan, is_active, email').eq('id', userId).maybeSingle();
+        if (!data || data.is_active === false) {
+          await supabaseClient.auth.signOut();
+          showLogin();
+          const alertBox = document.getElementById('loginErrorAlert');
+          if (alertBox) {
+            document.getElementById('loginErrorText').innerText = 'Akses Ditolak: Akun Anda telah dihapus atau dinonaktifkan dari sistem.';
+            alertBox.classList.remove('hidden');
           }
-          currentUserProfile = data;
+          showToast('Akses Ditolak: Akun Anda telah dihapus atau dinonaktifkan dari sistem.', 'error');
+          return;
+        }
+        currentUserProfile = data;
 
-          // Format label role: Kepala Bagian Tata Usaha atau Staf Logistik TU
-          const normalizedRole = (data.role || '').toLowerCase();
-          const isKepalaTU = normalizedRole === 'kepala_tu' || normalizedRole.includes('kepala') || (data.jabatan && data.jabatan.toLowerCase().includes('kepala'));
-          const roleLabel = isKepalaTU ? 'Kepala Bagian Tata Usaha' : 'Staf Logistik TU';
+        // Format label role: Kepala Sub Bagian Tata Usaha dan Rumah Tangga atau Staf
+        const normalizedRole = (data.role || '').toLowerCase();
+        const isKepalaTU = normalizedRole.includes('kepala') || (data.jabatan && data.jabatan.toLowerCase().includes('kepala'));
+        const roleLabel = isKepalaTU ? 'Kepala Sub Bagian Tata Usaha dan Rumah Tangga' : 'Staf';
 
-          const roleEl = document.getElementById('sidebarUserRole');
-          if (roleEl) {
-            roleEl.innerText = `${roleLabel} (${data.nama_lengkap || ''})`;
-          }
+        const roleEl = document.getElementById('sidebarUserRole');
+        if (roleEl) {
+          roleEl.innerText = `${roleLabel} (${data.nama_lengkap || ''})`;
+        }
 
-          const pjInput = document.getElementById('pinjamPenanggungJawab');
-          if (pjInput) {
-            pjInput.value = data.nama_lengkap || currentUser?.email || (isKepalaTU ? 'Kepala Bagian Tata Usaha' : 'Petugas Logistik TU');
-          }
+        const pjInput = document.getElementById('pinjamPenanggungJawab');
+        if (pjInput) {
+          pjInput.value = data.nama_lengkap || currentUser?.email || roleLabel;
         }
       } catch (e) {
-        // Abaikan jika belum ada profil
+        console.warn('loadUserProfile error:', e);
       }
     }
 
@@ -1660,31 +1896,35 @@
         const { data: authResult, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        // Cek status akun & verifikasi otorisasi peran (Staf Logistik & Kepala Bagian Tata Usaha)
-        if (authResult?.user?.id) {
-          const { data: prof } = await supabaseClient
+        // Cek keberadaan user di tabel profil_user berdasarkan id atau email
+        let prof = null;
+        if (authResult?.user) {
+          const { data: profData } = await supabaseClient
             .from('profil_user')
-            .select('role, jabatan, is_active')
-            .eq('id', authResult.user.id)
-            .single();
+            .select('id, email, nama_lengkap, role, jabatan, is_active')
+            .or(`id.eq.${authResult.user.id},email.eq.${authResult.user.email || email}`)
+            .maybeSingle();
 
-          if (prof && prof.is_active === false) {
-            await supabaseClient.auth.signOut();
-            throw new Error('Akun Anda telah dinonaktifkan.');
-          }
-
-          // Verifikasi Otorisasi: Mengizinkan akun dengan peran Kepala Bagian Tata Usaha (kepala_tu) maupun Staf Logistik (staf_gudang / admin)
-          if (prof && prof.role) {
-            const normalizedRole = (prof.role || '').toLowerCase();
-            const allowedRoles = ['staf_gudang', 'kepala_tu', 'admin', 'kepala bagian tata usaha', 'staf logistik tata usaha'];
-            const isAuthorized = allowedRoles.includes(normalizedRole) || normalizedRole.includes('kepala') || normalizedRole.includes('staf');
-            if (!isAuthorized) {
-              await supabaseClient.auth.signOut();
-              throw new Error('Akses ditolak: Akun Anda tidak memiliki otorisasi peran untuk masuk.');
-            }
-          }
+          prof = profData;
         }
-        showToast('Login berhasil! Selamat datang di Sistem Inventaris.', 'success');
+
+        // Jika user TIDAK DITEMUKAN di tabel profil_user (karena sudah dihapus) atau berstatus nonaktif:
+        if (!prof || prof.is_active === false) {
+          await supabaseClient.auth.signOut();
+          throw new Error('Akses Ditolak: Akun Anda telah dihapus atau dinonaktifkan dari sistem.');
+        }
+
+        // Verifikasi Otorisasi: Pastikan kedua role (Staf & Kepala Sub Bagian Tata Usaha dan Rumah Tangga) diizinkan login
+        const normalizedRole = (prof.role || '').toLowerCase();
+        const normalizedJabatan = (prof.jabatan || '').toLowerCase();
+        const allowedRoles = ['staf', 'kepala sub bagian tata usaha dan rumah tangga', 'staf_gudang', 'kepala_tu', 'admin', 'kepala bagian tata usaha', 'staf logistik tata usaha'];
+        const isAuthorized = allowedRoles.includes(normalizedRole) || normalizedRole.includes('kepala') || normalizedRole.includes('staf') || normalizedJabatan.includes('kepala') || normalizedJabatan.includes('staf');
+        if (!isAuthorized) {
+          await supabaseClient.auth.signOut();
+          throw new Error('Akses Ditolak: Peran akun Anda tidak memiliki otorisasi untuk masuk.');
+        }
+
+        showToast('Login berhasil! Selamat datang di SIAPIN.', 'success');
       } catch (err) {
         document.getElementById('loginErrorText').innerText = err.message || 'Login gagal';
         alertBox.classList.remove('hidden');
@@ -1774,6 +2014,7 @@
         renderChart(barangList);
         renderTables(barangList);
         renderKelolaTable(barangList);
+        renderKelolaStokTable(barangList);
         populateDropdowns(barangList);
 
         // 2. Ambil Data Peminjaman & Deteksi Keterlambatan
@@ -1881,9 +2122,9 @@
                   </span>
                 </td>
                 <td class="py-2.5 px-3 text-right">
-                  <button onclick="tandaiKembali('${item.id}', '${namaBarang}')"
-                    class="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg text-[11px] font-bold shadow-sm transition">
-                    ✓ Sudah Kembali
+                  <button onclick="bukaModalPengembalian('${item.id}')"
+                    class="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg text-[11px] font-bold shadow-sm transition inline-flex items-center gap-1">
+                    <span>✓ Pengembalian</span>
                   </button>
                 </td>
               </tr>
@@ -1902,28 +2143,9 @@
       }
     }
 
-    // Tandai Pengembalian Aset
-    window.tandaiKembali = async function(peminjamanId, namaBarang) {
-      if (!confirm(`Konfirmasi pengembalian untuk aset: "${namaBarang}"?`)) return;
-
-      try {
-        const { error } = await supabaseClient
-          .from('peminjaman')
-          .update({
-            status: 'kembali',
-            tanggal_kembali: new Date().toISOString()
-          })
-          .eq('id', peminjamanId);
-
-        if (error) throw error;
-
-        showToast(`Aset "${namaBarang}" berhasil dikembalikan!`, 'success');
-        await loadPeminjaman();
-        await loadRiwayatLaporan();
-
-      } catch (err) {
-        showToast('Gagal memproses pengembalian: ' + err.message, 'error');
-      }
+    // Pengembalian Aset (Membuka Dialog 3 Kondisi Pengembalian)
+    window.tandaiKembali = function(peminjamanId) {
+      bukaModalPengembalian(peminjamanId);
     };
 
     // Hitung Metrik & Progress Bar
@@ -2151,6 +2373,161 @@
           </td>
         </tr>
       `).join('');
+    }
+
+    // 4. Tabel Halaman Baru: Kelola Stok Barang (Tambah / Kurang Stok Fisik Langsung)
+    function renderKelolaStokTable(items) {
+      const tbody = document.getElementById('tableKelolaStokBody');
+      const badge = document.getElementById('kelolaStokTotalBadge');
+      if (!tbody) return;
+
+      const searchInput = document.getElementById('kelolaStokSearchInput');
+      const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+      const list = items || [];
+      const katSelect = document.getElementById('kelolaStokKategoriSelect');
+      const katFilter = katSelect ? katSelect.value : '';
+
+      const filtered = list.filter(b => {
+        if (katFilter && b.kategori !== katFilter) return false;
+        if (query) {
+          const match = (b.nama && b.nama.toLowerCase().includes(query)) ||
+            (b.kode_barang && b.kode_barang.toLowerCase().includes(query)) ||
+            (b.kategori && b.kategori.toLowerCase().includes(query)) ||
+            (b.lokasi_rak && b.lokasi_rak.toLowerCase().includes(query));
+          if (!match) return false;
+        }
+        return true;
+      });
+
+      if (badge) {
+        badge.innerText = `${filtered.length} Barang`;
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="py-8 text-center text-xs text-slate-400">
+              ${query ? `Tidak ada barang yang cocok dengan kata kunci "${escapeHtml(query)}".` : 'Belum ada data barang di database Supabase.'}
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((item, idx) => {
+        const curStok = Number(item.stok) || 0;
+        const minStok = Number(item.stok_minimum || 5);
+        const isKritis = curStok <= minStok;
+
+        const stokBadge = isKritis
+          ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-rose-50 text-rose-700 border border-rose-200 font-mono shadow-2xs"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>${curStok}</span>`
+          : `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono shadow-2xs">${curStok}</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-2.5 px-3 text-center text-slate-400 font-mono text-xs">${idx + 1}</td>
+            <td class="py-2.5 px-3 font-mono text-xs font-bold text-slate-600">${escapeHtml(item.kode_barang || '-')}</td>
+            <td class="py-2.5 px-3 font-semibold text-slate-800 text-xs">${escapeHtml(item.nama || '-')}</td>
+            <td class="py-2.5 px-3 text-[11px] text-slate-500">${escapeHtml(item.kategori || 'Umum')}</td>
+            <td class="py-2.5 px-3 text-center">${stokBadge}</td>
+            <td class="py-2.5 px-3 text-[11px] text-slate-500 font-medium">${escapeHtml(item.satuan || 'pcs')}</td>
+            <td class="py-2.5 px-3 text-center text-xs text-slate-600">${minStok}</td>
+            <td class="py-2.5 px-3 text-center">
+              <div class="inline-flex items-center justify-center gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80 shadow-2xs">
+                <button type="button" onclick="ubahStokLangsung('${item.id}', -1, '${escapeJsString(item.nama || '')}')"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 border border-slate-200 font-bold text-xs transition shadow-2xs"
+                  title="Kurangi 1 unit stok">
+                  -1
+                </button>
+                <div class="flex items-center gap-1">
+                  <input type="number" id="stokDelta_${item.id}" min="1" value="1"
+                    class="w-12 text-center py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 focus:ring-1 focus:ring-emerald-500 outline-none" />
+                  <button type="button" onclick="ubahStokDelta('${item.id}', -1, '${escapeJsString(item.nama || '')}')"
+                    class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-bold shadow-2xs transition"
+                    title="Kurangi sesuai input">
+                    - Kurang
+                  </button>
+                  <button type="button" onclick="ubahStokDelta('${item.id}', 1, '${escapeJsString(item.nama || '')}')"
+                    class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold shadow-2xs transition"
+                    title="Tambah sesuai input">
+                    + Tambah
+                  </button>
+                </div>
+                <button type="button" onclick="ubahStokLangsung('${item.id}', 1, '${escapeJsString(item.nama || '')}')"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg bg-white hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 border border-slate-200 font-bold text-xs transition shadow-2xs"
+                  title="Tambah 1 unit stok">
+                  +1
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Fungsi Penyesuaian Stok Fisik Barang (UPDATE public.barang SET stok = ...)
+    window.ubahStokDelta = async function(itemId, direction, nama) {
+      const inputEl = document.getElementById(`stokDelta_${itemId}`);
+      const amount = parseInt(inputEl?.value || '1', 10);
+      if (isNaN(amount) || amount <= 0) {
+        showToast('Masukkan jumlah penyesuaian stok yang valid (minimal 1)!', 'error');
+        return;
+      }
+      await sesuaikanStokBarang(itemId, direction * amount, nama);
+    };
+
+    window.ubahStokLangsung = async function(itemId, delta, nama) {
+      await sesuaikanStokBarang(itemId, delta, nama);
+    };
+
+    async function sesuaikanStokBarang(itemId, delta, nama) {
+      const item = barangList.find(b => b.id === itemId);
+      if (!item) return;
+
+      const currentStok = Number(item.stok) || 0;
+      const newStok = currentStok + delta;
+      if (newStok < 0) {
+        alert(`Stok tidak boleh bernilai negatif! Stok saat ini: ${currentStok}`);
+        showToast('Gagal: Stok tidak boleh bernilai negatif.', 'error');
+        return;
+      }
+
+      const actionText = delta > 0 ? `menambah ${delta}` : `mengurangi ${Math.abs(delta)}`;
+      if (!confirm(`Konfirmasi ${actionText} unit untuk "${nama}"?\n\nStok saat ini: ${currentStok} → Stok baru: ${newStok}`)) {
+        return;
+      }
+
+      try {
+        const { error } = await supabaseClient
+          .from('barang')
+          .update({ stok: newStok })
+          .eq('id', itemId);
+
+        if (error) throw error;
+
+        item.stok = newStok;
+        showToast(`Stok "${nama}" berhasil diperbarui menjadi ${newStok} ${item.satuan || ''}!`, 'success');
+        renderKelolaStokTable(barangList);
+        renderKelolaTable(barangList);
+        renderTables(barangList);
+        updateMetrics(barangList);
+
+        // Catat ke tabel mutasi sebagai riwayat audit jika tabel mutasi tersedia
+        try {
+          await supabaseClient.from('mutasi').insert([{
+            barang_id: itemId,
+            jenis_mutasi: delta > 0 ? 'masuk' : 'keluar',
+            jumlah: Math.abs(delta),
+            keterangan: `Penyesuaian stok langsung (${delta > 0 ? '+' : ''}${delta}) melalui menu Kelola Stok`,
+            tanggal_mutasi: new Date().toISOString()
+          }]);
+        } catch (e) {
+          // Mutasi opsional
+        }
+      } catch (err) {
+        showToast('Gagal memperbarui stok barang: ' + err.message, 'error');
+      }
     }
 
     // =========================================================================
@@ -2542,7 +2919,9 @@
     function openManageUserModal() {
       registerUserForm.reset();
       const jabatanInput = document.getElementById('inputUserJabatan');
-      if (jabatanInput) jabatanInput.value = 'Staf Logistik Tata Usaha';
+      if (jabatanInput) jabatanInput.value = 'Staf';
+      const roleInput = document.getElementById('inputUserRole');
+      if (roleInput) roleInput.value = 'Staf';
       manageUserModal.classList.remove('hidden');
       document.getElementById('inputUserEmail').focus();
       loadRegisteredUsers();
@@ -2561,10 +2940,12 @@
     const inputUserJabatanEl = document.getElementById('inputUserJabatan');
     if (inputUserRoleEl && inputUserJabatanEl) {
       inputUserRoleEl.addEventListener('change', function() {
-        if (this.value === 'kepala_tu' || this.value === 'Kepala Bagian Tata Usaha') {
-          inputUserJabatanEl.value = 'Kepala Bagian Tata Usaha';
-        } else if (this.value === 'staf_gudang' || this.value === 'Staf Logistik & Gudang TU') {
-          inputUserJabatanEl.value = 'Staf Logistik Tata Usaha';
+        if (this.value === 'Kepala Sub Bagian Tata Usaha dan Rumah Tangga') {
+          inputUserJabatanEl.value = 'Kepala Sub Bagian Tata Usaha dan Rumah Tangga';
+        } else if (this.value === 'Staf') {
+          inputUserJabatanEl.value = 'Staf';
+        } else {
+          inputUserJabatanEl.value = this.value;
         }
       });
     }
@@ -2593,7 +2974,7 @@
           nama_lengkap: nama,
           nip: nip || null,
           role: role,
-          jabatan: jabatan || 'Staf Logistik Tata Usaha',
+          jabatan: jabatan || role || 'Staf',
           no_whatsapp: telepon || null,
           no_telepon: telepon || null
         };
@@ -2627,7 +3008,7 @@
           nama_lengkap: nama,
           nip: nip || null,
           role: role,
-          jabatan: jabatan || 'Staf Logistik Tata Usaha',
+          jabatan: jabatan || role || 'Staf',
           no_whatsapp: telepon || null,
           is_active: true
         };
@@ -2636,6 +3017,13 @@
           .from('profil_user')
           .upsert(profilePayload);
 
+        // Fallback jika database Supabase masih menggunakan enum user_role
+        if (profileErr && profileErr.message && profileErr.message.includes('enum user_role')) {
+          profilePayload.role = role.toLowerCase().includes('kepala') ? 'kepala_tu' : 'staf_gudang';
+          const retry = await supabaseClient.from('profil_user').upsert(profilePayload);
+          profileErr = retry.error;
+        }
+
         // Fallback jika tabel profil_user di database masih menggunakan no_telepon alih-alih no_whatsapp
         if (profileErr && profileErr.message && profileErr.message.includes('no_whatsapp')) {
           delete profilePayload.no_whatsapp;
@@ -2643,7 +3031,6 @@
           const retry = await supabaseClient.from('profil_user').upsert(profilePayload);
           profileErr = retry.error;
         }
-
         if (profileErr) throw profileErr;
 
         showToast(`Akun staf "${nama}" (${email}) berhasil didaftarkan!`, 'success');
@@ -2683,9 +3070,10 @@
 
         tbody.innerHTML = data.map(u => {
           const isActive = u.is_active !== false;
-          const roleBadge = u.role === 'kepala_tu'
-            ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">Kepala TU</span>`
-            : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800">Staf Gudang</span>`;
+          const isKepala = (u.role || '').toLowerCase().includes('kepala') || (u.jabatan || '').toLowerCase().includes('kepala');
+          const roleBadge = isKepala
+            ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">Kepala Sub Bagian TU & RT</span>`
+            : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800">Staf</span>`;
 
           const statusBadge = isActive
             ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif</span>`
@@ -2801,26 +3189,18 @@
       }
 
       try {
-        const { data, error } = await supabaseClient
+        const { error } = await supabaseClient
           .from('profil_user')
           .delete()
-          .eq('id', userId)
-          .select();
+          .eq('id', userId);
 
         if (error) throw error;
-
-        if (!data || data.length === 0) {
-          alert('Akses hapus ditolak oleh RLS. Anda tidak memiliki izin untuk menghapus akun staf ini.');
-          showToast('Akses hapus ditolak oleh RLS.', 'error');
-          return;
-        }
 
         const rowEl = document.getElementById(`user-row-${userId}`);
         if (rowEl) rowEl.remove();
 
         showToast(`Akun staf "${nama}" berhasil dihapus dari sistem!`, 'success');
         await loadRegisteredUsers();
-
       } catch (err) {
         alert('Gagal menghapus akun: ' + (err.message || 'Ditolak oleh RLS'));
         showToast('Gagal menghapus akun staf: ' + err.message, 'error');
@@ -3156,8 +3536,10 @@
     const homeDashboardContent = document.getElementById('homeDashboardContent');
     const riwayatLaporanContent = document.getElementById('riwayatLaporanContent');
     const kelolaBarangContent = document.getElementById('kelolaBarangContent');
+    const kelolaStokContent = document.getElementById('kelolaStokContent');
     const sidebarHomeBtn = document.getElementById('sidebarHomeBtn');
     const sidebarKelolaBarangBtn = document.getElementById('sidebarKelolaBarangBtn');
+    const sidebarKelolaStokBtn = document.getElementById('sidebarKelolaStokBtn');
     const sidebarRiwayatBtn = document.getElementById('sidebarRiwayatBtn');
 
     window.switchView = function(viewName) {
@@ -3168,10 +3550,12 @@
       if (homeDashboardContent) homeDashboardContent.classList.add('hidden');
       if (riwayatLaporanContent) riwayatLaporanContent.classList.add('hidden');
       if (kelolaBarangContent) kelolaBarangContent.classList.add('hidden');
+      if (kelolaStokContent) kelolaStokContent.classList.add('hidden');
 
       // Reset status tombol navigasi sidebar
       if (sidebarHomeBtn) sidebarHomeBtn.className = inactiveClass;
       if (sidebarKelolaBarangBtn) sidebarKelolaBarangBtn.className = inactiveClass;
+      if (sidebarKelolaStokBtn) sidebarKelolaStokBtn.className = inactiveClass;
       if (sidebarRiwayatBtn) sidebarRiwayatBtn.className = inactiveClass;
 
       if (viewName === 'riwayat') {
@@ -3182,6 +3566,10 @@
         if (kelolaBarangContent) kelolaBarangContent.classList.remove('hidden');
         if (sidebarKelolaBarangBtn) sidebarKelolaBarangBtn.className = activeClass;
         renderKelolaTable(barangList);
+      } else if (viewName === 'stok') {
+        if (kelolaStokContent) kelolaStokContent.classList.remove('hidden');
+        if (sidebarKelolaStokBtn) sidebarKelolaStokBtn.className = activeClass;
+        renderKelolaStokTable(barangList);
       } else {
         if (homeDashboardContent) homeDashboardContent.classList.remove('hidden');
         if (sidebarHomeBtn) sidebarHomeBtn.className = activeClass;
@@ -3194,8 +3582,8 @@
 
     if (sidebarHomeBtn) sidebarHomeBtn.addEventListener('click', () => switchView('dashboard'));
     if (sidebarKelolaBarangBtn) sidebarKelolaBarangBtn.addEventListener('click', () => switchView('kelola'));
+    if (sidebarKelolaStokBtn) sidebarKelolaStokBtn.addEventListener('click', () => switchView('stok'));
     if (sidebarRiwayatBtn) sidebarRiwayatBtn.addEventListener('click', () => switchView('riwayat'));
-
     // =========================================================================
     // FITUR LAPORAN, FILTER, EXPORT CSV & PRINT DOKUMEN RESMI
     // =========================================================================
@@ -3283,14 +3671,20 @@
       const now = new Date();
 
       const filtered = rawPeminjamanList.filter(item => {
-        const isKembali = item.status === 'kembali';
-        const isOverdue = !isKembali && new Date(item.batas_waktu_kembali) < now;
-        const isDipinjam = !isKembali && !isOverdue;
+        const sLower = (item.status || '').toLowerCase();
+        const kLower = (item.keterangan || '').toLowerCase();
+        const isKembaliNormal = (sLower === 'kembali' || sLower === 'kembali normal') && !kLower.includes('rusak') && !kLower.includes('mutasi');
+        const isKembaliRusak = sLower === 'kembali - rusak' || kLower.includes('kondisi: kembali - rusak') || kLower.includes('kondisi: rusak') || kLower.includes('barang rusak');
+        const isMutasi = sLower === 'mutasi' || kLower.includes('kondisi: mutasi') || kLower.includes('status: mutasi') || kLower.includes('habis pakai');
+        const isDone = isKembaliNormal || isKembaliRusak || isMutasi;
+        const isOverdue = !isDone && new Date(item.batas_waktu_kembali) < now;
+        const isDipinjam = !isDone && !isOverdue;
 
         if (statusVal === 'dipinjam' && !isDipinjam) return false;
         if (statusVal === 'terlambat' && !isOverdue) return false;
-        if (statusVal === 'kembali' && !isKembali) return false;
-
+        if (statusVal === 'kembali' && !isKembaliNormal) return false;
+        if (statusVal === 'rusak' && !isKembaliRusak) return false;
+        if (statusVal === 'mutasi' && !isMutasi) return false;
         if (dariVal) {
           const itemDate = new Date(item.tanggal_ambil);
           const dariDate = new Date(dariVal);
@@ -3335,14 +3729,23 @@
       tbody.innerHTML = filtered.map((item, idx) => {
         const batas = new Date(item.batas_waktu_kembali);
         const ambil = new Date(item.tanggal_ambil);
-        const isKembali = item.status === 'kembali';
-        const isOverdue = !isKembali && batas < now;
+        const sLower = (item.status || '').toLowerCase();
+        const kLower = (item.keterangan || '').toLowerCase();
+        const isKembaliNormal = (sLower === 'kembali' || sLower === 'kembali normal') && !kLower.includes('rusak') && !kLower.includes('mutasi');
+        const isKembaliRusak = sLower === 'kembali - rusak' || kLower.includes('kondisi: kembali - rusak') || kLower.includes('kondisi: rusak') || kLower.includes('barang rusak');
+        const isMutasi = sLower === 'mutasi' || kLower.includes('kondisi: mutasi') || kLower.includes('status: mutasi') || kLower.includes('habis pakai');
+        const isDone = isKembaliNormal || isKembaliRusak || isMutasi;
+        const isOverdue = !isDone && batas < now;
 
         const { nama: namaBarang, kode: kodeBarang, isOrphan } = getBarangInfoPeminjaman(item);
 
         let statusBadge = '';
-        if (isKembali) {
-          statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300">Kembali</span>`;
+        if (isKembaliNormal) {
+          statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-300">Kembali</span>`;
+        } else if (isKembaliRusak) {
+          statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300">Kembali - Rusak</span>`;
+        } else if (isMutasi) {
+          statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-800 border border-purple-300">Mutasi</span>`;
         } else if (isOverdue) {
           const diffDays = Math.max(1, Math.floor((now - batas) / (1000 * 60 * 60 * 24)));
           statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black bg-rose-600 text-white">Terlambat ${diffDays}h</span>`;
@@ -3357,12 +3760,12 @@
                title="Klik untuk perbesar tanda tangan" />
         ` : `<span class="text-[10px] text-slate-400 italic">Tanpa TTD</span>`;
 
-        const aksiBtn = isKembali ? `
+        const aksiBtn = isDone ? `
           <span class="text-[10px] text-slate-400 font-medium">Selesai</span>
         ` : `
-          <button onclick="tandaiKembali('${item.id}', '${escapeJsString(namaBarang)}')"
-            class="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg text-[11px] font-bold shadow-sm transition">
-            ✓ Sudah Kembali
+          <button onclick="bukaModalPengembalian('${item.id}')"
+            class="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg text-[11px] font-bold shadow-sm transition inline-flex items-center gap-1">
+            <span>✓ Pengembalian</span>
           </button>
         `;
 
@@ -3414,14 +3817,20 @@
       const now = new Date();
 
       const itemsToExport = rawPeminjamanList.filter(item => {
-        const isKembali = item.status === 'kembali';
-        const isOverdue = !isKembali && new Date(item.batas_waktu_kembali) < now;
-        const isDipinjam = !isKembali && !isOverdue;
+        const sLower = (item.status || '').toLowerCase();
+        const kLower = (item.keterangan || '').toLowerCase();
+        const isKembaliNormal = (sLower === 'kembali' || sLower === 'kembali normal') && !kLower.includes('rusak') && !kLower.includes('mutasi');
+        const isKembaliRusak = sLower === 'kembali - rusak' || kLower.includes('kondisi: kembali - rusak') || kLower.includes('kondisi: rusak') || kLower.includes('barang rusak');
+        const isMutasi = sLower === 'mutasi' || kLower.includes('kondisi: mutasi') || kLower.includes('status: mutasi') || kLower.includes('habis pakai');
+        const isDone = isKembaliNormal || isKembaliRusak || isMutasi;
+        const isOverdue = !isDone && new Date(item.batas_waktu_kembali) < now;
+        const isDipinjam = !isDone && !isOverdue;
 
         if (statusVal === 'dipinjam' && !isDipinjam) return false;
         if (statusVal === 'terlambat' && !isOverdue) return false;
-        if (statusVal === 'kembali' && !isKembali) return false;
-
+        if (statusVal === 'kembali' && !isKembaliNormal) return false;
+        if (statusVal === 'rusak' && !isKembaliRusak) return false;
+        if (statusVal === 'mutasi' && !isMutasi) return false;
         if (dariVal) {
           const itemDate = new Date(item.tanggal_ambil);
           const dariDate = new Date(dariVal);
@@ -3455,12 +3864,18 @@
 
       const headers = ['No', 'Kode Barang', 'Nama Barang', 'Nama Peminjam', 'Unit Ruangan', 'Penanggung Jawab', 'Jumlah', 'Tanggal Ambil', 'Batas Waktu Kembali', 'Tanggal Kembali', 'Status Peminjaman', 'Keterangan'];
       const rows = itemsToExport.map((item, idx) => {
-        const isKembali = item.status === 'kembali';
-        const isOverdue = !isKembali && new Date(item.batas_waktu_kembali) < now;
+        const sLower = (item.status || '').toLowerCase();
+        const kLower = (item.keterangan || '').toLowerCase();
+        const isKembaliNormal = (sLower === 'kembali' || sLower === 'kembali normal') && !kLower.includes('rusak') && !kLower.includes('mutasi');
+        const isKembaliRusak = sLower === 'kembali - rusak' || kLower.includes('kondisi: kembali - rusak') || kLower.includes('kondisi: rusak') || kLower.includes('barang rusak');
+        const isMutasi = sLower === 'mutasi' || kLower.includes('kondisi: mutasi') || kLower.includes('status: mutasi') || kLower.includes('habis pakai');
+        const isDone = isKembaliNormal || isKembaliRusak || isMutasi;
+        const isOverdue = !isDone && new Date(item.batas_waktu_kembali) < now;
         let statusText = 'Dipinjam';
-        if (isKembali) statusText = 'Sudah Dikembalikan';
+        if (isKembaliNormal) statusText = 'Kembali';
+        else if (isKembaliRusak) statusText = 'Kembali - Rusak';
+        else if (isMutasi) statusText = 'Mutasi';
         else if (isOverdue) statusText = 'Terlambat';
-
         const { nama: namaBarang, kode: kodeBarang } = getBarangInfoPeminjaman(item);
         return [
           idx + 1,
@@ -3537,6 +3952,129 @@
     });
     document.getElementById('kelolaBarangKategoriSelect')?.addEventListener('change', () => {
       renderKelolaTable(barangList);
+    });
+
+    // =========================================================================
+    // MODAL PENGEMBALIAN BARANG: 3 PILIHAN KONDISI (NORMAL, RUSAK, MUTASI)
+    // =========================================================================
+    window.bukaModalPengembalian = function(peminjamanId) {
+      const item = (rawPeminjamanList && rawPeminjamanList.find(p => p.id === peminjamanId)) ||
+                   (peminjamanList && peminjamanList.find(p => p.id === peminjamanId));
+
+      if (!item) {
+        showToast('Data peminjaman tidak ditemukan!', 'error');
+        return;
+      }
+
+      const { nama: namaBarang } = getBarangInfoPeminjaman(item);
+
+      document.getElementById('kembaliPeminjamanId').value = peminjamanId;
+      document.getElementById('kembaliBarangId').value = item.barang_id || '';
+      document.getElementById('kembaliJumlahPinjam').value = item.jumlah || 1;
+      document.getElementById('kembaliNamaBarang').innerText = namaBarang || 'Barang Inventaris';
+      document.getElementById('kembaliNamaPeminjam').innerText = item.nama_peminjam || '-';
+      document.getElementById('kembaliJumlahText').innerText = `${item.jumlah || 1} unit`;
+      document.getElementById('kembaliCatatan').value = '';
+
+      const radios = document.getElementsByName('kondisiPengembalian');
+      if (radios && radios.length > 0) radios[0].checked = true;
+
+      document.getElementById('modalPengembalian').classList.remove('hidden');
+    };
+
+    window.tutupModalPengembalian = function() {
+      document.getElementById('modalPengembalian').classList.add('hidden');
+    };
+
+    document.getElementById('formPengembalian')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const peminjamanId = document.getElementById('kembaliPeminjamanId').value;
+      const barangId = document.getElementById('kembaliBarangId').value;
+      const jumlah = parseInt(document.getElementById('kembaliJumlahPinjam').value, 10) || 1;
+      const catatan = document.getElementById('kembaliCatatan').value.trim();
+      const selectedRadio = document.querySelector('input[name="kondisiPengembalian"]:checked');
+      const kondisi = selectedRadio ? selectedRadio.value : 'Kembali';
+
+      const btn = document.getElementById('kembaliSubmitBtn');
+      const spinner = document.getElementById('kembaliSpinner');
+      const text = document.getElementById('kembaliSubmitText');
+
+      btn.disabled = true;
+      spinner.classList.remove('hidden');
+      text.innerText = 'Menyimpan...';
+
+      try {
+        const item = (rawPeminjamanList && rawPeminjamanList.find(p => p.id === peminjamanId)) ||
+                     (peminjamanList && peminjamanList.find(p => p.id === peminjamanId));
+
+        // a. "Kembali Normal" -> Status peminjaman menjadi Kembali, dan jumlah pinjaman ditambahkan kembali ke stok master barang.
+        // b. "Kembali (Barang Rusak)" -> Status peminjaman menjadi Kembali - Rusak. Stok siap pakai tidak bertambah.
+        // c. "Mutasi / Habis Pakai" -> Status peminjaman menjadi Mutasi. Stok tidak dikembalikan ke gudang utama karena barang telah dimutasi/diserahkan permanen ke unit peminjam.
+
+        let statusPeminjaman = kondisi; // 'Kembali' | 'Kembali - Rusak' | 'Mutasi'
+
+        // 1. Jika Kembali Normal: Tambahkan stok master barang
+        if (kondisi === 'Kembali' && barangId) {
+          try {
+            const { data: bData } = await supabaseClient.from('barang').select('id, stok, nama').eq('id', barangId).single();
+            if (bData) {
+              const newStok = (Number(bData.stok) || 0) + jumlah;
+              await supabaseClient.from('barang').update({ stok: newStok }).eq('id', barangId);
+              const bMem = barangList.find(b => b.id === barangId);
+              if (bMem) bMem.stok = newStok;
+            }
+          } catch (errStok) {
+            console.warn('Gagal menambah stok master barang:', errStok);
+          }
+        }
+
+        // 2. Update status peminjaman di tabel peminjaman
+        let updatePayload = {
+          status: statusPeminjaman,
+          tanggal_kembali: new Date().toISOString()
+        };
+        if (catatan) {
+          const oldKet = item?.keterangan ? item.keterangan + ' | ' : '';
+          updatePayload.keterangan = `${oldKet}[Kondisi: ${kondisi}] ${catatan}`;
+        }
+
+        let { error } = await supabaseClient
+          .from('peminjaman')
+          .update(updatePayload)
+          .eq('id', peminjamanId);
+
+        // Fallback jika database memiliki check constraint lama (status IN ('dipinjam', 'kembali', 'terlambat'))
+        if (error && (error.message.includes('check constraint') || error.code === '23514')) {
+          updatePayload.status = 'kembali';
+          const oldKet = item?.keterangan ? item.keterangan + ' | ' : '';
+          updatePayload.keterangan = `${oldKet}[Kondisi: ${kondisi}] ${catatan || ''}`.trim();
+          const retry = await supabaseClient.from('peminjaman').update(updatePayload).eq('id', peminjamanId);
+          error = retry.error;
+        }
+
+        if (error) throw error;
+
+        showToast(`Pengembalian aset berhasil diproses (${kondisi})!`, 'success');
+        tutupModalPengembalian();
+        await loadData();
+        await loadPeminjaman();
+        await loadRiwayatLaporan();
+
+      } catch (err) {
+        showToast('Gagal memproses pengembalian: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        spinner.classList.add('hidden');
+        text.innerText = 'Simpan Pengembalian';
+      }
+    });
+
+    // Event Listener Filter & Pencarian Kelola Stok
+    document.getElementById('kelolaStokSearchInput')?.addEventListener('input', () => {
+      renderKelolaStokTable(barangList);
+    });
+    document.getElementById('kelolaStokKategoriSelect')?.addEventListener('change', () => {
+      renderKelolaStokTable(barangList);
     });
 
     window.addEventListener('DOMContentLoaded', initApp);
