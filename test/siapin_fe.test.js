@@ -30,10 +30,15 @@ test('2. Kop Surat Cetak Laporan: Layout 3 Kolom & Logo Resmi', () => {
   assert.ok(existsSync('logo-sidoarjo.png'), 'logo-sidoarjo.png harus ada di root');
   assert.ok(existsSync('logo-rsud.png'), 'logo-rsud.png harus ada di root');
 
-  // Layout 3 kolom
+  // Layout 3 kolom presisi
   assert.ok(
-    html.includes('flex items-center justify-between border-b-4 border-double border-black pb-3 mb-4'),
-    'Header kop surat harus menggunakan layout 3 kolom dengan border-b-4 border-double border-black'
+    html.includes('border-b-4 border-double border-black pb-3 mb-4'),
+    'Header kop surat harus menggunakan border-b-4 border-double border-black'
+  );
+  assert.match(
+    html,
+    /grid-cols-\[auto_1fr_auto\]|grid.*items-center/i,
+    'Header kop surat harus menggunakan sistem grid 3 kolom presisi'
   );
 
   // Logo kiri: logo-sidoarjo.png (w-24 / w-28)

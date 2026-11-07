@@ -124,10 +124,10 @@
         print-color-adjust: exact;
       }
       #printKopSurat img.kop-logo-kiri {
-        width: 100px !important;
-        height: auto !important;
-        max-width: 110px !important;
-        max-height: 112px !important;
+        width: 96px !important;
+        height: 96px !important;
+        max-width: 96px !important;
+        max-height: 96px !important;
         object-fit: contain !important;
         transform: none !important;
         margin: 0 !important;
@@ -135,10 +135,10 @@
         print-color-adjust: exact;
       }
       #printKopSurat img.kop-logo-kanan {
-        width: 100px !important;
-        height: auto !important;
-        max-width: 110px !important;
-        max-height: 112px !important;
+        width: 96px !important;
+        height: 96px !important;
+        max-width: 96px !important;
+        max-height: 96px !important;
         object-fit: contain !important;
         transform: none !important;
         margin: 0 !important;
@@ -630,14 +630,14 @@
         
         <!-- Kop Surat Resmi (Hanya muncul saat Cetak Dokumen / Print) -->
         <div id="printKopSurat" class="hidden print:block pb-2 mb-4">
-          <div class="flex items-center justify-between border-b-4 border-double border-black pb-3 mb-4 px-6 sm:px-10 print:px-12">
+          <div class="grid grid-cols-[auto_1fr_auto] items-center gap-6 sm:gap-8 border-b-4 border-double border-black pb-3 mb-4 px-4 sm:px-8">
             <!-- a. Kiri: Logo Pemkab Sidoarjo -->
-            <div class="flex-shrink-0 flex items-center justify-center w-24 sm:w-28">
-              <img src="logo-sidoarjo.png" alt="Logo Pemkab Sidoarjo" class="kop-logo-kiri w-24 sm:w-28 h-auto max-h-28 object-contain">
+            <div class="flex-shrink-0 flex items-center justify-center">
+              <img src="logo-sidoarjo.png" alt="Logo Pemkab Sidoarjo" class="kop-logo-kiri w-24 h-24 object-contain">
             </div>
 
             <!-- b. Tengah: Teks Kop Surat Resmi (Times New Roman / Serif) -->
-            <div class="flex-1 text-center font-serif px-4" style="font-family: 'Times New Roman', Times, serif;">
+            <div class="text-center font-serif px-2" style="font-family: 'Times New Roman', Times, serif;">
               <div class="text-base font-bold uppercase tracking-wide leading-tight text-black">PEMERINTAH KABUPATEN SIDOARJO</div>
               <div class="text-lg font-extrabold uppercase tracking-wide leading-tight text-black">RUMAH SAKIT UMUM DAERAH</div>
               <div class="text-lg font-extrabold uppercase tracking-wide leading-tight text-black">R.T. NOTOPURO SIDOARJO</div>
@@ -647,8 +647,8 @@
             </div>
 
             <!-- c. Kanan: Logo RSUD R.T. Notopuro Sidoarjo -->
-            <div class="flex-shrink-0 flex items-center justify-center w-24 sm:w-28">
-              <img src="logo-rsud.png" alt="Logo RSUD R.T. Notopuro Sidoarjo" class="kop-logo-kanan w-24 sm:w-28 h-auto max-h-28 object-contain">
+            <div class="flex-shrink-0 flex items-center justify-center">
+              <img src="logo-rsud.png" alt="Logo RSUD R.T. Notopuro Sidoarjo" class="kop-logo-kanan w-24 h-24 object-contain">
             </div>
           </div>
           <div class="flex items-center justify-between text-xs font-bold text-slate-900 pb-1 mb-2">
