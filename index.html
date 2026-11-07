@@ -124,10 +124,10 @@
         print-color-adjust: exact;
       }
       #printKopSurat img.kop-logo-kiri {
-        width: 75px !important;
-        height: 85px !important;
-        max-width: 75px !important;
-        max-height: 85px !important;
+        width: 100px !important;
+        height: auto !important;
+        max-width: 110px !important;
+        max-height: 112px !important;
         object-fit: contain !important;
         transform: none !important;
         margin: 0 !important;
@@ -135,10 +135,10 @@
         print-color-adjust: exact;
       }
       #printKopSurat img.kop-logo-kanan {
-        width: 80px !important;
-        height: 80px !important;
-        max-width: 80px !important;
-        max-height: 80px !important;
+        width: 100px !important;
+        height: auto !important;
+        max-width: 110px !important;
+        max-height: 112px !important;
         object-fit: contain !important;
         transform: none !important;
         margin: 0 !important;
@@ -630,14 +630,14 @@
         
         <!-- Kop Surat Resmi (Hanya muncul saat Cetak Dokumen / Print) -->
         <div id="printKopSurat" class="hidden print:block pb-2 mb-4">
-          <div class="flex items-center justify-between border-b-4 border-double border-black pb-3 mb-4">
+          <div class="flex items-center justify-between border-b-4 border-double border-black pb-3 mb-4 px-6 sm:px-10 print:px-12">
             <!-- a. Kiri: Logo Pemkab Sidoarjo -->
-            <div class="flex-shrink-0 flex items-center justify-start" style="width: 85px;">
-              <img src="logo-sidoarjo.png" alt="Logo Pemkab Sidoarjo" class="kop-logo-kiri" style="width: 75px; height: 85px; object-fit: contain;">
+            <div class="flex-shrink-0 flex items-center justify-center w-24 sm:w-28">
+              <img src="logo-sidoarjo.png" alt="Logo Pemkab Sidoarjo" class="kop-logo-kiri w-24 sm:w-28 h-auto max-h-28 object-contain">
             </div>
 
             <!-- b. Tengah: Teks Kop Surat Resmi (Times New Roman / Serif) -->
-            <div class="flex-1 text-center font-serif px-2" style="font-family: 'Times New Roman', Times, serif;">
+            <div class="flex-1 text-center font-serif px-4" style="font-family: 'Times New Roman', Times, serif;">
               <div class="text-base font-bold uppercase tracking-wide leading-tight text-black">PEMERINTAH KABUPATEN SIDOARJO</div>
               <div class="text-lg font-extrabold uppercase tracking-wide leading-tight text-black">RUMAH SAKIT UMUM DAERAH</div>
               <div class="text-lg font-extrabold uppercase tracking-wide leading-tight text-black">R.T. NOTOPURO SIDOARJO</div>
@@ -647,8 +647,8 @@
             </div>
 
             <!-- c. Kanan: Logo RSUD R.T. Notopuro Sidoarjo -->
-            <div class="flex-shrink-0 flex items-center justify-end" style="width: 85px;">
-              <img src="logo-rsud.png" alt="Logo RSUD R.T. Notopuro Sidoarjo" class="kop-logo-kanan" style="width: 80px; height: 80px; object-fit: contain;">
+            <div class="flex-shrink-0 flex items-center justify-center w-24 sm:w-28">
+              <img src="logo-rsud.png" alt="Logo RSUD R.T. Notopuro Sidoarjo" class="kop-logo-kanan w-24 sm:w-28 h-auto max-h-28 object-contain">
             </div>
           </div>
           <div class="flex items-center justify-between text-xs font-bold text-slate-900 pb-1 mb-2">
@@ -785,7 +785,7 @@
             <p class="font-bold">Pengelola Logistik & Aset TU</p>
             <div class="h-20"></div>
             <p class="font-bold underline" id="printStaffNameSpan">Petugas Logistik TU</p>
-            <p class="text-[10px]">Staf Terautentikasi</p>
+            <p class="text-[10px]" id="printStaffRoleSpan">Staf</p>
           </div>
         </div>
 
@@ -1890,6 +1890,10 @@
         const roleEl = document.getElementById('sidebarUserRole');
         if (roleEl) {
           roleEl.innerText = `${roleLabel} (${data.nama_lengkap || ''})`;
+        }
+        const staffRoleSpan = document.getElementById('printStaffRoleSpan');
+        if (staffRoleSpan) {
+          staffRoleSpan.innerText = formatRoleName(data.role, data.jabatan);
         }
 
         const pjInput = document.getElementById('pinjamPenanggungJawab');
@@ -3948,10 +3952,41 @@
       showToast('File CSV/Excel laporan peminjaman berhasil diunduh!', 'success');
     }
 
+    function formatRoleName(role, jabatan) {
+      const rawRole = (role || '').trim();
+      const rawJabatan = (jabatan || '').trim();
+
+      const combined = (rawRole + ' ' + rawJabatan).toLowerCase().replace(/[_-]+/g, ' ');
+
+      // Prioritas 1: Deteksi variasi Kepala TU
+      if (/\bkepala\b/i.test(combined)) {
+        return 'Kepala TU';
+      }
+
+      // Prioritas 2: Deteksi Admin (kata utuh, hindari salah cocok dengan 'administrasi')
+      if (/\badmin(istrator)?\b/i.test(combined)) {
+        return 'Admin';
+      }
+
+      // Prioritas 3: Deteksi Staf / Staff
+      if (/\b(staf|staff)\b/i.test(combined)) {
+        return 'Staf';
+      }
+
+      const target = rawRole || rawJabatan || 'Staf';
+      return target
+        .replace(/[_-]+/g, ' ')
+        .split(' ')
+        .filter(Boolean)
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ');
+    }
+
     function printLaporan() {
       const dateSpan = document.getElementById('printDateSpan');
       const signDateSpan = document.getElementById('printSignDateSpan');
       const staffNameSpan = document.getElementById('printStaffNameSpan');
+      const staffRoleSpan = document.getElementById('printStaffRoleSpan');
 
       const nowStr = new Date().toLocaleDateString('id-ID', {
         day: 'numeric',
@@ -3964,6 +3999,11 @@
       if (staffNameSpan) {
         const staffName = currentUserProfile?.nama_lengkap || currentUser?.email || 'Petugas Logistik TU';
         staffNameSpan.innerText = staffName;
+      }
+      if (staffRoleSpan) {
+        const role = currentUserProfile?.role || currentUser?.role || currentUser?.user_metadata?.role || '';
+        const jabatan = currentUserProfile?.jabatan || '';
+        staffRoleSpan.innerText = formatRoleName(role, jabatan);
       }
 
       window.print();

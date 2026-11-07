@@ -36,13 +36,13 @@ test('2. Kop Surat Cetak Laporan: Layout 3 Kolom & Logo Resmi', () => {
     'Header kop surat harus menggunakan layout 3 kolom dengan border-b-4 border-double border-black'
   );
 
-  // Logo kiri: logo-sidoarjo.png (75x85)
+  // Logo kiri: logo-sidoarjo.png (w-24 / w-28)
   assert.ok(html.includes('logo-sidoarjo.png'), 'logo-sidoarjo.png harus dipanggil di kop');
-  assert.match(html, /width:\s*75px;\s*height:\s*85px/i, 'Logo sidoarjo harus berukuran 75x85px');
+  assert.match(html, /kop-logo-kiri.*w-2[48]/i, 'Logo sidoarjo harus berukuran w-24 atau w-28');
 
-  // Logo kanan: logo-rsud.png (80x80)
+  // Logo kanan: logo-rsud.png (w-24 / w-28)
   assert.ok(html.includes('logo-rsud.png'), 'logo-rsud.png harus dipanggil di kop');
-  assert.match(html, /width:\s*80px;\s*height:\s*80px/i, 'Logo RSUD harus berukuran 80x80px');
+  assert.match(html, /kop-logo-kanan.*w-2[48]/i, 'Logo RSUD harus berukuran w-24 atau w-28');
 
   // Teks kop tengah
   assert.ok(html.includes('PEMERINTAH KABUPATEN SIDOARJO'), 'Baris 1 harus ada');
@@ -96,4 +96,10 @@ test('5. Menu Kelola Stok & Modal Pilihan 3 Kondisi Pengembalian', () => {
 
   // Logic stok pada pengembalian
   assert.ok(html.includes("kondisi === 'Kembali' && barangId"), 'Kembali normal harus menambahkan stok master barang');
+});
+
+test('6. Cetak Laporan: Role Dinamis pada Tanda Tangan Footer', () => {
+  const html = readFileSync('index.html', 'utf8');
+  assert.ok(html.includes('id="printStaffRoleSpan"'), 'Span untuk role staff cetak laporan harus ada');
+  assert.ok(html.includes('formatRoleName'), 'Fungsi formatRoleName harus ada');
 });
