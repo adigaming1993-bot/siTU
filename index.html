@@ -1317,8 +1317,8 @@
   <!-- ========================================================================= -->
   <!-- 6. MODAL 4: CATAT PEMINJAMAN ASET (Pelacakan Peminjaman)                   -->
   <!-- ========================================================================= -->
-  <div id="peminjamanModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-3 sm:p-4 overflow-y-auto w-full max-w-full">
-    <div class="bg-white rounded-2xl w-full max-w-full sm:max-w-lg shadow-2xl border border-slate-100 overflow-hidden fade-in my-4 sm:my-8">
+  <div id="peminjamanModal" class="fixed inset-0 z-50 hidden modal-backdrop overflow-y-auto flex items-start md:items-center justify-center p-4 w-full max-w-full">
+    <div class="bg-white rounded-2xl w-full max-w-lg my-auto overflow-hidden shadow-2xl border border-slate-100 fade-in">
       
       <div class="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 w-full max-w-full">
         <div>
@@ -1371,16 +1371,17 @@
             </p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full max-w-full">
-            <div>
+            <div class="w-full min-w-0">
               <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Unit *</label>
               <input type="number" id="pinjamJumlah" required min="1" value="1"
                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
             </div>
 
-            <div>
+            <div class="w-full min-w-0 overflow-hidden">
               <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Batas Waktu Pengembalian *</label>
               <input type="datetime-local" id="pinjamBatasWaktu" required
-                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
+                style="max-width: 100%; min-width: 0; -webkit-appearance: none;"
+                class="w-full max-w-full min-w-0 block box-border px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition" />
             </div>
           </div>
 
