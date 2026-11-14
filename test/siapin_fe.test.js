@@ -108,3 +108,28 @@ test('6. Cetak Laporan: Role Dinamis pada Tanda Tangan Footer', () => {
   assert.ok(html.includes('id="printStaffRoleSpan"'), 'Span untuk role staff cetak laporan harus ada');
   assert.ok(html.includes('formatRoleName'), 'Fungsi formatRoleName harus ada');
 });
+
+test('7. Fitur Edit Data Barang: Tombol, Modal, dan Handler JS', () => {
+  const html = readFileSync('index.html', 'utf8');
+
+  // 1. Tombol Edit pada tabel Kelola Data Barang
+  assert.ok(html.includes("openEditModal('${item.id}')"), 'Tombol Edit harus memanggil openEditModal(id)');
+  assert.ok(html.includes('title="Edit Data Barang"'), 'Tooltip tombol Edit harus ada');
+  assert.ok(html.includes('title="Hapus Barang"'), 'Tombol Hapus harus tetap dipertahankan');
+
+  // 2. Modal Edit Barang
+  assert.ok(html.includes('id="editBarangModal"'), 'Modal editBarangModal harus ada');
+  assert.ok(html.includes('id="formEditBarang"'), 'Form formEditBarang harus ada');
+  assert.ok(html.includes('id="editBarangId"'), 'Input hidden editBarangId harus ada');
+  assert.ok(html.includes('id="editNama"'), 'Input editNama harus ada');
+  assert.ok(html.includes('id="editKategori"'), 'Select editKategori harus ada');
+  assert.ok(html.includes('id="editSatuan"'), 'Input editSatuan harus ada');
+  assert.ok(html.includes('id="editBatasMin"'), 'Input editBatasMin harus ada');
+  assert.ok(html.includes('id="editRak"'), 'Input editRak harus ada');
+
+  // 3. Logika JS
+  assert.ok(html.includes('function openEditModal(id)'), 'Fungsi openEditModal harus ada');
+  assert.ok(html.includes('function closeEditModal()'), 'Fungsi closeEditModal harus ada');
+  assert.match(html, /\.from\(['"]barang['"]\)\s*\.update\(/, 'Update tabel barang di Supabase harus ada');
+  assert.ok(html.includes('window.openEditModal = openEditModal;'), 'openEditModal harus diekspos ke window');
+});

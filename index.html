@@ -164,9 +164,9 @@
       <!-- Aksen Garis Gradasi Tipis di Paling Atas Card -->
       <div class="absolute top-0 left-0 right-0 h-1.5 w-full bg-gradient-to-r from-sky-400 via-blue-500 to-emerald-400"></div>
 
-      <!-- Wadah Logo RSUD Lebih Menonjol -->
-      <div class="w-24 h-24 mx-auto mb-4 bg-white rounded-2xl p-2.5 shadow-lg shadow-sky-500/10 ring-4 ring-white/10 flex items-center justify-center overflow-hidden">
-        <img src="logo-rsud.png" alt="Logo RSUD" class="w-full h-full object-contain" style="transform: scale(1.35);">
+      <!-- Logo RSUD Transparan -->
+      <div class="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+        <img src="logo-rsud.png" alt="Logo RSUD" class="w-24 h-24 object-contain">
       </div>
 
       <!-- Tipografi Judul Aplikasi -->
@@ -1627,6 +1627,100 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: EDIT DATA BARANG LOGISTIK TU                                       -->
+  <!-- ========================================================================= -->
+  <div id="editBarangModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
+      
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div>
+          <h3 class="font-bold text-slate-800 text-base">Edit Data Barang Logistik</h3>
+          <p class="text-xs text-slate-400">Perbarui data inventaris terhubung ke tabel barang Supabase</p>
+        </div>
+        <button type="button" id="closeEditModalBtn" onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+      <form id="formEditBarang" class="p-6 space-y-4">
+        <input type="hidden" id="editBarangId" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-slate-600 uppercase">Kode Barang</label>
+              <span class="text-[10px] text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Tetap</span>
+            </div>
+            <input type="text" id="editKode" readonly placeholder="Kode Barang"
+              class="w-full px-3.5 py-2.5 bg-gray-100 cursor-not-allowed border border-slate-200 rounded-xl text-sm font-mono font-semibold text-slate-700 outline-none transition" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kategori *</label>
+            <select id="editKategori" required
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition">
+              <option value="">Pilih Kategori...</option>
+              <option value="Alat Tulis Kantor">Alat Tulis Kantor (ATK)</option>
+              <option value="Cetakan & Formulir">Cetakan & Formulir RS</option>
+              <option value="Kebersihan & Sanitasi Non-Medis">Kebersihan & Sanitasi</option>
+              <option value="Perlengkapan IT">Perlengkapan Komputer & IT</option>
+              <option value="Perlengkapan Kantor">Perlengkapan Kantor</option>
+              <option value="Perlengkapan Rumah Tangga TU">Perlengkapan Rumah Tangga TU</option>
+              <option value="Lain-lain">Lain-lain</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Barang *</label>
+          <input type="text" id="editNama" required placeholder="misal: Kertas HVS A4 75 GSM"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Satuan *</label>
+            <input type="text" id="editSatuan" required placeholder="rim / pcs / dus"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Batas Min. Stok *</label>
+            <input type="number" id="editBatasMin" required min="0" value="5"
+              oninput="document.getElementById('editStokMin').value = this.value"
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
+            <input type="hidden" id="editStokMin" value="5" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Lokasi Rak / Lemari</label>
+          <input type="text" id="editRak" placeholder="Rak A-1 Logistik TU"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition" />
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button type="button" id="cancelEditModalBtn" onclick="closeEditModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+            Batal
+          </button>
+          <button type="submit" id="saveEditBarangBtn"
+            class="px-5 py-2.5 bg-[#0f172a] hover:bg-slate-800 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center gap-2">
+            <span id="saveEditBtnSpinner" class="hidden">
+              <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+            </span>
+            <span id="saveEditBtnText">Simpan Perubahan</span>
+          </button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+
 
   <!-- ========================================================================= -->
   <!-- 8. JAVASCRIPT FRONTEND LENGKAP                                            -->
@@ -2391,14 +2485,24 @@
           <td class="py-2.5 px-3 text-center text-xs text-slate-600">${item.stok_minimum || 5}</td>
           <td class="py-2.5 px-3 text-xs text-slate-500">${escapeHtml(item.lokasi_rak || '-')}</td>
           <td class="py-2.5 px-3 text-center">
-            <button type="button" onclick="hapusBarang('${item.id}', '${escapeJsString(item.nama || '')}')"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white border border-rose-200 transition shadow-xs"
-              title="Hapus Barang">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-              <span>Hapus</span>
-            </button>
+            <div class="inline-flex items-center justify-center gap-1.5">
+              <button type="button" onclick="openEditModal('${item.id}')"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white border border-blue-200 transition shadow-xs"
+                title="Edit Data Barang">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span>Edit</span>
+              </button>
+              <button type="button" onclick="hapusBarang('${item.id}', '${escapeJsString(item.nama || '')}')"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white border border-rose-200 transition shadow-xs"
+                title="Hapus Barang">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                <span>Hapus</span>
+              </button>
+            </div>
           </td>
         </tr>
       `).join('');
@@ -2821,6 +2925,162 @@
           saveBtn.disabled = false;
           spinner.classList.add('hidden');
           text.innerText = 'Simpan';
+        }
+      });
+    }
+
+    // =========================================================================
+    // MODAL EDIT DATA BARANG (KELOLA DATA BARANG)
+    // =========================================================================
+    const editBarangModal = document.getElementById('editBarangModal');
+    const formEditBarang = document.getElementById('formEditBarang');
+
+    async function openEditModal(id) {
+      if (!id) {
+        showToast('ID barang tidak valid.', 'error');
+        return;
+      }
+
+      // Ambil data barang dari state lokal barangList atau fallback Supabase
+      let item = Array.isArray(barangList) ? barangList.find(b => String(b.id) === String(id)) : null;
+
+      if (!item && supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('barang')
+            .select('*')
+            .eq('id', id)
+            .single();
+          if (!error && data) {
+            item = data;
+          }
+        } catch (err) {
+          console.error('Error fetch barang by id:', err);
+        }
+      }
+
+      if (!item) {
+        showToast('Data barang tidak ditemukan.', 'error');
+        return;
+      }
+
+      // Isi (populate) nilai-nilai ke dalam input di modal Edit
+      const idEl = document.getElementById('editBarangId');
+      if (idEl) idEl.value = item.id || '';
+
+      const kodeEl = document.getElementById('editKode');
+      if (kodeEl) kodeEl.value = item.kode_barang || '';
+
+      const namaEl = document.getElementById('editNama');
+      if (namaEl) namaEl.value = item.nama || '';
+
+      const katEl = document.getElementById('editKategori');
+      if (katEl) katEl.value = item.kategori || '';
+
+      const satuanEl = document.getElementById('editSatuan');
+      if (satuanEl) satuanEl.value = item.satuan || '';
+
+      const stokMinVal = (item.stok_minimum !== undefined && item.stok_minimum !== null) ? item.stok_minimum : 5;
+      const batasMinEl = document.getElementById('editBatasMin');
+      if (batasMinEl) batasMinEl.value = stokMinVal;
+      const stokMinEl = document.getElementById('editStokMin');
+      if (stokMinEl) stokMinEl.value = stokMinVal;
+
+      const rakEl = document.getElementById('editRak');
+      if (rakEl) rakEl.value = item.lokasi_rak || '';
+
+      // Tampilkan modal
+      if (editBarangModal) {
+        editBarangModal.classList.remove('hidden');
+      }
+
+      setTimeout(() => {
+        if (namaEl) namaEl.focus();
+      }, 100);
+    }
+    window.openEditModal = openEditModal;
+
+    function closeEditModal() {
+      if (editBarangModal) {
+        editBarangModal.classList.add('hidden');
+      }
+    }
+    window.closeEditModal = closeEditModal;
+
+    const closeEditBtnEl = document.getElementById('closeEditModalBtn');
+    if (closeEditBtnEl) closeEditBtnEl.addEventListener('click', closeEditModal);
+
+    const cancelEditBtnEl = document.getElementById('cancelEditModalBtn');
+    if (cancelEditBtnEl) cancelEditBtnEl.addEventListener('click', closeEditModal);
+
+    if (editBarangModal) {
+      editBarangModal.addEventListener('click', (e) => {
+        if (e.target === editBarangModal) closeEditModal();
+      });
+    }
+
+    if (formEditBarang) {
+      formEditBarang.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const saveBtn = document.getElementById('saveEditBarangBtn');
+        const spinner = document.getElementById('saveEditBtnSpinner');
+        const text = document.getElementById('saveEditBtnText');
+
+        if (saveBtn) saveBtn.disabled = true;
+        if (spinner) spinner.classList.remove('hidden');
+        if (text) text.innerText = 'Menyimpan...';
+
+        try {
+          const id = document.getElementById('editBarangId')?.value;
+          if (!id) {
+            throw new Error('ID barang tidak ditemukan.');
+          }
+
+          const nama = document.getElementById('editNama')?.value.trim();
+          const kategori = document.getElementById('editKategori')?.value;
+          const satuan = document.getElementById('editSatuan')?.value.trim() || 'pcs';
+          const stokMinInput = document.getElementById('editBatasMin') || document.getElementById('editStokMin');
+          const stokMin = parseInt(stokMinInput?.value, 10) || 5;
+          const lokasiRak = document.getElementById('editRak')?.value.trim();
+
+          if (!nama || !kategori) {
+            throw new Error('Mohon lengkapi nama barang dan kategori.');
+          }
+
+          if (!supabaseClient) {
+            throw new Error('Koneksi Supabase belum terinisialisasi. Silakan refresh halaman.');
+          }
+
+          const updatePayload = {
+            nama: nama,
+            kategori: kategori,
+            satuan: satuan,
+            stok_minimum: stokMin,
+            lokasi_rak: lokasiRak || null
+          };
+
+          const { data, error } = await supabaseClient
+            .from('barang')
+            .update(updatePayload)
+            .eq('id', id);
+
+          if (error) throw error;
+
+          showToast(`Data barang "${nama}" berhasil diperbarui!`, 'success');
+          closeEditModal();
+
+          // Refresh data tabel tanpa me-reload halaman
+          await loadData();
+
+        } catch (err) {
+          console.error('Error update barang:', err);
+          alert('Gagal memperbarui barang: ' + (err.message || 'Terjadi kesalahan sistem'));
+          showToast('Gagal update barang: ' + err.message, 'error');
+        } finally {
+          if (saveBtn) saveBtn.disabled = false;
+          if (spinner) spinner.classList.add('hidden');
+          if (text) text.innerText = 'Simpan Perubahan';
         }
       });
     }
