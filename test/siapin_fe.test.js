@@ -133,3 +133,29 @@ test('7. Fitur Edit Data Barang: Tombol, Modal, dan Handler JS', () => {
   assert.match(html, /\.from\(['"]barang['"]\)\s*\.update\(/, 'Update tabel barang di Supabase harus ada');
   assert.ok(html.includes('window.openEditModal = openEditModal;'), 'openEditModal harus diekspos ke window');
 });
+
+test('8. Responsivitas Form & Halaman Peminjaman untuk Layar HP', () => {
+  const html = readFileSync('index.html', 'utf8');
+
+  // 1. Form Catat Peminjaman menggunakan w-full, max-w-full, dan padding dinamis p-4 md:p-8
+  assert.match(
+    html,
+    /id="peminjamanForm"[^>]*class="[^"]*p-4 md:p-8[^"]*w-full max-w-full[^"]*"/,
+    'Form peminjaman harus menggunakan padding p-4 md:p-8 dan w-full max-w-full'
+  );
+
+  // 2. Container modal peminjaman fleksibel dan responsif
+  assert.ok(html.includes('id="peminjamanModal"'), 'peminjamanModal harus tetap ada');
+  assert.match(
+    html,
+    /<div id="peminjamanModal"[^>]*class="[^"]*w-full max-w-full[^"]*"/,
+    'Modal peminjaman harus menggunakan w-full max-w-full'
+  );
+
+  // 3. Tabel riwayat peminjaman aset dibungkus dengan overflow-x-auto
+  assert.match(
+    html,
+    /class="[^"]*w-full max-w-full overflow-x-auto[^"]*">\s*<table id="tableRiwayatLaporan"/,
+    'Tabel riwayat peminjaman harus dibungkus w-full max-w-full overflow-x-auto'
+  );
+});

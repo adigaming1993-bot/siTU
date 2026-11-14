@@ -415,8 +415,8 @@
       <!-- ===================================================================== -->
       <!-- KARTU PERINGATAN DINAMIS MERAH: KETERLAMBATAN PEMINJAMAN ASET         -->
       <!-- ===================================================================== -->
-      <section id="overdueAlertSection" class="hidden fade-in">
-        <div class="bg-rose-50 border-2 border-rose-200 text-rose-950 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+      <section id="overdueAlertSection" class="hidden fade-in w-full max-w-full">
+        <div class="bg-rose-50 border-2 border-rose-200 text-rose-950 rounded-2xl p-4 md:p-6 shadow-sm relative overflow-hidden w-full max-w-full">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-rose-200/80 gap-2">
             <div class="flex items-center gap-3">
               <span class="flex h-3 w-3 relative">
@@ -437,7 +437,7 @@
           </p>
 
           <!-- Tabel Ringkas Peminjaman Terlambat (Borderless) -->
-          <div class="overflow-x-auto bg-white/70 backdrop-blur-sm rounded-xl border border-rose-100 p-2">
+          <div class="w-full max-w-full overflow-x-auto bg-white/70 backdrop-blur-sm rounded-xl border border-rose-100 p-2">
             <table class="w-full text-left text-xs border-none min-w-[620px]">
               <thead class="text-rose-900 font-bold uppercase tracking-wider border-b border-rose-200/60">
                 <tr>
@@ -626,7 +626,7 @@
       <!-- TAB 2: HALAMAN MANDIRI RIWAYAT & LAPORAN PEMINJAMAN ASET (FULL-WIDTH)  -->
       <!-- Dilengkapi Filter Rentang Tanggal, Filter Status, Pencarian, & Cetak  -->
       <!-- ===================================================================== -->
-      <div id="riwayatLaporanContent" class="hidden space-y-6">
+      <div id="riwayatLaporanContent" class="hidden space-y-6 w-full max-w-full">
         
         <!-- Kop Surat Resmi (Hanya muncul saat Cetak Dokumen / Print) -->
         <div id="printKopSurat" class="hidden print:block pb-2 mb-4">
@@ -676,7 +676,7 @@
         </div>
 
         <!-- Bar Peralatan Filter & Tombol Cetak / Ekspor (Print: Hidden) -->
-        <div id="reportToolbar" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 space-y-4 print:hidden">
+        <div id="reportToolbar" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 md:p-8 space-y-4 print:hidden w-full max-w-full">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             
             <!-- Filter Tanggal Mulai -->
@@ -751,8 +751,8 @@
         </div>
 
         <!-- Tabel Rekapitulasi Riwayat Peminjaman Aset (Full-Width) -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 overflow-hidden">
-          <div class="overflow-x-auto">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 md:p-8 overflow-hidden w-full max-w-full">
+          <div class="w-full max-w-full overflow-x-auto">
             <table id="tableRiwayatLaporan" class="w-full text-left text-xs border-collapse min-w-[860px]">
               <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] border-b border-slate-200">
                 <tr>
@@ -1316,10 +1316,10 @@
   <!-- ========================================================================= -->
   <!-- 6. MODAL 4: CATAT PEMINJAMAN ASET (Pelacakan Peminjaman)                   -->
   <!-- ========================================================================= -->
-  <div id="peminjamanModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8">
+  <div id="peminjamanModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-3 sm:p-4 overflow-y-auto w-full max-w-full">
+    <div class="bg-white rounded-2xl w-full max-w-full sm:max-w-lg shadow-2xl border border-slate-100 overflow-hidden fade-in my-4 sm:my-8">
       
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+      <div class="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 w-full max-w-full">
         <div>
           <h3 class="font-bold text-slate-800 text-base">Pencatatan Peminjaman Aset Baru</h3>
           <p class="text-xs text-slate-400">Peminjaman aset logistik lengkap dengan Tanda Tangan Digital</p>
@@ -1331,8 +1331,8 @@
         </button>
       </div>
 
-      <div class="overflow-x-auto">
-        <form id="peminjamanForm" class="p-6 space-y-4">
+      <div class="w-full max-w-full overflow-x-auto">
+        <form id="peminjamanForm" class="p-4 md:p-8 space-y-4 w-full max-w-full">
           
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Barang / Aset yang Dipinjam *</label>
@@ -1342,7 +1342,7 @@
             </select>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full max-w-full">
             <div>
               <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Staf Peminjam *</label>
               <input type="text" id="pinjamNama" required placeholder="dr. Bambang / Ns. Ratna"
@@ -1369,7 +1369,7 @@
               * Kolom otomatis terkunci dan terisi dari sesi akun staf yang sedang login.
             </p>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full max-w-full">
             <div>
               <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Unit *</label>
               <input type="number" id="pinjamJumlah" required min="1" value="1"
@@ -1402,7 +1402,7 @@
                 <span>Hapus / Ulangi TTD</span>
               </button>
             </div>
-            <div class="relative w-full h-36 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden hover:border-indigo-400 focus-within:border-indigo-500 transition">
+            <div class="relative w-full max-w-full h-36 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden hover:border-indigo-400 focus-within:border-indigo-500 transition">
               <canvas id="ttdCanvas" class="w-full h-full cursor-crosshair touch-none"></canvas>
               <div id="ttdPlaceholder" class="pointer-events-none absolute inset-0 flex items-center justify-center text-xs text-slate-400 font-medium select-none">
                 ✍️ Goreskan tanda tangan staf peminjam di sini
@@ -1413,7 +1413,7 @@
             </p>
           </div>
 
-          <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+          <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full max-w-full">
             <button type="button" onclick="closePeminjamanModal(); switchView('riwayat');" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline">
               Lihat Riwayat & Laporan Lengkap →
             </button>
@@ -1536,9 +1536,9 @@
   <!-- ========================================================================= -->
   <!-- MODAL: KONDISI PENGEMBALIAN BARANG / ASET (NORMAL, RUSAK, MUTASI)         -->
   <!-- ========================================================================= -->
-  <div id="modalPengembalian" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden fade-in my-8 flex flex-col">
-      <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-900 to-indigo-950 text-white">
+  <div id="modalPengembalian" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-3 sm:p-4 overflow-y-auto w-full max-w-full">
+    <div class="bg-white rounded-2xl w-full max-w-full sm:max-w-lg shadow-2xl border border-slate-100 overflow-hidden fade-in my-4 sm:my-8 flex flex-col">
+      <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-900 to-indigo-950 text-white w-full max-w-full">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">
             🔄
@@ -1555,7 +1555,8 @@
         </button>
       </div>
 
-      <form id="formPengembalian" class="p-6 space-y-4">
+      <div class="w-full max-w-full overflow-x-auto">
+        <form id="formPengembalian" class="p-4 md:p-8 space-y-4 w-full max-w-full">
         <input type="hidden" id="kembaliPeminjamanId" />
         <input type="hidden" id="kembaliBarangId" />
         <input type="hidden" id="kembaliJumlahPinjam" />
@@ -1624,6 +1625,7 @@
           </button>
         </div>
       </form>
+      </div>
     </div>
   </div>
 
